@@ -1,0 +1,236 @@
+package com.panaceasoft.citiesdirectory.fragments;
+
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.support.v4.app.Fragment;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.panaceasoft.citiesdirectory.Config;
+import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.activities.MainActivity;
+import com.panaceasoft.citiesdirectory.activities.UserLogin;
+import com.panaceasoft.citiesdirectory.activities.UserRegister;
+import com.panaceasoft.citiesdirectory.models.Users;
+import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
+import com.panaceasoft.citiesdirectory.utilities.Utils;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.HashMap;
+
+/**
+ * Created by Panacea-Soft on 8/1/15.
+ * Contact Email : teamps.is.cool@gmail.com
+ */
+
+public class UserRegisterFragment extends Fragment {
+
+    private View view;
+    private EditText input_name;
+    private EditText input_email;
+    private EditText input_password;
+    private String userName;
+    private String email;
+    private ProgressBar pb;
+    private Button button_register;
+    private Button button_cancel;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(R.layout.fragment_user_register, container, false);
+
+        // Init the all UI
+        initUI();
+
+        return view;
+    }
+
+    private void initUI() {
+        input_name = (EditText) this.view.findViewById(R.id.input_name);
+        input_email = (EditText) this.view.findViewById(R.id.input_email);
+        input_password = (EditText) this.view.findViewById(R.id.input_password);
+        pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
+        button_register = (Button) this.view.findViewById(R.id.button_register);
+        button_cancel = (Button) this.view.findViewById(R.id.button_cancel);
+
+        button_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doRegister();
+            }
+        });
+
+        button_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doCancel();
+            }
+        });
+    }
+
+    private void doCancel() {
+        if(getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).openFragment(R.id.nav_profile);
+        }else if(getActivity() instanceof UserRegister) {
+            getActivity().finish();
+        }
+    }
+
+    private boolean inputValidation() {
+
+
+        if(input_name.getText().toString().equals("")) {
+            Toast.makeText(getActivity().getApplicationContext(), R.string.name_validation_message,
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if(input_email.getText().toString().equals("")) {
+            Toast.makeText(getActivity().getApplicationContext(), R.string.email_validation_message,
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if(input_password.getText().toString().equals("")) {
+            Toast.makeText(getActivity().getApplicationContext(), R.string.password_validation_message,
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void doRegister() {
+
+        if(inputValidation()) {
+
+            pb.setVisibility(view.VISIBLE);
+
+            final String URL = Config.APP_API_URL + Config.POST_USER_REGISTER;
+            Utils.psLog(URL);
+
+            userName = input_name.getText().toString().trim();
+            email = input_email.getText().toString().trim();
+
+            HashMap<String, String> params = new HashMap<>();
+            params.put("username", input_name.getText().toString().trim());
+            params.put("email", input_email.getText().toString().trim());
+            params.put("password", input_password.getText().toString().trim());
+
+            doSubmit(URL, params, view);
+
+
+        }
+
+    }
+
+    private void doSubmit(String postURL, HashMap<String, String> params, final View view) {
+
+        RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
+        JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+
+                            pb.setVisibility(view.GONE);
+
+                            String user_id = response.getString("user_id");
+
+                            Utils.psLog(user_id);
+                            if(user_id != null){
+                                //showSuccessPopup();
+                                Utils.psLog("Successful Register, Need to Store in SQLite DB.");
+
+
+                                DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
+                                Utils.psLog("..... Inserting into DB....");
+                                db.addUser(new Users(Integer.parseInt(user_id), userName, email, "", 0, ""));
+
+                                Utils.psLog(" User Count : " + db.getUserCount());
+
+                                //Save Login User Info
+                                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putInt("_login_user_id", Integer.parseInt(user_id));
+                                editor.putString("_login_user_name", userName);
+                                editor.putString("_login_user_email", email);
+                                editor.putString("_login_user_about_me", "");
+                                //editor.putString("_login_user_del_address", "");
+                                //editor.putString("_login_user_bill_address", "");
+                                editor.commit();
+
+                                // Update Menu
+                                Utils.activity.changeMenu();
+
+                                // Show profile Menu
+                                if(getActivity() instanceof MainActivity) {
+                                    ((MainActivity) getActivity()).openFragment(R.id.nav_profile_login);
+                                }
+
+                                showSuccessPopup();
+
+                            } else {
+                                //showFailPopup();
+                                Utils.psLog("Register Fail");
+                                showFailPopup();
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            Utils.psLog("Register Fail");
+                            showFailPopup();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.psLog("Error: "+ error.getMessage());
+            }
+        });
+
+        // add the request object to the queue to be executed
+        mRequestQueue.add(req);
+
+    }
+
+    public void showFailPopup() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.register)
+                .content(R.string.login_fail)
+                .positiveText(R.string.OK)
+                .show();
+    }
+
+    private void showSuccessPopup() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.register)
+                .content(R.string.register_success)
+                .positiveText(R.string.OK)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    public void onPositive(MaterialDialog dialog) {
+                        if(getActivity() instanceof MainActivity) {
+                            ((MainActivity) getActivity()).openFragment(R.id.nav_profile);
+                        }else if(getActivity() instanceof UserLogin) {
+                            getActivity().finish();
+                        }
+                    }
+                })
+                .show();
+    }
+
+
+}

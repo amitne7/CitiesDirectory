@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/space_1"
+    android:paddingRight="@dimen/space_1"
+    tools:context="com.panaceasoft.citiesdirectory.fragments.ProfileFragment">
+
+
+    <ImageView
+        android:layout_marginTop="@dimen/space_2"
+        android:src="@drawable/ic_android_black_24dp"
+        android:id="@+id/iv_profile_photo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="@dimen/sub_head"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="@dimen/body2"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_about_me"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:textSize="@dimen/body2" />
+
+    <TextView
+        android:id="@+id/tv_delivery_address_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/delivery_address"
+        android:textSize="@dimen/body2" />
+
+    <TextView
+        android:id="@+id/tv_delivery_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:textSize="@dimen/body2" />
+
+    <TextView
+        android:id="@+id/tv_billing_address_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/billing_address"
+        android:textSize="@dimen/body2" />
+
+    <TextView
+        android:id="@+id/tv_billing_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:textSize="@dimen/body2" />
+
+
+</LinearLayout>

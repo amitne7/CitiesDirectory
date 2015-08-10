@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+
+    <ImageView
+        android:layout_width="65dp"
+        android:layout_height="55dp"
+        android:src="@drawable/custom_marker_light_red" />
+
+    <ImageView
+        android:id="@+id/img_pin"
+        android:layout_width="40dp"
+        android:layout_height="23dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/dummy_cover_2" />
+
+    <!--
+    <TextView
+        android:id="@+id/num_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="20"
+        android:textColor="#ce8223"
+        android:textSize="25dp"
+        android:textStyle="bold" />-->
+
+</RelativeLayout>
