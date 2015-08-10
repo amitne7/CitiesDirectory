@@ -4,8 +4,6 @@ package com.panaceasoft.citiesdirectory.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,13 +11,8 @@ import android.widget.TextView;
 import java.util.HashMap;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
 import com.panaceasoft.citiesdirectory.R;
-import com.panaceasoft.citiesdirectory.models.CityData;
-import com.panaceasoft.citiesdirectory.utilities.Utils;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by Panacea-Soft on 26/7/15.

@@ -2,15 +2,11 @@ package com.panaceasoft.citiesdirectory.adapters;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Build;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,23 +16,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.SelectedCityActivity;
-import com.panaceasoft.citiesdirectory.models.CityData;
 import com.panaceasoft.citiesdirectory.models.PCityData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
-
-import static com.panaceasoft.citiesdirectory.R.anim.fab_in;
 
 /**
  * Created by Panacea-Soft on 15/7/15.
@@ -46,7 +34,6 @@ import static com.panaceasoft.citiesdirectory.R.anim.fab_in;
 
 public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder>  {
 
-    private List<CityData> cities;
     private Activity activity;
     private int lastPosition = -1;
 

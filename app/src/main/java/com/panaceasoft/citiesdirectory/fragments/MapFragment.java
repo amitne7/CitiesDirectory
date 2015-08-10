@@ -43,7 +43,6 @@ import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.adapters.MapPopupAdapter;
 import com.panaceasoft.citiesdirectory.listeners.GPSTracker;
-import com.panaceasoft.citiesdirectory.models.CityData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rey.material.widget.Slider;
@@ -61,7 +60,7 @@ import java.util.Locale;
  */
 
 public class MapFragment extends Fragment {
-
+    /*
     MapView mMapView;
     private GoogleMap googleMap;
     private Marker customMarker;
@@ -455,6 +454,6 @@ public class MapFragment extends Fragment {
 
 
 
-
+*/
 
 }

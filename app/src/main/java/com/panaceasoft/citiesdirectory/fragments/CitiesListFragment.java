@@ -1,13 +1,10 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +26,9 @@ import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.adapters.CityAdapter;
 import com.panaceasoft.citiesdirectory.listeners.ClickListener;
 import com.panaceasoft.citiesdirectory.listeners.RecyclerTouchListener;
-import com.panaceasoft.citiesdirectory.models.CategoryData;
-import com.panaceasoft.citiesdirectory.models.CityData;
 import com.panaceasoft.citiesdirectory.models.PCityData;
 import com.panaceasoft.citiesdirectory.models.SubCategoryData;
 import com.pnikosis.materialishprogress.ProgressWheel;
-
-import org.apache.http.HttpStatus;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -50,9 +43,9 @@ public class CitiesListFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private ProgressWheel progressWheel;
-    private List<CityData> sh;
-    private List<CityData> dataSet;
-    private ArrayList<CategoryData> categoryArrayList;
+    //private List<CityData> sh;
+    //private List<CityData> dataSet;
+    //private ArrayList<CategoryData> categoryArrayList;
     private ArrayList<SubCategoryData> subCategoryArrayList;
     private CityAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -104,7 +97,7 @@ public class CitiesListFragment extends Fragment {
         display_message = (TextView) view.findViewById(R.id.display_message);
         display_message.setVisibility(view.GONE);
 
-        dataSet = new ArrayList<>();
+        //dataSet = new ArrayList<>();
         pCityDataSet = new ArrayList<>();
         //adapter = new CityAdapter(getActivity(),dataSet);
         adapter = new CityAdapter(getActivity(),pCityDataSet);

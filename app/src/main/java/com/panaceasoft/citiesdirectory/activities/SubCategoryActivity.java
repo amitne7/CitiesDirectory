@@ -160,7 +160,7 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     }
 
-    public void openActivity(int selected_item_id, int selected_shop_id){
+    public void openActivity(int selected_item_id, int selected_city_id){
         final Intent intent;
 
         intent = new Intent(this, DetailActivity.class);
@@ -170,9 +170,9 @@ public class SubCategoryActivity extends AppCompatActivity {
         //intent.putExtra("selected_category_index", 0);
 
         //intent.putExtra("selected_item", new ItemDataWrapper(myDataset.get(position)));
-
+        Utils.psLog("Selected City ID : " + selectedCityID);
         intent.putExtra("selected_item_id", selected_item_id);
-        intent.putExtra("selected_shop_id", selected_shop_id);
+        intent.putExtra("selected_city_id", selectedCityID + "");
 
         startActivityForResult(intent, 1);
     }

@@ -1,6 +1,5 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -21,20 +19,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
-import com.panaceasoft.citiesdirectory.activities.DetailActivity;
-import com.panaceasoft.citiesdirectory.activities.DetailOneActivity;
 import com.panaceasoft.citiesdirectory.activities.SubCategoryActivity;
 import com.panaceasoft.citiesdirectory.adapters.ItemAdapter;
 import com.panaceasoft.citiesdirectory.listeners.ClickListener;
 import com.panaceasoft.citiesdirectory.listeners.RecyclerTouchListener;
-import com.panaceasoft.citiesdirectory.models.CustomRowInformation;
-import com.panaceasoft.citiesdirectory.models.ImageData;
-import com.panaceasoft.citiesdirectory.models.ItemAttributeData;
-import com.panaceasoft.citiesdirectory.models.ItemData;
-import com.panaceasoft.citiesdirectory.models.ItemDataWrapper;
+//import com.panaceasoft.citiesdirectory.models.ImageData;
 import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.models.PSubCategoryData;
-import com.panaceasoft.citiesdirectory.models.SubCategoryData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
@@ -52,7 +43,7 @@ public class TabFragment extends Fragment {
     public String selectedCityID;
     //private SubCategoryData subCategoryData = null;
 
-    private ArrayList<ImageData> imageDataArrayList;
+   // private ArrayList<ImageData> imageDataArrayList;
     private RecyclerView mRecyclerView;
     private StaggeredGridLayoutManager mLayoutManager;
     private ItemAdapter mAdapter;

@@ -13,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
-import com.panaceasoft.citiesdirectory.models.ItemData;
 import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;

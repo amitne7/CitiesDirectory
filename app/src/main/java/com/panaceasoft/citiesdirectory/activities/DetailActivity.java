@@ -89,7 +89,7 @@ public class DetailActivity extends AppCompatActivity {
     private Button btnMoreReview ;
     private FloatingActionButton fab;
     private int selected_item_id;
-    private int selected_shop_id;
+    private String selected_city_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,8 +145,8 @@ public class DetailActivity extends AppCompatActivity {
     private void loadData() {
 
         selected_item_id = getIntent().getIntExtra("selected_item_id", 0);
-        selected_shop_id = getIntent().getIntExtra("selected_shop_id", 0);
-        requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/shop_id/" + selected_shop_id);
+        selected_city_id = getIntent().getStringExtra("selected_city_id");
+        requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/city_id/" + selected_city_id);
 
     }
 
@@ -194,7 +194,7 @@ public class DetailActivity extends AppCompatActivity {
     public void doReview(View view) {
         Intent intent = new Intent(this,ReviewListActivity.class);
         intent.putExtra("selected_item_id", selected_item_id);
-        intent.putExtra("selected_shop_id", selected_shop_id);
+        intent.putExtra("selected_city_id", selected_city_id);
 
         // Testing Code
         ArrayList<PItemData> PID = new ArrayList<PItemData>();
@@ -560,7 +560,7 @@ public class DetailActivity extends AppCompatActivity {
             Utils.psLog(URL);
             HashMap<String, String> params = new HashMap<>();
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
-            params.put("shop_id", String.valueOf(pref.getInt("_id", 0)));
+            params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
             doSubmit(URL, params, view);
         } else {
             showNeedLogin();
@@ -574,7 +574,7 @@ public class DetailActivity extends AppCompatActivity {
             Utils.psLog(URL);
             HashMap<String, String> params = new HashMap<>();
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
-            params.put("shop_id", String.valueOf(pref.getInt("_id", 0)));
+            params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
             doSubmit(URL, params, view);
         } else {
             showNeedLogin();

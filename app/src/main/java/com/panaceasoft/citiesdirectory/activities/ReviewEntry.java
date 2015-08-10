@@ -46,7 +46,7 @@ public class ReviewEntry extends ActionBarActivity {
     private TextView login_user_email;
     private EditText input_review_message;
     private int selected_item_id;
-    private int selected_shop_id;
+    private int selected_city_id;
 
     ProgressBar pb;
 
@@ -69,7 +69,7 @@ public class ReviewEntry extends ActionBarActivity {
     private void prepareData() {
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         selected_item_id = getIntent().getIntExtra("selected_item_id", 0);
-        selected_shop_id = getIntent().getIntExtra("selected_shop_id", 0);
+        selected_city_id = getIntent().getIntExtra("selected_city_id", 0);
     }
 
     private void setupUserInfo() {
@@ -108,7 +108,7 @@ public class ReviewEntry extends ActionBarActivity {
             HashMap<String, String> params = new HashMap<>();
             params.put("review", input_review_message.getText().toString().trim());
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
-            params.put("shop_id", String.valueOf(pref.getInt("_id", 0)));
+            params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
 
             doSubmit(URL, params, view);
 
@@ -125,7 +125,7 @@ public class ReviewEntry extends ActionBarActivity {
                         try {
                             String success_status = response.getString("success");
 
-                            requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/shop_id/" + selected_shop_id, success_status);
+                            requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/city_id/" + selected_city_id, success_status);
 
                         } catch (JSONException e) {
                             e.printStackTrace();

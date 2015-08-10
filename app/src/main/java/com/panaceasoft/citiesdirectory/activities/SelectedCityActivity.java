@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.GlobalData;
@@ -22,14 +21,11 @@ import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.adapters.CategoryAdapter;
 import com.panaceasoft.citiesdirectory.listeners.ClickListener;
 import com.panaceasoft.citiesdirectory.listeners.RecyclerTouchListener;
-import com.panaceasoft.citiesdirectory.models.CategoryData;
 
 import com.panaceasoft.citiesdirectory.models.CategoryRowData;
-import com.panaceasoft.citiesdirectory.models.CityData;
 import com.panaceasoft.citiesdirectory.models.PCategoryData;
 import com.panaceasoft.citiesdirectory.models.PCityData;
 import com.panaceasoft.citiesdirectory.models.PSubCategoryData;
-import com.panaceasoft.citiesdirectory.models.SubCategoryData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 
@@ -47,7 +43,6 @@ public class SelectedCityActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ImageView detailImage;
     private TextView txtTitle;
-    private CityData ctd;
     private RecyclerView mRecyclerView;
     private StaggeredGridLayoutManager mLayoutManager;
     private CategoryAdapter mAdapter;
@@ -210,6 +205,9 @@ public class SelectedCityActivity extends AppCompatActivity {
         //intent.putExtra("selected_categories", new CategoryDataWrapper(ctd.getCategoryData()));
         //GlobalData.categoryData = pCity.categories;
         intent.putExtra("selected_category_index", pCity.categories.get(position).id-1 );
+
+        Utils.psLog("Selected City ID :> " + selectedCityID);
+
         intent.putExtra("selected_city_id", selectedCityID + "");
         startActivity(intent);
     }

@@ -1,7 +1,5 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,14 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
-import com.panaceasoft.citiesdirectory.models.CityData;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 
 public class UserForgotPasswordFragment extends Fragment {
