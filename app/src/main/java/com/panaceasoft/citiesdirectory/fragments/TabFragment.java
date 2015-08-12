@@ -40,7 +40,8 @@ import java.util.List;
 
 public class TabFragment extends Fragment {
 
-    public String selectedCityID;
+    public int selectedCityID;
+    public int selectedSubCategoryID;
     //private SubCategoryData subCategoryData = null;
 
    // private ArrayList<ImageData> imageDataArrayList;
@@ -58,7 +59,7 @@ public class TabFragment extends Fragment {
 
     // TODO: Rename and change types and number of parameters
     //public static TabFragment newInstance(SubCategoryData subCategoryData, String CityID) {
-    public static TabFragment newInstance(PSubCategoryData subCategoryData, String CityID) {
+    public static TabFragment newInstance(PSubCategoryData subCategoryData, int CityID) {
         TabFragment fragment = new TabFragment();
         fragment.setData(subCategoryData, CityID);
         //SelectedCityID = CityID;
@@ -71,10 +72,11 @@ public class TabFragment extends Fragment {
     }
 
     //public void setData(SubCategoryData subCategoryData, String selectedCityID) {
-    public void setData(PSubCategoryData subCategoryData, String selectedCityID) {
+    public void setData(PSubCategoryData subCategoryData, int selectedCityID) {
         //this.subCategoryData = subCategoryData;
         this.subCategoryData = subCategoryData;
         this.selectedCityID = selectedCityID;
+        this.selectedSubCategoryID = subCategoryData.id;
     }
 
     /*

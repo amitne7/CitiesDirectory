@@ -204,11 +204,11 @@ public class SelectedCityActivity extends AppCompatActivity {
         intent = new Intent(this,SubCategoryActivity.class);
         //intent.putExtra("selected_categories", new CategoryDataWrapper(ctd.getCategoryData()));
         //GlobalData.categoryData = pCity.categories;
-        intent.putExtra("selected_category_index", pCity.categories.get(position).id-1 );
+        intent.putExtra("selected_category_index", position );
 
         Utils.psLog("Selected City ID :> " + selectedCityID);
 
-        intent.putExtra("selected_city_id", selectedCityID + "");
+        intent.putExtra("selected_city_id", selectedCityID);
         startActivity(intent);
     }
 

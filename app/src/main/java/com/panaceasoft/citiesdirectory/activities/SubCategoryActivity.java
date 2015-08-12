@@ -2,6 +2,7 @@ package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
@@ -40,7 +42,7 @@ public class SubCategoryActivity extends AppCompatActivity {
     private int selectedCategoryIndex = 0;
     //private ArrayList<CategoryData> categoriesList;
     //private ArrayList<SubCategoryData> subCategoriesList =  null;
-    private String selectedCityID;
+    private int selectedCityID;
     private int C_FRAGMENTS_TO_KEEP_IN_MEMORY=0;
     private ViewPager viewPager;
 
@@ -69,9 +71,8 @@ public class SubCategoryActivity extends AppCompatActivity {
         }
 
 
-
         selectedCategoryIndex = getIntent().getIntExtra("selected_category_index", 0);
-        selectedCityID = getIntent().getStringExtra("selected_city_id");
+        selectedCityID = getIntent().getIntExtra("selected_city_id", 0);
 
         //subCategoriesList = categoriesList.get(selectedCategoryIndex).getSubCategoryData();
         subCategoriesList = categoriesList.get(selectedCategoryIndex).sub_categories;
@@ -98,8 +99,19 @@ public class SubCategoryActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFabClicked(v);
+            }
+        });
 
+    }
 
+    private void onFabClicked(View v) {
+        TabFragment fragment = (TabFragment) ((Adapter) viewPager.getAdapter()).getItem(viewPager.getCurrentItem());
+        Toast.makeText(this," Selected Ciy :"+fragment.selectedCityID+" Sub Cat : "+fragment.selectedSubCategoryID, Toast.LENGTH_SHORT).show();
     }
 
     //private void setupViewPager(ViewPager viewPager, ArrayList<SubCategoryData> subCategoryArrayList) {
