@@ -1,7 +1,9 @@
 package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -48,6 +50,7 @@ public class SubCategoryActivity extends AppCompatActivity {
     ///////
     private ArrayList<PCategoryData> categoriesList;
     private ArrayList<PSubCategoryData> subCategoriesList;
+    private SharedPreferences prefs;
 
 
     @Override
@@ -110,7 +113,17 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     private void onFabClicked(View v) {
         TabFragment fragment = (TabFragment) ((Adapter) viewPager.getAdapter()).getItem(viewPager.getCurrentItem());
-        Toast.makeText(this," Selected Ciy :"+fragment.selectedCityID+" Sub Cat : "+fragment.selectedSubCategoryID, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this," Selected Ciy :"+fragment.selectedCityID+" Sub Cat : "+fragment.selectedSubCategoryID, Toast.LENGTH_SHORT).show();
+        prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("_selected_city_id", fragment.selectedCityID);
+        editor.putInt("_selected_sub_cat_id", fragment.selectedSubCategoryID);
+        editor.commit();
+
+        final Intent intent;
+        intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+
     }
 
     //private void setupViewPager(ViewPager viewPager, ArrayList<SubCategoryData> subCategoryArrayList) {

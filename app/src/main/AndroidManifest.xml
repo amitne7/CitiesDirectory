@@ -87,7 +87,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAa_qHvfvhtknJ3dmtHIWTMz4_3B-Phs2M" />
+            android:value="AIzaSyD58wrJjZ9h_z6saXdcDaJyiOCySJONdcU" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -140,6 +140,10 @@
         <activity
             android:name=".activities.NewsActivity"
             android:label="@string/title_activity_news" >
+        </activity>
+        <activity
+            android:name=".activities.MapActivity"
+            android:label="@string/title_activity_map" >
         </activity>
     </application>
 

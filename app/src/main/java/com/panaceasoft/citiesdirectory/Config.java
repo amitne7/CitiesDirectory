@@ -18,6 +18,8 @@ public class Config extends Application{
 
     public static final String admob_key = "32dfsdfXKDfXFdXFdfd";
 
+    public static final String GOOGLE_PROJECT_NO = "312984937906";
+
 
     public static  JSONObject apiResponse = null;
 
@@ -25,13 +27,13 @@ public class Config extends Application{
     public static final double REGION_LNG = 103.817394;
 
     public static final String MSG_KEY = "m";
-    //public static final String APP_API_URL = "http://www.panacea-soft.com/citiesdirectory/index.php";
-    public static final String APP_API_URL = "http://192.168.43.52:7777/citiesdirectory/index.php";
+    public static final String APP_API_URL = "http://www.panacea-soft.com/citiesdirectory/index.php";
+    //public static final String APP_API_URL = "http://192.168.43.52:7777/citiesdirectory/index.php";
     public static final int PAGINATION = 3;
 
 
-    //public static final String APP_IMAGES_URL = "http://www.panacea-soft.com/citiesdirectory/uploads/";
-    public static final String APP_IMAGES_URL = "http://192.168.43.52:7777/citiesdirectory/uploads/";
+    public static final String APP_IMAGES_URL = "http://www.panacea-soft.com/citiesdirectory/uploads/";
+    //public static final String APP_IMAGES_URL = "http://192.168.43.52:7777/citiesdirectory/uploads/";
 
     public static final String GET_ALL = "/rest/cities/get";
 
@@ -39,7 +41,7 @@ public class Config extends Application{
 
     public static final String ITEMS_BY_ID = "/rest/items/get/id/";
 
-    public static final String SEARCH_BY_GEO = "/rest/cities/search_by_geo/miles/";
+    public static final String SEARCH_BY_GEO = "/rest/items/search_by_geo/miles/";
 
     public static final String POST_ITEM_INQUIRY = "/rest/items/inquiry/id/";
 

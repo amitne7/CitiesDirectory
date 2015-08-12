@@ -115,7 +115,7 @@ public class NotificationFragment extends Fragment {
                                 .getInstance(getActivity().getApplicationContext());
                     }
                     regId = gcmObj
-                            .register("726371303489");
+                            .register(Config.GOOGLE_PROJECT_NO);
                     msg = "Registration ID :" + regId;
 
                 } catch (IOException ex) {

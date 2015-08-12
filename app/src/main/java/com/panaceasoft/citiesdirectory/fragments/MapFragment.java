@@ -2,12 +2,15 @@ package com.panaceasoft.citiesdirectory.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -41,8 +44,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.activities.DetailActivity;
 import com.panaceasoft.citiesdirectory.adapters.MapPopupAdapter;
 import com.panaceasoft.citiesdirectory.listeners.GPSTracker;
+import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rey.material.widget.Slider;
@@ -50,6 +55,7 @@ import com.rey.material.widget.Slider;
 import android.widget.RelativeLayout.LayoutParams;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -60,14 +66,14 @@ import java.util.Locale;
  */
 
 public class MapFragment extends Fragment {
-    /*
+
     MapView mMapView;
     private GoogleMap googleMap;
     private Marker customMarker;
     private LatLng markerLatLng;
 
     private ProgressWheel progressWheel;
-    private List<CityData> sh;
+    private ArrayList<PItemData> sh;
     private TextView display_message;
     private RequestQueue queue;
 
@@ -79,8 +85,12 @@ public class MapFragment extends Fragment {
     private boolean checkingLatLng = false;
     private HashMap<String, Uri> images=new HashMap<String, Uri>();
     private HashMap<String, Bitmap> markerImages =new HashMap<String, Bitmap>();
-    private HashMap<Marker, CityData> markerInfo = new HashMap<Marker, CityData>();
+    private HashMap<Marker, PItemData> markerInfo = new HashMap<Marker, PItemData>();
     private HashMap<String, String> markerAddress = new HashMap<String, String>();
+    private SharedPreferences pref;
+
+    private int selectedCityId;
+    private int selectedSubCatId;
 
     public MapFragment() {
         // Required empty public constructor
@@ -117,7 +127,13 @@ public class MapFragment extends Fragment {
             }
             marker = inflater.inflate(R.layout.custom_marker, container, false);
 
-            requestData(Config.APP_API_URL + Config.GET_ALL, marker);
+            pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
+            selectedCityId = pref.getInt("_selected_city_id", 0);
+            selectedSubCatId = pref.getInt("_selected_sub_cat_id",0);
+
+            //Log.d("TEAMPS", "URL : " + Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/");
+
+            requestData(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityId + "/sub_cat_id/" + selectedSubCatId + "/item/all/", marker);
 
         } else {
             showNoServicePopup();
@@ -193,9 +209,10 @@ public class MapFragment extends Fragment {
             public void onClick(View view) {
                 Utils.psLog(String.valueOf(slider.getValue()));
                 //mile = slider.getValue();
-                Utils.psLog(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude);
+                Utils.psLog(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId);
+                //Log.d("TEAMPS", "URL : " + Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/");
                 googleMap.clear();
-                requestData(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude, marker);
+                requestData(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId, marker);
                 dialog.hide();
             }
         });
@@ -316,19 +333,22 @@ public class MapFragment extends Fragment {
 
                         //progressWheel.setVisibility(View.GONE);
                         Gson gson = new Gson();
-                        Type listType = new TypeToken<List<CityData>>() {}.getType();
-                        sh = (List<CityData>) gson.fromJson(response,listType);
+                        Type listType = new TypeToken<List<PItemData>>() {}.getType();
+                        sh = gson.fromJson(response,listType);
 
                         Utils.psLog("Total : " + sh.size());
 
                         googleMap = mMapView.getMap();
+                        Utils.psLog("City " + sh.get(0).name);
 
-                        for(final CityData s: sh){
-                            Log.d("Shop Name : ", s.getName() + "");
+                        for (final PItemData s: sh){
+                            Utils.psLog("Item Name : " + s.name);
+                            //Utils.psLog("Img Path >" + Config.APP_IMAGES_URL + s.images.get(0).path);
 
                             final ImageView pin = (ImageView) marker.findViewById(R.id.img_pin);
                             try {
-                                ImageRequest request = new ImageRequest(Config.APP_IMAGES_URL + s.getCover_image_file(),
+                                Utils.psLog("Img Path >" + Config.APP_IMAGES_URL + s.images.get(0).path);
+                                ImageRequest request = new ImageRequest(Config.APP_IMAGES_URL + s.images.get(0).path,
                                         new Response.Listener<Bitmap>() {
 
                                             @Override
@@ -338,15 +358,15 @@ public class MapFragment extends Fragment {
 
 
 
-                                                double latitude = Double.parseDouble(s.getLat());
-                                                double longitude = Double.parseDouble(s.getLng());
+                                                double latitude = Double.parseDouble(s.lat);
+                                                double longitude = Double.parseDouble(s.lng);
 
                                                 markerLatLng = new LatLng(latitude,longitude);
 
                                                 customMarker = googleMap.addMarker(new MarkerOptions()
                                                         .position(markerLatLng)
-                                                        .title(s.getName())
-                                                        .snippet(s.getDescription().substring(0, Math.min(s.getDescription().length(),80)) + "...")
+                                                        .title(s.name)
+                                                        .snippet(s.description.substring(0, Math.min(s.description.length(), 80)) + "...")
                                                         .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker)))
                                                         .anchor(0.5f, 1));
                                                 CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -364,7 +384,7 @@ public class MapFragment extends Fragment {
                                                 }
 
                                                 if(markerAddress != null) {
-                                                    markerAddress.put(customMarker.getId(),s.getAddress());
+                                                    markerAddress.put(customMarker.getId(),s.address);
                                                 }
 
                                                 googleMap.setInfoWindowAdapter(new MapPopupAdapter(getActivity(),getActivity().getLayoutInflater(), markerImages, markerAddress));
@@ -381,10 +401,14 @@ public class MapFragment extends Fragment {
                                                     @Override
                                                     public void onInfoWindowClick(Marker marker) {
 
-                                                        CityData ct = markerInfo.get(marker);
-                                                        Utils.psLog("Selected Name : " + ct.getName());
+                                                        PItemData ct = markerInfo.get(marker);
+                                                        Utils.psLog("Selected Item Name : " + ct.name);
                                                         Utils.psLog("(: Ready to open Detail Page :)");
-
+                                                        final Intent intent;
+                                                        intent = new Intent(getActivity(), DetailActivity.class);
+                                                        intent.putExtra("selected_item_id", ct.id);
+                                                        intent.putExtra("selected_city_id", selectedCityId + "");
+                                                        startActivity(intent);
 
                                                     }
                                                 });
@@ -408,9 +432,12 @@ public class MapFragment extends Fragment {
                                 queue.add(request);
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                Utils.psLog(e.getMessage());
                             }
 
+
                         }
+
 
                     }
                 },
@@ -454,6 +481,6 @@ public class MapFragment extends Fragment {
 
 
 
-*/
+
 
 }

@@ -117,4 +117,6 @@
     <string name="notification_setting">Push Notification Setting</string>
     <string name="latest_message">Latest Message From System</string>
     <string name="title_activity_news">NewsActivity</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="explore_on_map">Explore On Map</string>
 </resources>
