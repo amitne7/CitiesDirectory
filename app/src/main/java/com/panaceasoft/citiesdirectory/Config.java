@@ -25,13 +25,13 @@ public class Config extends Application{
     public static final double REGION_LNG = 103.817394;
 
     public static final String MSG_KEY = "m";
-    public static final String APP_API_URL = "http://www.panacea-soft.com/citiesdirectory/index.php";
-    //public static final String APP_API_URL = "http://192.168.43.52:7777/citiesdirectory/index.php";
+    //public static final String APP_API_URL = "http://www.panacea-soft.com/citiesdirectory/index.php";
+    public static final String APP_API_URL = "http://192.168.43.52:7777/citiesdirectory/index.php";
     public static final int PAGINATION = 3;
 
 
-    public static final String APP_IMAGES_URL = "http://www.panacea-soft.com/citiesdirectory/uploads/";
-    //public static final String APP_IMAGES_URL = "http://192.168.43.52:7777/citiesdirectory/uploads/";
+    //public static final String APP_IMAGES_URL = "http://www.panacea-soft.com/citiesdirectory/uploads/";
+    public static final String APP_IMAGES_URL = "http://192.168.43.52:7777/citiesdirectory/uploads/";
 
     public static final String GET_ALL = "/rest/cities/get";
 

@@ -20,7 +20,6 @@ import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.fragments.TabFragment;
 import com.panaceasoft.citiesdirectory.models.PCategoryData;
 import com.panaceasoft.citiesdirectory.models.PSubCategoryData;
-import com.panaceasoft.citiesdirectory.models.SubCategoryData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 import java.util.ArrayList;

@@ -116,4 +116,5 @@
     <string name="push_noti_setting">Push Notification Setting</string>
     <string name="notification_setting">Push Notification Setting</string>
     <string name="latest_message">Latest Message From System</string>
+    <string name="title_activity_news">NewsActivity</string>
 </resources>

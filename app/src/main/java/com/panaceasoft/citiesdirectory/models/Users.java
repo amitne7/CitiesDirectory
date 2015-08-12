@@ -15,11 +15,6 @@ public class Users {
     int is_banded;
     String profile_photo;
 
-    /*
-    String background_photo;
-    String billing_address;
-    String delivery_address;*/
-
     public Users() {
     }
 
@@ -29,11 +24,6 @@ public class Users {
         this.about_me = about_me;
         this.is_banded = is_banded;
         this.profile_photo = profile_photo;
-        /*
-        this.background_photo = background_photo;
-        this.billing_address = billing_address;
-        this.delivery_address = delivery_address;
-        */
     }
 
     public Users(int id, String user_name, String email, String about_me, int is_banded, String profile_photo) {
@@ -43,12 +33,6 @@ public class Users {
         this.about_me = about_me;
         this.is_banded = is_banded;
         this.profile_photo = profile_photo;
-
-        /*
-        this.background_photo = background_photo;
-        this.billing_address = billing_address;
-        this.delivery_address = delivery_address;
-        */
     }
 
     public int getId() {
@@ -75,20 +59,6 @@ public class Users {
         return profile_photo;
     }
 
-    /*
-    public String getBackground_photo() {
-        return background_photo;
-    }
-
-    public String getBilling_address() {
-        return billing_address;
-    }
-
-    public String getDelivery_address() {
-        return delivery_address;
-    }
-    */
-
     public void setId(int id) {
         this.id = id;
     }
@@ -113,17 +83,4 @@ public class Users {
         this.profile_photo = profile_photo;
     }
 
-    /*
-    public void setBackground_photo(String background_photo) {
-        this.background_photo = background_photo;
-    }
-
-    public void setBilling_address(String billing_address) {
-        this.billing_address = billing_address;
-    }
-
-    public void setDelivery_address(String delivery_address) {
-        this.delivery_address = delivery_address;
-    }
-    */
 }

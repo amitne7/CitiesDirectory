@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.listeners.SelectListener;
-import com.panaceasoft.citiesdirectory.models.ItemAttributeDetailData;
 import com.panaceasoft.citiesdirectory.models.PCityData;
 import com.panaceasoft.citiesdirectory.models.PItemAttributeDetailData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;

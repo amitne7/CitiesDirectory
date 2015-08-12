@@ -27,7 +27,6 @@ import com.panaceasoft.citiesdirectory.adapters.CityAdapter;
 import com.panaceasoft.citiesdirectory.listeners.ClickListener;
 import com.panaceasoft.citiesdirectory.listeners.RecyclerTouchListener;
 import com.panaceasoft.citiesdirectory.models.PCityData;
-import com.panaceasoft.citiesdirectory.models.SubCategoryData;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.lang.reflect.Type;
@@ -46,7 +45,6 @@ public class CitiesListFragment extends Fragment {
     //private List<CityData> sh;
     //private List<CityData> dataSet;
     //private ArrayList<CategoryData> categoryArrayList;
-    private ArrayList<SubCategoryData> subCategoryArrayList;
     private CityAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
 
