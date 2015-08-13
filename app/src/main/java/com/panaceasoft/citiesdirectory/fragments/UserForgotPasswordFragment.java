@@ -37,7 +37,6 @@ public class UserForgotPasswordFragment extends Fragment {
     private void initUI() {
         input_email = (EditText) this.view.findViewById(R.id.input_email);
         button_request = (Button) this.view.findViewById(R.id.button_request);
-
         button_request.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -45,7 +44,6 @@ public class UserForgotPasswordFragment extends Fragment {
                 doRequest();
             }
         });
-
     }
 
     private void doRequest() {
@@ -69,18 +67,11 @@ public class UserForgotPasswordFragment extends Fragment {
         StringRequest request = new StringRequest(uri,
 
                 new Response.Listener<String>() {
-
-
                     @Override
                     public void onResponse(String response) {
-
                         pb.setVisibility(View.GONE);
-
-
                     }
                 },
-
-
 
                 new Response.ErrorListener() {
 

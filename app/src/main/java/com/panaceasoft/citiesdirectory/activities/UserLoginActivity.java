@@ -4,26 +4,22 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-
 import com.panaceasoft.citiesdirectory.R;
 
-public class MapActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-    private String selected_city_id;
-    private String selected_sub_cat_id;
+public class UserLoginActivity extends AppCompatActivity {
 
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_user_login);
         setupToolbar();
-        prepareData();
     }
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.explore_on_map));
+        toolbar.setTitle(getString(R.string.login));
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,14 +28,6 @@ public class MapActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
-
-    private void prepareData() {
-        selected_city_id = getIntent().getStringExtra("selected_city_id");
-        selected_sub_cat_id = getIntent().getStringExtra("selected_sub_cat_id");
-    }
-
-
 
 }

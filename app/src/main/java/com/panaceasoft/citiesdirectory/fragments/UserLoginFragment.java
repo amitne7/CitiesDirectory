@@ -21,9 +21,9 @@ import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.MainActivity;
-import com.panaceasoft.citiesdirectory.activities.UserForgotPassword;
-import com.panaceasoft.citiesdirectory.activities.UserLogin;
-import com.panaceasoft.citiesdirectory.activities.UserRegister;
+import com.panaceasoft.citiesdirectory.activities.UserForgotPasswordActivity;
+import com.panaceasoft.citiesdirectory.activities.UserLoginActivity;
+import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
 import com.panaceasoft.citiesdirectory.models.Users;
 import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
@@ -49,12 +49,8 @@ public class UserLoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_user_login, container, false);
-
-        // Init the all UI
         initUI();
-
         return view;
     }
 
@@ -109,36 +105,22 @@ public class UserLoginFragment extends Fragment {
     }
 
     private void doForgot() {
-        // Do Forgot Code Here
-        Utils.psLog("Inside Forgot");
-        // This is the sample code how to open other fragment from here
-        // It will open the home screen
-        /*
-        if(getActivity() instanceof MainActivity) {
-            Utils.psLog("LN 126");
-            ((MainActivity) getActivity()).openFragment(R.id.nav_home);
-        } else if(getActivity() instanceof UserForgotPassword) {
-            Utils.psLog("LN 118");
-            startActivity(new Intent(getActivity(),UserForgotPassword.class));
-        }
-        */
         if(getActivity() instanceof MainActivity) {
 
             ((MainActivity) getActivity()).openFragment(R.id.nav_register);
-        }else if(getActivity() instanceof UserLogin) {
+        }else if(getActivity() instanceof UserLoginActivity) {
 
-            startActivity(new Intent(getActivity(),UserForgotPassword.class));
+            startActivity(new Intent(getActivity(),UserForgotPasswordActivity.class));
         }
     }
 
     private void doRegister() {
-
         if(getActivity() instanceof MainActivity) {
 
             ((MainActivity) getActivity()).openFragment(R.id.nav_register);
-        }else if(getActivity() instanceof UserLogin) {
+        }else if(getActivity() instanceof UserLoginActivity) {
 
-            startActivity(new Intent(getActivity(),UserRegister.class));
+            startActivity(new Intent(getActivity(),UserRegisterActivity.class));
         }
     }
 
@@ -161,41 +143,15 @@ public class UserLoginFragment extends Fragment {
                             String is_banned = response.getString("is_banned");
                             String user_profile_photo = response.getString("profile_photo");
 
-                            /*
-                            String user_bg_photo = response.getString("background_photo");
-                            String delivery_address = response.getString("delivery_address");
-                            String billing_address = response.getString("billing_address"); */
-
-                            Utils.psLog(" Login User Id : " + user_id);
-
                             if(user_id != null){
-                                //showSuccessPopup();
                                 Utils.psLog("Successful Login, Need to Store in SQLite DB.");
-
-                                /*
-                                if(!response.getString("profile_photo").toString().equals("")) {
-                                    InputStream in = new URL(Config.APP_IMAGES_URL + user_profile_photo).openConnection().getInputStream();
-                                    Bitmap profileBitmap = BitmapFactory.decodeStream(in);
-                                    Utils.saveBitmapImage(getApplicationContext(),profileBitmap,"profile_photo");
-                                }
-                                */
-
-                                /*
-                                if(!response.getString("background_photo").toString().equals("")) {
-                                    InputStream in = new URL(Config.APP_IMAGES_URL + user_bg_photo).openConnection().getInputStream();
-                                    Bitmap bgBitmap = BitmapFactory.decodeStream(in);
-                                    Utils.saveBitmapImage(getApplicationContext(),bgBitmap,"background_photo");
-                                }
-                                */
 
                                 DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
                                 Utils.psLog("..... Inserting into DB....");
-                                //db.addUser(new Users(Integer.parseInt(user_id), user_name, email, about_me, Integer.parseInt(is_banned), user_profile_photo, user_bg_photo, delivery_address, billing_address));
                                 db.addUser(new Users(Integer.parseInt(user_id), user_name, email, about_me, Integer.parseInt(is_banned), user_profile_photo));
 
                                 Utils.psLog(" User Count : " + db.getUserCount());
 
-                                //Save Login User Info
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                                 SharedPreferences.Editor editor = prefs.edit();
                                 editor.putInt("_login_user_id", Integer.parseInt(user_id));
@@ -203,8 +159,6 @@ public class UserLoginFragment extends Fragment {
                                 editor.putString("_login_user_email", email);
                                 editor.putString("_login_user_about_me", about_me);
                                 editor.putString("_login_user_photo", user_profile_photo);
-                                //editor.putString("_login_user_del_address", delivery_address);
-                                //editor.putString("_login_user_bill_address", billing_address);
                                 editor.commit();
 
                                 Utils.activity.loadProfileImage(user_name, user_profile_photo);
@@ -218,7 +172,6 @@ public class UserLoginFragment extends Fragment {
                                 }
 
                             } else {
-                                //showFailPopup();
                                 Utils.psLog("Login Fail");
                                 showFailPopup();
 

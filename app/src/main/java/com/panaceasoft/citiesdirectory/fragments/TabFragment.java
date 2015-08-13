@@ -42,28 +42,19 @@ public class TabFragment extends Fragment {
 
     public int selectedCityID;
     public int selectedSubCategoryID;
-    //private SubCategoryData subCategoryData = null;
-
-   // private ArrayList<ImageData> imageDataArrayList;
     private RecyclerView mRecyclerView;
     private StaggeredGridLayoutManager mLayoutManager;
     private ItemAdapter mAdapter;
-
     private ProgressWheel progressWheel;
     private Handler handler;
-
-    //
     private PSubCategoryData subCategoryData;
     private List<PItemData> it;
     private List<PItemData> myDataset;
 
     // TODO: Rename and change types and number of parameters
-    //public static TabFragment newInstance(SubCategoryData subCategoryData, String CityID) {
     public static TabFragment newInstance(PSubCategoryData subCategoryData, int CityID) {
         TabFragment fragment = new TabFragment();
         fragment.setData(subCategoryData, CityID);
-        //SelectedCityID = CityID;
-
         return fragment;
     }
 
@@ -71,40 +62,22 @@ public class TabFragment extends Fragment {
 
     }
 
-    //public void setData(SubCategoryData subCategoryData, String selectedCityID) {
     public void setData(PSubCategoryData subCategoryData, int selectedCityID) {
-        //this.subCategoryData = subCategoryData;
         this.subCategoryData = subCategoryData;
         this.selectedCityID = selectedCityID;
         this.selectedSubCategoryID = subCategoryData.id;
     }
 
-    /*
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-    */
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.d("TEAMPS", " Sub Cat Data Tab Frag : " + subCategoryData.name);
-
         View view = inflater.inflate(R.layout.fragment_tab, container, false);
-
-        //Button txt = (Button) view.findViewById(R.id.btnLogin);
-        //txt.setText(subCategoryData.name);
-
-        Log.d("TEAMPS", "URL : " + Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/");
 
         // Inflate the layout for this fragment
         requestData(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/form/0");
-
         setupProgressWheel(view);
         setupRecyclerView(view);
-
 
         mAdapter.setOnLoadMoreListener(new ItemAdapter.OnLoadMoreListener() {
 
@@ -114,21 +87,11 @@ public class TabFragment extends Fragment {
                 int from = myDataset.size();
                 myDataset.add(null);
                 mAdapter.notifyItemInserted(myDataset.size() - 1);
-
-
-
-                Utils.psLog("Inside Load More Function");
-
                 Log.d("API URL : ", Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + 1 + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/form/" + from);
-
                 requestData(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + 1 + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/from/" + from);
-
             }
 
         });
-
-
-
 
         return view;
     }
@@ -139,19 +102,14 @@ public class TabFragment extends Fragment {
 
     private void setupRecyclerView(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
-        //mLayoutManager = new GridLayoutManager(this, 2);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         myDataset = new ArrayList<>();
 
         mAdapter = new ItemAdapter(myDataset, mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
-
 
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), mRecyclerView, new ClickListener() {
             @Override
@@ -186,7 +144,6 @@ public class TabFragment extends Fragment {
                         it = (List< PItemData>) gson.fromJson(response, listType);
 
                         progressWheel.setVisibility(View.GONE);
-                        //categoryArrayList = ctd.getCategoryData();
 
 
                         for(PItemData pItem : it) {

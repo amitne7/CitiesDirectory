@@ -53,7 +53,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMAGE = 1;
     private String encodedString;
     private String fileName;
-    private String selectedImagePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,12 +128,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             final Intent intent;
             intent = new Intent(this, PasswordUpdateActivity.class);
@@ -147,7 +141,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Code to do refresh Data in Detail Activity
         Intent in = new Intent();
         setResult(RESULT_OK, in);
         finish();
@@ -155,10 +148,7 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     public void doUpdate(View view){
-        // Update code here
-       // Utils.psLog(" " + etUserName.getText());
 
-        // Server code here
         if(inputValidation()) {
             pb = (ProgressBar) findViewById(R.id.loading_spinner);
             pb.setVisibility(view.VISIBLE);
@@ -174,9 +164,6 @@ public class EditProfileActivity extends AppCompatActivity {
             doSubmit(URL, params);
 
         }
-
-
-
 
     }
 
@@ -283,9 +270,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * API call for upload selected image from gallery to the server
-     */
     public void uploadImage() {
 
         RequestQueue rq = Volley.newRequestQueue(this);

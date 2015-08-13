@@ -18,17 +18,6 @@
         app:sl_discreteMode="true"/>
 
 
-    <!--<TextView-->
-        <!--android:id="@+id/complete_address_title"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textSize="@dimen/small_title"-->
-        <!--android:textColor="@android:color/black"-->
-        <!--android:layout_marginTop="@dimen/space_2"-->
-        <!--android:layout_marginLeft="@dimen/space_1"-->
-        <!--android:text="@string/complete_address_title"-->
-        <!--/>-->
-
     <TextView
         android:id="@+id/complete_address"
         android:layout_width="fill_parent"

@@ -4,17 +4,16 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.models.PItemData;
-import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -58,7 +57,6 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                     totalItemCount = linearLayoutManager.getItemCount();
                     lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                    Log.d("V Count ", lastVisibleItem + " - count");
                     if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                         // End has been reached
                         // Do something
@@ -78,7 +76,6 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                     totalItemCount = gridLayoutManager.getItemCount();
                     lastVisibleItem = gridLayoutManager.findLastVisibleItemPosition();
-                    Log.d("V Count ", lastVisibleItem+" - count");
                     if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                         // End has been reached
                         // Do something
@@ -99,7 +96,6 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
 
-                    Utils.psLog(" On Scroll Stage Change " + newState);
 
                     if(newState == 1){
                         totalItemCount = staggeredGridLayoutManager.getItemCount();
@@ -144,7 +140,6 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         }
                         string += " = " + lastVisibleItem2[i];
                     }
-                    Log.d("V Count ", string+" - count");
                     if (!loading && totalItemCount <= (greatestItem + visibleThreshold)) {
                         // End has been reached
                         // Do something

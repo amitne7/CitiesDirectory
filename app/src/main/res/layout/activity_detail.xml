@@ -203,106 +203,12 @@
             </LinearLayout>
 
 
-            <!--<android.support.v7.widget.CardView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_margin="@dimen/space_1">-->
-
-                <!--<LinearLayout-->
-
-                    <!--android:layout_width="fill_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_margin="@dimen/space_1"-->
-                    <!--android:orientation="vertical">-->
-
-                    <!--<LinearLayout-->
-                        <!--android:id="@+id/choose_container"-->
-                        <!--android:layout_width="fill_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:orientation="vertical">-->
-                    <!--</LinearLayout>-->
-
-                    <!--<TextView-->
-
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_marginTop="@dimen/space_1"-->
-                        <!--android:textStyle="bold"-->
-                        <!--android:text="@string/price" />-->
-
-                    <!--<LinearLayout-->
-                        <!--android:layout_width="match_parent"-->
-
-                        <!--android:layout_height="@dimen/list_height" android:orientation="horizontal">-->
-                        <!--<TextView-->
-                            <!--android:id="@+id/item_price"-->
-                            <!--android:paddingLeft="@dimen/space_1"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_gravity="center_vertical"-->
-                            <!--android:textSize = "@dimen/body1"-->
-                            <!--android:text="35$" />-->
-
-                        <!--<include layout="@layout/ui_line"/>-->
-                    <!--</LinearLayout>-->
-
-                    <!--<include layout="@layout/ui_line"/>-->
-
-                    <!--<TextView-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:textStyle="bold"-->
-                        <!--android:layout_marginTop="@dimen/space_1"-->
-                        <!--android:text="@string/qty" />-->
-
-                    <!--<EditText-->
-
-                        <!--android:paddingLeft="@dimen/space_1"-->
-                        <!--android:id="@+id/input_message"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="56dp"-->
-                        <!--android:textSize = "@dimen/body1"-->
-                        <!--android:background="@null"-->
-                        <!--android:inputType="phone"-->
-                        <!--android:digits="1234567890"-->
-                        <!--android:hint="@string/qty"/>-->
-
-                    <!--<include layout="@layout/ui_line"/>-->
-
-                    <!--<Button-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:textSize="@dimen/button"-->
-                        <!--android:textColor="@android:color/white"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:text="@string/add_to_cart"/>-->
-
-                <!--</LinearLayout>-->
-
-            <!--</android.support.v7.widget.CardView>-->
-
             <LinearLayout
                 android:layout_marginTop="@dimen/space_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!--<TextView-->
-                    <!--android:id="@+id/shop_name"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textSize="@dimen/sub_head"-->
-                    <!--android:textStyle="bold"-->
-                    <!--android:textAlignment="center"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:paddingBottom="@dimen/space_1"-->
-                    <!--></TextView>-->
-
-                <!--<ImageView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="200dp"-->
-                    <!--android:src="@drawable/dummy_cover_1"/>-->
-
-                <!-- -->
                 <com.google.android.gms.maps.MapView
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/mapView"
@@ -311,12 +217,6 @@
                     android:paddingLeft="@dimen/space_2"
                     android:paddingRight="@dimen/space_2"
                     />
-
-                <!--<fragment-->
-                    <!--android:id="@+id/mapView"-->
-                    <!--android:name="com.google.android.gms.maps.MapFragment"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="match_parent"/>-->
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -343,8 +243,6 @@
                 </LinearLayout>
 
 
-
-
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -352,10 +250,10 @@
                     android:layout_marginLeft="@dimen/space_2">
 
                     <ImageView
-                    android:layout_width="@dimen/icon_small"
-                    android:layout_height="@dimen/icon_small"
-                    android:tint="@color/textColorSecondary"
-                    android:src="@drawable/ic_local_phone_black"
+                        android:layout_width="@dimen/icon_small"
+                        android:layout_height="@dimen/icon_small"
+                        android:tint="@color/textColorSecondary"
+                        android:src="@drawable/ic_local_phone_black"
                         />
 
                     <TextView

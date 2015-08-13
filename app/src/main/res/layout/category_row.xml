@@ -28,18 +28,6 @@
                 android:scaleType="fitXY"
 
                 android:adjustViewBounds="true"/>
-            <!--
-            <TextView
-                android:id="@+id/category_name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:textSize="15sp"
-                android:layout_below="@id/catImage"
-                android:padding="@dimen/space_1"
-                android:text="@string/city_name"
-
-                android:textColor="@android:color/white"/>-->
 
             <TextView
                 android:id="@+id/category_name"
@@ -52,8 +40,6 @@
                 android:textColor="@android:color/black"
                 android:layout_below="@id/category_image"
                 />
-
-
 
 
         </RelativeLayout>

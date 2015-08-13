@@ -13,11 +13,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
@@ -38,59 +36,28 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private ArrayList<? extends Parcelable> categoryArrayList = null;
-
-    private Menu menu;
     private int selectedCategoryIndex = 0;
-    //private ArrayList<CategoryData> categoriesList;
-    //private ArrayList<SubCategoryData> subCategoriesList =  null;
-    private int selectedCityID;
+    private int selectedCityId;
     private int C_FRAGMENTS_TO_KEEP_IN_MEMORY=0;
     private ViewPager viewPager;
 
-    ///////
     private ArrayList<PCategoryData> categoriesList;
     private ArrayList<PSubCategoryData> subCategoriesList;
     private SharedPreferences prefs;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
 
-
-        /*
-        // Prepare Data
-        CategoryDataWrapper wrap =  (CategoryDataWrapper) getIntent().getSerializableExtra("selected_categories");
-        categoriesList = wrap.getCategories();
-        */
         categoriesList = GlobalData.citydata.categories;
-
-
-        //Print Cat Name
-        for (PCategoryData cd : categoriesList) {
-            Log.d(" Cat Name : ", cd.name);
-        }
-
-
         selectedCategoryIndex = getIntent().getIntExtra("selected_category_index", 0);
-        selectedCityID = getIntent().getIntExtra("selected_city_id", 0);
-
-        //subCategoriesList = categoriesList.get(selectedCategoryIndex).getSubCategoryData();
+        selectedCityId = getIntent().getIntExtra("selected_city_id", 0);
         subCategoriesList = categoriesList.get(selectedCategoryIndex).sub_categories;
 
-        //Print Sub Cat Name
-        for (PSubCategoryData scd : subCategoriesList) {
-            Log.d(" Sub Cat Name : ", scd.name);
-        }
-
-        // Title
         selectedCategoryIndex = getIntent().getIntExtra("selected_category_index", 0);
-        Log.d("TEAMPS", "Selected Category : " + selectedCategoryIndex + " " + categoriesList.get(0).name);
-        // set up toolbar
         setupToolbar();
 
-        // Prepare Tabs
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         if (viewPager != null) {
             setupViewPager(viewPager, subCategoriesList);
@@ -99,7 +66,6 @@ public class SubCategoryActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setupWithViewPager(viewPager);
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -113,7 +79,6 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     private void onFabClicked(View v) {
         TabFragment fragment = (TabFragment) ((Adapter) viewPager.getAdapter()).getItem(viewPager.getCurrentItem());
-        //Toast.makeText(this," Selected Ciy :"+fragment.selectedCityID+" Sub Cat : "+fragment.selectedSubCategoryID, Toast.LENGTH_SHORT).show();
         prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("_selected_city_id", fragment.selectedCityID);
@@ -126,12 +91,11 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     }
 
-    //private void setupViewPager(ViewPager viewPager, ArrayList<SubCategoryData> subCategoryArrayList) {
     private void setupViewPager(ViewPager viewPager, ArrayList<PSubCategoryData> subCategoryArrayList) {
         Adapter adapter = new Adapter(getSupportFragmentManager());
         C_FRAGMENTS_TO_KEEP_IN_MEMORY = subCategoryArrayList.size();
         for(PSubCategoryData scd : subCategoryArrayList) {
-            adapter.addFragment(new TabFragment().newInstance(scd,selectedCityID), "" + scd.name);
+            adapter.addFragment(new TabFragment().newInstance(scd, selectedCityId), "" + scd.name);
         }
         viewPager.setOffscreenPageLimit(C_FRAGMENTS_TO_KEEP_IN_MEMORY);
 
@@ -156,16 +120,8 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        Log.d("TEAMPS", "Selected Menu id : " + id);
-
-        //noinspection SimplifiableIfStatement
         loadCategoryUI(id);
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -186,37 +142,23 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     public void openActivity(int selected_item_id, int selected_city_id){
         final Intent intent;
-
         intent = new Intent(this, DetailActivity.class);
-
-        //intent.putExtra("selected_categories", new CategoryDataWrapper(ctd.getCategoryData()));
-
-        //intent.putExtra("selected_category_index", 0);
-
-        //intent.putExtra("selected_item", new ItemDataWrapper(myDataset.get(position)));
-        Utils.psLog("Selected City ID : " + selectedCityID);
+        Utils.psLog("Selected City ID : " + selectedCityId);
         intent.putExtra("selected_item_id", selected_item_id);
-        intent.putExtra("selected_city_id", selectedCityID + "");
-
+        intent.putExtra("selected_city_id", selectedCityId + "");
         startActivityForResult(intent, 1);
     }
 
     private void loadCategoryUI(int id){
-
-        Utils.psLog(" Load Category id : " + id);
-
         Intent intent = new Intent(this,SubCategoryActivity.class);
-        //intent.putExtra("selected_categories", new CategoryDataWrapper(categoriesList));
         intent.putExtra("selected_categories", categoriesList);
         intent.putExtra("selected_category_index", id);
         startActivity(intent);
-
         this.finish();
-
     }
+
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //toolbar.setTitle(categoriesList.get(selectedCategoryIndex).getName());
         toolbar.setTitle(categoriesList.get(selectedCategoryIndex).name);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -226,30 +168,22 @@ public class SubCategoryActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
 
     static class Adapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();
-
         public Adapter(FragmentManager fm) {
             super(fm);
         }
-
-
-
         public void addFragment(Fragment fragment, String title) {
             mFragments.add(fragment);
             mFragmentTitles.add(title);
         }
-
         @Override
         public Fragment getItem(int position) {
             return mFragments.get(position);
         }
-
-
 
         @Override
         public int getCount() {

@@ -1,6 +1,7 @@
 package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,10 +16,15 @@ import android.widget.TextView;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.models.PImageData;
+import com.panaceasoft.citiesdirectory.models.PItemData;
+import com.panaceasoft.citiesdirectory.models.PNewsData;
 import com.panaceasoft.citiesdirectory.uis.ExtendedViewPager;
 import com.panaceasoft.citiesdirectory.uis.TouchImageView;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 /**
  * Created by Panacea-Soft on 7/15/15.
@@ -27,6 +33,14 @@ import com.squareup.picasso.Picasso;
 
 public class GalleryActivity extends AppCompatActivity {
     static TextView txtImgDesc;
+    private static PNewsData newsData;
+    private static PItemData itemData;
+
+    private Bundle bundle;
+    private String from;
+
+    private static ArrayList<PImageData> imageArray;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,31 +49,21 @@ public class GalleryActivity extends AppCompatActivity {
         ExtendedViewPager mViewPager = (ExtendedViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(new TouchImageAdapter());
         mViewPager.setCurrentItem((Integer.MAX_VALUE / 2) - (Integer.MAX_VALUE / 2) % 12);
-
         txtImgDesc = (TextView) findViewById(R.id.img_desc);
 
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_gallery, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        bundle = getIntent().getBundleExtra("images_bundle");
+        from =bundle.getString("from");
+        if(from.toString().equals("item")) {
+            itemData = bundle.getParcelable("images");
+            imageArray = itemData.images;
+        } else {
+            newsData = bundle.getParcelable("images");
+            imageArray = newsData.images;
         }
 
-        return super.onOptionsItemSelected(item);
+
+
     }
 
     static class TouchImageAdapter extends PagerAdapter {
@@ -69,7 +73,6 @@ public class GalleryActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             return Integer.MAX_VALUE;
-            //return images.length;
         }
 
 
@@ -80,13 +83,13 @@ public class GalleryActivity extends AppCompatActivity {
             TextView imgDesc = new TextView(container.getContext());
 
 
-            if(position >=  GlobalData.itemData.images.size()) {
-                position = position %  GlobalData.itemData.images.size();
+            if(position >=  imageArray.size()) {
+                position = position %  imageArray.size();
             }
-            Picasso.with(context).load(Config.APP_IMAGES_URL + GlobalData.itemData.images.get(position).path).into(imgView);
+            Picasso.with(context).load(Config.APP_IMAGES_URL + imageArray.get(position).path).into(imgView);
 
-            txtImgDesc.setText(GlobalData.itemData.images.get(position).description);
-            Utils.psLog("Img Desc " + GlobalData.itemData.images.get(position).description);
+            txtImgDesc.setText(imageArray.get(position).description);
+            Utils.psLog("Img Desc " + imageArray.get(position).description);
 
             container.addView(imgView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             return imgView;

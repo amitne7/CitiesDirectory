@@ -73,11 +73,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_IS_BANDED, user.getIs_banded());
         values.put(KEY_PROFILE_PHOTO, user.getProfile_photo());
 
-       /*
-        values.put(KEY_BG_PHOTO, user.getBackground_photo());
-        values.put(KEY_BILL_ADDRESS, user.getBilling_address());
-        values.put(KEY_DEL_ADDRESS, user.getDelivery_address());*/
-
         //Insert Into DB
         db.insert(TABLE_USERS, null,values);
         db.close();
@@ -120,10 +115,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 user.setAbout_me(cursor.getString(3));
                 user.setIs_banded(Integer.parseInt(cursor.getString(4)));
                 user.setProfile_photo(cursor.getString(5));
-                /*
-                user.setBackground_photo(cursor.getString(6));
-                user.setBilling_address(cursor.getString(7));
-                user.setDelivery_address(cursor.getString(8));*/
 
                 usersList.add(user);
             } while (cursor.moveToNext());
@@ -145,12 +136,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_IS_BANDED, user.getIs_banded());
         values.put(KEY_PROFILE_PHOTO, user.getProfile_photo());
 
-        /*
-        values.put(KEY_BG_PHOTO, user.getBackground_photo());
-        values.put(KEY_BILL_ADDRESS, user.getBilling_address());
-        values.put(KEY_DEL_ADDRESS, user.getDelivery_address());*/
-
-        //update record
         return db.update(TABLE_USERS, values,KEY_ID + " =?",
                 new String[] { String.valueOf(user.getId())});
 

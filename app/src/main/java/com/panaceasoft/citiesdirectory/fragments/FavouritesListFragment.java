@@ -1,8 +1,6 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -62,7 +60,6 @@ public class FavouritesListFragment extends Fragment {
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
         View view = inflater.inflate(R.layout.fragment_favourites_list, container, false);
 
-
         Utils.psLog(Config.APP_API_URL + Config.GET_FAVOURITE_ITEMS + pref.getInt("_login_user_id", 0) + "/count/" + Config.PAGINATION + "/form/0");
         requestData(Config.APP_API_URL + Config.GET_FAVOURITE_ITEMS + pref.getInt("_login_user_id", 0) + "/count/" + Config.PAGINATION + "/form/0");
 
@@ -104,7 +101,6 @@ public class FavouritesListFragment extends Fragment {
                             it = (List< PItemData>) gson.fromJson(response, listType);
 
                             progressWheel.setVisibility(View.GONE);
-                            //categoryArrayList = ctd.getCategoryData();
                             for (PItemData pItem : it) {
 
                                 myDataset.add(pItem);
@@ -120,10 +116,8 @@ public class FavouritesListFragment extends Fragment {
                 },
 
                 new Response.ErrorListener() {
-
                     @Override
                     public void onErrorResponse(VolleyError ex) {
-                        //Log.d("Volley Error " , ex.getMessage());
                     }
                 });
 
@@ -137,19 +131,14 @@ public class FavouritesListFragment extends Fragment {
 
     private void setupRecyclerView(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
-        //mLayoutManager = new GridLayoutManager(this, 2);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         myDataset = new ArrayList<>();
 
         mAdapter = new ItemAdapter(myDataset, mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
-
 
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), mRecyclerView, new ClickListener() {
             @Override

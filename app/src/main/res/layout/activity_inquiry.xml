@@ -27,18 +27,6 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <!--<com.pnikosis.materialishprogress.ProgressWheel-->
-            <!--android:id="@+id/progress_wheel"-->
-            <!--android:layout_width="80dp"-->
-            <!--android:layout_height="80dp"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:paddingTop="@dimen/space_2"-->
-            <!--wheel:barColor="@color/colorPrimary"-->
-            <!--wheel:progressIndeterminate="true"-->
-
-             <!--/>-->
-
         <ProgressBar
             android:id="@+id/loading_spinner"
             android:layout_width="wrap_content"
@@ -101,8 +89,6 @@
             android:id="@+id/button_submit"
             android:text="@string/submit"
             android:onClick="doInquiry"/>
-
-
 
     </LinearLayout>
 

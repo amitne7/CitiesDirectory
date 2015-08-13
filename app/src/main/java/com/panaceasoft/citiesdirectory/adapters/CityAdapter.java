@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,11 +32,8 @@ import java.util.List;
 
 
 public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder>  {
-
     private Activity activity;
     private int lastPosition = -1;
-
-    ////////
     private List<PCityData> pCityDataList;
 
     public static class CityViewHolder extends RecyclerView.ViewHolder {
@@ -57,18 +53,11 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
             cityName.setTypeface(Utils.getTypeFace(Utils.Fonts.NOTO_SANS));
             cityDesc.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         }
-
-
     }
 
-
-
-    //public CityAdapter(Context context, List<CityData> cities){
     public CityAdapter(Context context, List<PCityData> cities){
         this.activity = (Activity) context;
-        //this.cities = cities;
         this.pCityDataList = cities;
-        //queue = Volley.newRequestQueue(context);
     }
 
     @Override
@@ -86,19 +75,10 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Override
     public void onBindViewHolder(final CityViewHolder holder, int position) {
-
-        //final CityData city = cities.get(position);
         final PCityData city = pCityDataList.get(position);
-
-        //holder.cityName.setText(city.getName());
-        //holder.cityDesc.setText(city.getDescription());
-        //Picasso.with(holder.cityPhoto.getContext()).load(Config.APP_IMAGES_URL + city.getCover_image_file()).into(holder.cityPhoto);
-
         holder.cityName.setText(city.name);
-        holder.cityDesc.setText(city.description);
+        holder.cityDesc.setText(city.description.substring(0, Math.min(city.description.length(), 150)) + "...");
         Picasso.with(holder.cityPhoto.getContext()).load(Config.APP_IMAGES_URL + city.cover_image_file).into(holder.cityPhoto);
-
-
         setAnimation(holder.cv, position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -106,18 +86,7 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
             @Override
             public void onClick(View view) {
                 final Intent intent;
-                //GlobalData.citydata = city;
-                Log.d(" Selected City Name : ", city.name);
-                Utils.psLog("City ID > " + city.id);
-
-                /*
                 intent = new Intent(holder.itemView.getContext(),SelectedCityActivity.class);
-                intent.putExtra("selected_city", new CityDataWrapper(city));
-                intent.putExtra("selected_city_id", city.getId());
-                holder.itemView.getContext().startActivity(intent);
-                */
-                intent = new Intent(holder.itemView.getContext(),SelectedCityActivity.class);
-                //intent.putExtra("selected_city", new CityDataWrapper(city));
                 GlobalData.citydata = city;
                 intent.putExtra("selected_city_id", city.id);
                 holder.itemView.getContext().startActivity(intent);
@@ -135,7 +104,6 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
 
     private void setAnimation(View viewToAnimate, int position)
     {
-        // If the bound view wasn't previously displayed on screen, it's animated
         if (position > lastPosition)
         {
             Animation animation = AnimationUtils.loadAnimation(activity, R.anim.abc_slide_in_bottom);

@@ -25,7 +25,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
                 android:scaleType="fitXY"
-                android:src="@drawable/dummy_cover_1"
+                android:src="@drawable/placeholder"
                 android:adjustViewBounds="true"/>
 
 

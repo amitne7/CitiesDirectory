@@ -1,6 +1,5 @@
 package com.panaceasoft.citiesdirectory;
 
-import com.panaceasoft.citiesdirectory.models.PCategoryData;
 import com.panaceasoft.citiesdirectory.models.PCityData;
 import com.panaceasoft.citiesdirectory.models.PItemData;
 
@@ -16,5 +15,4 @@ public class GlobalData {
     public static PItemData itemData =  null;
     public static PCityData citydata = null;
     public static ArrayList<PCityData> cityDatas = new ArrayList<PCityData>();
-    //public static PCategoryData categoryData = null;
 }

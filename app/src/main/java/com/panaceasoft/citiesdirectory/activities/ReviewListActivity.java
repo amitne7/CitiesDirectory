@@ -1,15 +1,10 @@
 package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.os.ResultReceiver;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -17,7 +12,6 @@ import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.adapters.ReviewAdapter;
 import com.panaceasoft.citiesdirectory.models.PItemData;
-
 import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 
@@ -34,19 +28,12 @@ public class ReviewListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_review_list);
-
         setupToolbar();
-
         setupFAB();
-
         prepareData();
-
         initList();
-
         refreshData();
-
     }
 
     private void initList() {
@@ -96,7 +83,7 @@ public class ReviewListActivity extends AppCompatActivity {
 
                     startActivityForResult(intent, 1);
                 } else {
-                    Intent intent = new Intent(getApplicationContext(), UserLogin.class);
+                    Intent intent = new Intent(getApplicationContext(), UserLoginActivity.class);
                     startActivity(intent);
                 }
             }
@@ -118,7 +105,6 @@ public class ReviewListActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Code to do refresh Data in Detail Activity
         Intent in = new Intent();
         setResult(RESULT_OK,in);
         finish();

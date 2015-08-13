@@ -3,16 +3,20 @@ package com.panaceasoft.citiesdirectory.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.util.HashMap;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.utilities.Utils;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
 
 /**
  * Created by Panacea-Soft on 26/7/15.
@@ -21,7 +25,7 @@ import com.panaceasoft.citiesdirectory.R;
 public class MapPopupAdapter implements GoogleMap.InfoWindowAdapter {
     private View popup=null;
     private LayoutInflater inflater=null;
-    private HashMap<String, Bitmap> images = null;
+    private HashMap<String, Uri> images=null;
     private HashMap<String, String> addressInfo = null;
     private Context ctxt=null;
     private int iconWidth=-1;
@@ -29,7 +33,7 @@ public class MapPopupAdapter implements GoogleMap.InfoWindowAdapter {
     private Marker lastMarker=null;
 
     public MapPopupAdapter(Context ctxt, LayoutInflater inflater,
-                           HashMap<String, Bitmap> images, HashMap<String, String> addressInfo) {
+                           HashMap<String, Uri> images, HashMap<String, String> addressInfo) {
         this.ctxt = ctxt;
         this.inflater = inflater;
         this.images = images;
@@ -66,14 +70,40 @@ public class MapPopupAdapter implements GoogleMap.InfoWindowAdapter {
             tv = (TextView) popup.findViewById(R.id.address);
             tv.setText(addressInfo.get(marker.getId()));
 
-            Bitmap image = images.get(marker.getId());
-            ImageView icon = (ImageView)popup.findViewById(R.id.icon);
-
-            icon.setImageBitmap(image);
+            Uri image=images.get(marker.getId());
+            ImageView icon=(ImageView)popup.findViewById(R.id.icon);
+            if(image == null) {
+                icon.setVisibility(View.GONE);
+            } else {
+                Picasso.with(ctxt).load(image).resize(iconWidth, iconHeight)
+                        .centerCrop().noFade()
+                        .placeholder(R.drawable.placeholder)
+                        .into(icon, new MarkerCallback(marker));
+            }
 
         }
 
         return(popup);
+    }
+
+    static class MarkerCallback implements Callback {
+        Marker marker=null;
+
+        MarkerCallback(Marker marker) {
+            this.marker=marker;
+        }
+
+        @Override
+        public void onError() {
+            Utils.psLog(getClass().getSimpleName() +  "Error loading thumbnail!");
+        }
+
+        @Override
+        public void onSuccess() {
+            if (marker != null && marker.isInfoWindowShown()) {
+                marker.showInfoWindow();
+            }
+        }
     }
 
 

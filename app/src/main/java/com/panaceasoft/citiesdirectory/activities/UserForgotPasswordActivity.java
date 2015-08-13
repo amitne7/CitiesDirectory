@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.panaceasoft.citiesdirectory.R;
 
-public class UserForgotPassword extends AppCompatActivity {
+public class UserForgotPasswordActivity extends AppCompatActivity {
     private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

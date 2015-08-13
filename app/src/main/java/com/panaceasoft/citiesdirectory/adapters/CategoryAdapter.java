@@ -26,7 +26,6 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<CategoryRowData> mDataset;
 
-    // The minimum amount of items to have below your current scroll position before loading more.
     private int visibleThreshold = 2;
     private int lastVisibleItem, totalItemCount;
     private boolean loading;
@@ -58,7 +57,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     totalItemCount = linearLayoutManager.getItemCount();
                     lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                    Log.d("V Count ", lastVisibleItem + " - count");
                     if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                         // End has been reached
                         // Do something
@@ -78,7 +76,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     totalItemCount = gridLayoutManager.getItemCount();
                     lastVisibleItem = gridLayoutManager.findLastVisibleItemPosition();
-                    Log.d("V Count ", lastVisibleItem+" - count");
                     if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                         // End has been reached
                         // Do something
@@ -111,7 +108,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         }
                         string += " = " + lastVisibleItem2[i];
                     }
-                    Log.d("V Count ", string+" - count");
                     if (!loading && totalItemCount <= (greatestItem + visibleThreshold)) {
                         // End has been reached
                         // Do something
@@ -152,14 +148,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof MyViewHolder){
             ((MyViewHolder)holder).title.setText(mDataset.get(position).getCatName());
-            //((MyViewHolder)holder).title.setText(mDataset.get(position).getCatName());
-            //Log.d(" >>> " , mDataset.get(position).getCatImage());
             Picasso.with(((MyViewHolder)holder).icon.getContext()).load(Config.APP_IMAGES_URL + mDataset.get(position).getCatImage()).into(((MyViewHolder)holder).icon);
-
         }else{
-            // For staggeredGridLayout Manager only
-            //StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
-            //layoutParams.setFullSpan(true);
             ((ProgressViewHolder)holder).progressBar.setIndeterminate(true);
         }
     }

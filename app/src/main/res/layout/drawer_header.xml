@@ -9,14 +9,4 @@
     android:orientation="vertical"
     android:gravity="top">
 
-    <!--<ImageView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:src="@drawable/cover_img"/>-->
-    <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Username"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>-->
-
 </LinearLayout>

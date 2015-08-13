@@ -54,8 +54,6 @@
             android:textSize="@dimen/sub_head"
             />
 
-
-
     </LinearLayout>
 
 </FrameLayout>

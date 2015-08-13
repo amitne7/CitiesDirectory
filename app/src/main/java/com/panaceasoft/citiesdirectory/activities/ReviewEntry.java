@@ -2,13 +2,10 @@ package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.ResultReceiver;
-import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -37,33 +34,24 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 
-public class ReviewEntry extends ActionBarActivity {
+public class ReviewEntry extends AppCompatActivity {
 
     private Toolbar toolbar;
     private SharedPreferences pref;
-
     private TextView login_user_name;
     private TextView login_user_email;
     private EditText input_review_message;
     private int selected_item_id;
     private int selected_city_id;
-
-    ProgressBar pb;
+    private ProgressBar pb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_review_entry);
-
         prepareData();
-
         setupToolbar();
-
         setupUserInfo();
-
-
-
     }
 
     private void prepareData() {
@@ -91,18 +79,14 @@ public class ReviewEntry extends ActionBarActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
 
     public void doReview(View view) {
-
         if(inputValidation()) {
             pb = (ProgressBar) findViewById(R.id.loading_spinner);
             pb.setVisibility(view.VISIBLE);
 
             final String URL = Config.APP_API_URL + Config.POST_REVIEW + getIntent().getExtras().getInt("selected_item_id");
-            Utils.psLog(URL);
-
             input_review_message = (EditText) findViewById(R.id.input_review_message);
 
             HashMap<String, String> params = new HashMap<>();
@@ -111,7 +95,6 @@ public class ReviewEntry extends ActionBarActivity {
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
 
             doSubmit(URL, params, view);
-
         }
 
     }

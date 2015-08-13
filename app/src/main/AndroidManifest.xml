@@ -53,9 +53,6 @@
                 android:value="@integer/google_play_services_version" />
         </activity>
         <activity
-            android:name=".activities.DetailOneActivity"
-            android:label="@string/app_name" />
-        <activity
             android:name=".activities.DetailActivity"
             android:label="@string/app_name" />
         <activity
@@ -100,7 +97,7 @@
             android:label="@string/title_activity_review_list" >
         </activity>
         <activity
-            android:name=".activities.UserLogin"
+            android:name=".activities.UserLoginActivity"
             android:label="@string/title_activity_user_login" >
         </activity>
         <activity
@@ -108,7 +105,7 @@
             android:label="@string/title_activity_review_entry" >
         </activity>
         <activity
-            android:name=".activities.UserRegister"
+            android:name=".activities.UserRegisterActivity"
             android:label="@string/title_activity_user_register" >
         </activity>
         <activity
@@ -120,7 +117,7 @@
             android:label="@string/title_activity_password_update" >
         </activity>
         <activity
-            android:name=".activities.UserForgotPassword"
+            android:name=".activities.UserForgotPasswordActivity"
             android:label="@string/title_activity_user_forgot_password" >
         </activity>
 
@@ -138,12 +135,16 @@
         <service android:name=".utilities.GCMNotificationIntentService" />
 
         <activity
-            android:name=".activities.NewsActivity"
+            android:name=".activities.NewsListActivity"
             android:label="@string/title_activity_news" >
         </activity>
         <activity
             android:name=".activities.MapActivity"
             android:label="@string/title_activity_map" >
+        </activity>
+        <activity
+            android:name=".activities.NewsDetailActivity"
+            android:label="@string/title_activity_news_detail" >
         </activity>
     </application>
 

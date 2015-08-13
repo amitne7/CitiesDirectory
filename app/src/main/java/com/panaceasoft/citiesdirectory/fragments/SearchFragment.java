@@ -69,7 +69,6 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_search, container, false);
-        //Toast.makeText(getActivity(), " First City Name : "  + GlobalData.cityDatas.get(0).name, Toast.LENGTH_SHORT).show();
         initUI(view);
         setupProgressWheel(view);
         setupRecyclerView(view);
@@ -115,12 +114,9 @@ public class SearchFragment extends Fragment {
 
     private void prepareForSearch(View v) {
         progressWheel.setVisibility(v.VISIBLE);
-        Utils.psLog(" Do Search " + txt_search.getText().toString());
         final String URL = Config.APP_API_URL + Config.POST_ITEM_SEARCH + 0; //Need to change selected city id from Popup
         Utils.psLog(URL);
         doSearch(getActivity().getApplicationContext(), URL, txt_search.getText().toString().trim(), v);
-
-        //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     public void doSearch(Context context,final String URL,final String keyword,final View v){
@@ -138,8 +134,7 @@ public class SearchFragment extends Fragment {
                     }
 
                     Gson gson = new Gson();
-                    Type listType = new TypeToken<List<PItemData>>() {
-                    }.getType();
+                    Type listType = new TypeToken<List<PItemData>>() {}.getType();
                     it = (List<PItemData>) gson.fromJson(response, listType);
 
                     for (PItemData pItem : it) {
@@ -188,12 +183,8 @@ public class SearchFragment extends Fragment {
 
     private void setupRecyclerView(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
-
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
-        //mLayoutManager = new GridLayoutManager(this, 2);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         myDataset = new ArrayList<>();
@@ -205,7 +196,6 @@ public class SearchFragment extends Fragment {
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), mRecyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-
                 onItemClicked(position);
             }
 

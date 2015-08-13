@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
-import com.panaceasoft.citiesdirectory.fragments.ContactUsFragment;
 import com.panaceasoft.citiesdirectory.fragments.CitiesListFragment;
 import com.panaceasoft.citiesdirectory.fragments.FavouritesListFragment;
 import com.panaceasoft.citiesdirectory.fragments.MapFragment;
@@ -39,11 +38,9 @@ import com.panaceasoft.citiesdirectory.fragments.MapFragment;
 import com.panaceasoft.citiesdirectory.fragments.NotificationFragment;
 import com.panaceasoft.citiesdirectory.fragments.ProfileFragment;
 
-import com.panaceasoft.citiesdirectory.fragments.TabFragment;
 import com.panaceasoft.citiesdirectory.fragments.SearchFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserLoginFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserRegisterFragment;
-import com.panaceasoft.citiesdirectory.listeners.GPSTracker;
 
 import com.panaceasoft.citiesdirectory.models.Users;
 import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
@@ -70,12 +67,8 @@ public class MainActivity extends AppCompatActivity {
     public Users user;
     private SearchView searchView;
     private FABActions fabActions;
-    // For Search Menu
     private MenuItem searchItem;
     private Fragment fragment = null;
-
-    int mile = 0;
-
     private boolean notiFlag;
 
     @Override
@@ -85,108 +78,18 @@ public class MainActivity extends AppCompatActivity {
 
         notiFlag = getIntent().getBooleanExtra("show_noti", false);
 
-        Utils.psLog(" > " + notiFlag);
-
         setupToolbar();
         setUpDrawerLayout();
         setUpNavigationView();
         setUpFAB();
-
         setUpUtils();
-
         loadLoginUserInfo();
-
         changeMenu();
-        /*// Testing Toolbar Height
-        int toolBarHeight = Utils.getToolbarHeight(this);
-        Log.d("TEAMPS", toolBarHeight + " : Toolbar Height");
-        // 5.1 = D/TEAMPS﹕ 112
-        // 5.0 = D/TEAMPS﹕ 112
-        // 4.2 = D/TEAMPS﹕ 84  : diff = 28
 
-        int statusBarHeight = getStatusBarHeight();
-        Log.d("TEAMPS", toolBarHeight + " : Status Bar Height");
-        // 5.1 = D/TEAMPS﹕ 112
-        // 5.0 = D/TEAMPS﹕ 112
-        // 4.2 = D/TEAMPS﹕ 84  : diff = 28
-
-        // Testing Version
-        Log.d("TEAMPS", Build.VERSION.RELEASE + " - " + BuildConfig.VERSION_NAME+ " Android Version");
-
-        // Testing Screen Width and height
-        Point size = Utils.getScreenSize();
-        Log.d("TEAMPS", "width : " + size.x +  " height :  " + size.y);
-        // 5.1 = 768 - 1184
-        // 5.0 =  width : 768 height :  1184
-        // huawei = width : 540 height :  960
-        // lenovo =
-
-
-*/
     }
 
     private void setUpUtils() {
         new Utils(this);
-    }
-
-    public int getStatusBarHeight() {
-        int result = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = getResources().getDimensionPixelSize(resourceId);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        searchItem = (MenuItem) findViewById(R.id.action_search);
-
-//        // Get the SearchView and set the searchable configuration
-//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-//        // Assumes current activity is the searchable activity
-//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//        searchView.setIconifiedByDefault(true); // Do not iconify the widget; expand it by default
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            changeMenu();
-            return true;
-        } else if (id == R.id.action_search) {
-            //searchStart();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void searchStart() {
-        searchItem = (MenuItem) findViewById(R.id.action_search);
-
-        SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
-        Log.d("TEAMPS", "Search Start");
-        SearchView searchView = null;
-        if (searchItem != null) {
-            Log.d("TEAMPS", "Search Item is not null");
-            searchView = (SearchView) searchItem.getActionView();
-        }
-        if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(MainActivity.this.getComponentName()));
-        }
-
     }
 
     public void changeMenu() {
@@ -203,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
@@ -211,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
     }
 
     public void setUpDrawerLayout() {
@@ -222,13 +123,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onDrawerOpened(View drawerView) {
                     super.onDrawerOpened(drawerView);
-                    // invalidateOptionsMenu(this);
                 }
 
                 @Override
                 public void onDrawerClosed(View drawerView) {
                     super.onDrawerClosed(drawerView);
-                    //invalidateOptionsMenu(this);
                 }
             };
 
@@ -250,14 +149,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 fabClicked(view);
-                //Snackbar.make(view, "Why you click me! Why Why", Snackbar.LENGTH_SHORT)
-                //       .setAction("Action", null).show();
-
-
-                //startActivity(new Intent(MainActivity.this, SubCategoryActivity.class));
-                //searchme();
             }
         });
     }
@@ -276,13 +168,11 @@ public class MainActivity extends AppCompatActivity {
     private void disableFAB() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.GONE);
-
     }
 
     private void enableFAB() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
-
     }
 
     private void updateFABIcon(int icon) {
@@ -292,37 +182,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateFABAction(FABActions action) {
         fabActions = action;
-    }
-
-
-    private void searchme() {
-        //searchView.setIconifiedByDefault(true);
-        //searchView.setIconified(false);
-        searchView.onActionViewExpanded();
-
-        /*this.getSupportActionBar().startActionMode(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                searchStart();
-                return true;
-
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-
-            }
-        });*/
     }
 
     private void setUpNavigationView() {
@@ -353,40 +212,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void navigationMenuChanged(MenuItem menuItem) {
-
         openFragment(menuItem.getItemId());
         menuItem.setChecked(true);
         drawerLayout.closeDrawers();
-
-        /* OLD CODE
-         switch (menuItem.getItemId()){
-
-            case R.id.nav_home:
-            case R.id.nav_home_login:
-                openFragment(R.id.nav_home);
-                break;
-            case R.id.nav_switch_city:
-            case R.id.nav_switch_city_login:
-                openFragment(R.id.nav_switch_city);
-                break;
-            case R.id.nav_map:
-            case R.id.nav_map_login:
-                openFragment(R.id.nav_map);
-                break;
-            case R.id.nav_profile:
-            case R.id.nav_profile_login:
-                openFragment(R.id.nav_profile);
-                break;
-            case R.id.nav_logout:
-
-               openFragment(R.id.nav_logout);
-                break;
-            default:
-                Toast.makeText(this, "Others", Toast.LENGTH_SHORT).show();
-                break;
-        }
-        */
-
     }
 
     public void openFragment(int menuId) {
@@ -397,7 +225,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_home_login:
                 disableFAB();
                 fragment = new CitiesListFragment();
-                //fragment = new MapFragment();
                 break;
 
             case R.id.nav_switch_city:
@@ -408,11 +235,6 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.nav_profile:
             case R.id.nav_profile_login:
-                // Need to add checking here
-                // If user is already login
-                //      Need to open profile fragment
-                // If not
-                //      Need to show Login fragment
 
                 DatabaseHelper db = new DatabaseHelper(getApplication());
                 if (db != null && db.getUserCount() > 0) {
@@ -427,14 +249,8 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.nav_map:
             case R.id.nav_map_login:
-                //locationSearchFAB();
                 disableFAB();
                 fragment = new MapFragment();
-                /*
-                Bundle bundle = new Bundle();
-                bundle.putInt("mile", mile);
-                fragment.setArguments(bundle);
-                */
                 break;
 
             case R.id.nav_register:
@@ -461,18 +277,14 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             default:
-                fragment = new ContactUsFragment();
-                Toast.makeText(this, " Menu is " + menuId, Toast.LENGTH_SHORT).show();
                 break;
         }
 
-        //if(mContent != fragment) {
         if (currentMenuId != menuId && menuId != R.id.nav_logout) {
             currentMenuId = menuId;
 
             updateFragment(fragment);
 
-            // Update Menu ID Selection
             try {
                 navigationView.getMenu().findItem(menuId).setChecked(true);
             } catch (Exception e) {
@@ -485,24 +297,15 @@ public class MainActivity extends AppCompatActivity {
     private void updateFragment(Fragment fragment) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-
         transaction.replace(R.id.content_frame, fragment);
-
         transaction.commit();
     }
 
     private void doLogout() {
-
         DatabaseHelper db = new DatabaseHelper(getApplication());
-        // db.deleteUser(user);
         db.deleteAllUser();
-
-        // Update the Menu
         changeMenu();
-
-        // Open Main Fragment
         openFragment(R.id.nav_home);
     }
 
@@ -517,37 +320,15 @@ public class MainActivity extends AppCompatActivity {
         if (usersArrayList.size() > 0) {
 
             user = usersArrayList.get(0);
-
-            //There is login user
             editor.putInt("_login_user_id", usersArrayList.get(0).getId());
             editor.putString("_login_user_name", usersArrayList.get(0).getUser_name());
             editor.putString("_login_user_email", usersArrayList.get(0).getEmail());
             editor.putString("_login_user_about_me", usersArrayList.get(0).getAbout_me());
-            //editor.putString("_login_user_del_address", usersArrayList.get(0).getDelivery_address());
-            //editor.putString("_login_user_bill_address", usersArrayList.get(0).getBilling_address());
         } else {
-            //User not yet login
             editor.putInt("_login_user_id", 0);
         }
         editor.commit();
     }
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        getSupportFragmentManag®er().findFragmentById(R.id.content_frame).onActivityResult(requestCode, resultCode, data);
-//
-//    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        String s = Config.base_url;
-        String a = s;
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -564,8 +345,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshProfileData() {
-        //Fragment fragment =new CitiesListFragment();
-        //this.updateFragment(fragment);
 
         if (fragment instanceof ProfileFragment) {
             ((ProfileFragment) fragment).setupData();

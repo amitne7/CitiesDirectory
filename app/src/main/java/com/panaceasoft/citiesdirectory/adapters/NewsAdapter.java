@@ -11,34 +11,34 @@ import android.widget.TextView;
 
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
-import com.panaceasoft.citiesdirectory.models.PReviewData;
+import com.panaceasoft.citiesdirectory.models.PNewsData;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 /**
- * Created by Panacea-Soft on 30/7/15.
+ * Created by Panacea-Soft on 13/8/15.
  * Contact Email : teamps.is.cool@gmail.com
  */
-public class ReviewAdapter extends BaseAdapter {
+public class NewsAdapter extends BaseAdapter{
 
     private Activity activity;
     private LayoutInflater inflater;
-    private ArrayList<PReviewData> reviewData;
+    private ArrayList<PNewsData> newsData;
 
-    public ReviewAdapter(Activity activity, ArrayList<PReviewData> reviewData) {
+    public NewsAdapter(Activity activity, ArrayList<PNewsData> newsData) {
         this.activity = activity;
-        this.reviewData = reviewData;
+        this.newsData = newsData;
     }
 
     @Override
     public int getCount() {
-        return reviewData.size();
+        return newsData.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return reviewData.get(position);
+        return newsData.get(position);
     }
 
     @Override
@@ -48,26 +48,26 @@ public class ReviewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if (inflater == null)
             inflater = (LayoutInflater) activity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null)
-            convertView = inflater.inflate(R.layout.review_row, null);
+            convertView = inflater.inflate(R.layout.news_row, null);
 
-        TextView txtUserName = (TextView) convertView.findViewById(R.id.user_name);
+        TextView txtNewsTitle = (TextView) convertView.findViewById(R.id.news_title);
         TextView txtMessage = (TextView) convertView.findViewById(R.id.message);
         TextView txtAgo = (TextView) convertView.findViewById(R.id.ago);
-        final ImageView imgUserPhoto = (ImageView) convertView.findViewById(R.id.thumbnail);
+        final ImageView imgNewsPhoto = (ImageView) convertView.findViewById(R.id.thumbnail);
 
-        PReviewData review = reviewData.get(position);
+        PNewsData news = newsData.get(position);
 
-        txtUserName.setText(review.appuser_name);
-        txtMessage.setText(review.review);
-        txtAgo.setText(review.added);
+        txtNewsTitle.setText(news.title);
+        txtMessage.setText(news.description.substring(0, Math.min(news.description.length(), 120)) + "...");
+        txtAgo.setText(news.added);
 
-        Picasso.with(activity.getApplicationContext()).load(Config.APP_IMAGES_URL + review.profile_photo).into(imgUserPhoto);
-
+        if(news.images.get(0).path != null) {
+            Picasso.with(activity.getApplicationContext()).load(Config.APP_IMAGES_URL + news.images.get(0).path).into(imgNewsPhoto);
+        }
         return convertView;
     }
 }

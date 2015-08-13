@@ -20,8 +20,8 @@ import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.MainActivity;
-import com.panaceasoft.citiesdirectory.activities.UserLogin;
-import com.panaceasoft.citiesdirectory.activities.UserRegister;
+import com.panaceasoft.citiesdirectory.activities.UserLoginActivity;
+import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
 import com.panaceasoft.citiesdirectory.models.Users;
 import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
@@ -84,13 +84,12 @@ public class UserRegisterFragment extends Fragment {
     private void doCancel() {
         if(getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).openFragment(R.id.nav_profile);
-        }else if(getActivity() instanceof UserRegister) {
+        }else if(getActivity() instanceof UserRegisterActivity) {
             getActivity().finish();
         }
     }
 
     private boolean inputValidation() {
-
 
         if(input_name.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.name_validation_message,
@@ -151,7 +150,6 @@ public class UserRegisterFragment extends Fragment {
 
                             Utils.psLog(user_id);
                             if(user_id != null){
-                                //showSuccessPopup();
                                 Utils.psLog("Successful Register, Need to Store in SQLite DB.");
 
 
@@ -168,8 +166,6 @@ public class UserRegisterFragment extends Fragment {
                                 editor.putString("_login_user_name", userName);
                                 editor.putString("_login_user_email", email);
                                 editor.putString("_login_user_about_me", "");
-                                //editor.putString("_login_user_del_address", "");
-                                //editor.putString("_login_user_bill_address", "");
                                 editor.commit();
 
                                 // Update Menu
@@ -183,7 +179,6 @@ public class UserRegisterFragment extends Fragment {
                                 showSuccessPopup();
 
                             } else {
-                                //showFailPopup();
                                 Utils.psLog("Register Fail");
                                 showFailPopup();
 
@@ -224,13 +219,12 @@ public class UserRegisterFragment extends Fragment {
                     public void onPositive(MaterialDialog dialog) {
                         if(getActivity() instanceof MainActivity) {
                             ((MainActivity) getActivity()).openFragment(R.id.nav_profile);
-                        }else if(getActivity() instanceof UserLogin) {
+                        }else if(getActivity() instanceof UserLoginActivity) {
                             getActivity().finish();
                         }
                     }
                 })
                 .show();
     }
-
 
 }

@@ -80,15 +80,12 @@ public class NotificationFragment extends Fragment {
         txtMessage = (TextView) view.findViewById(R.id.latest_push_message);
 
         if(pref.getBoolean("_push_noti_setting",false)) {
-            Utils.psLog("Already Chk >> ");
             tgNoti.setChecked(true);
         } else {
-            Utils.psLog("No Chk >> ");
             tgNoti.setChecked(false);
         }
 
         if(!pref.getString("_push_noti_message","").toString().equals("")) {
-            Utils.psLog("Got Message >> ");
             txtMessage.setText(pref.getString("_push_noti_message","").toString());
         } else {
             txtMessage.setText("No Message");
@@ -127,29 +124,7 @@ public class NotificationFragment extends Fragment {
             @Override
             protected void onPostExecute(String msg) {
                 Utils.psLog(" Msg Val " + msg);
-                /*
-                final String URL = "http://www.panacea-soft.com/gcm/gcm.php?shareRegId=true";
-                HashMap<String, String> params = new HashMap<>();
-                params.put("regId", regId);
-                serverSubmit(URL, params, view);
-                */
-
                 storeRegIdinServer();
-
-                /*
-                if (!TextUtils.isEmpty(regId)) {
-                    storeRegIdinSharedPref(applicationContext, regId, emailID);
-                    Toast.makeText(
-                            applicationContext,
-                            "Registered with GCM Server successfully.\n\n"
-                                    + msg, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(
-                            applicationContext,
-                            "Reg ID Creation Failed.\n\nEither you haven't enabled Internet or GCM server is busy right now. Make sure you enabled Internet and try registering again after some time."
-                                    + msg, Toast.LENGTH_LONG).show();
-                }
-                */
             }
         }.execute(null, null, null);
     }
@@ -157,9 +132,7 @@ public class NotificationFragment extends Fragment {
 
     private void storeRegIdinServer() {
         params.put("regId", regId);
-        // Make RESTful webservice call using AsyncHttpClient object
         final String URL = "http://www.panacea-soft.com/gcm/gcm.php?shareRegId=true";
-
         AsyncHttpClient client = new AsyncHttpClient();
         client.post(URL, params,
                 new AsyncHttpResponseHandler() {
@@ -203,124 +176,6 @@ public class NotificationFragment extends Fragment {
                         }
                     }
                 });
-    }
-
-    /*
-    public void doSubmit() {
-        if(tgNoti.isChecked()) {
-            if(Utils.isGooglePlayServicesOK(getActivity())) {
-                Utils.psLog("Push Notification is ON");
-                final String URL = "http://www.panacea-soft.com/gcm/gcm.php?shareRegId=true";
-                String msg = "";
-                try {
-                    if (gcmObj == null) {
-                        gcmObj = GoogleCloudMessaging
-                                .getInstance(getActivity().getApplicationContext());
-                    }
-                    regId = gcmObj
-                            .register("726371303489"); //Need to change as Config Value
-                    msg = "Registration ID :" + regId;
-                    Utils.psLog("inside try >> " + msg);
-
-                    HashMap<String, String> params = new HashMap<>();
-                    params.put("regId", regId);
-                    serverSubmit(URL, params, view);
-
-
-
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-                }
-
-                Utils.psLog(msg);
-            } else {
-                showNoServicePopup();
-            }
-
-        } else {
-            Utils.psLog("API Need to update as un register from this device.");
-        }
-
-    }
-    */
-    /*
-    private void doSubmit(View view){
-        Utils.psLog("inside doSubmit");
-        if(tgNoti.isChecked()) {
-            if(Utils.isGooglePlayServicesOK(getActivity())) {
-                Utils.psLog("Push Notification is ON");
-                final String URL = "http://www.panacea-soft.com/gcm/gcm.php?shareRegId=true";
-                String msg = "";
-                try {
-                    if (gcmObj == null) {
-                        gcmObj = GoogleCloudMessaging
-                                .getInstance(getActivity().getApplicationContext());
-                    }
-                    regId = gcmObj
-                            .register("726371303489"); //Need to change as Config Value
-                    msg = "Registration ID :" + regId;
-                    Utils.psLog("inside try >> " + msg);
-
-//                    HashMap<String, String> params = new HashMap<>();
-//                    params.put("regId", regId);
-//                    serverSubmit(URL, params, view);
-
-
-
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-                }
-
-                Utils.psLog(msg);
-            } else {
-                showNoServicePopup();
-            }
-
-        } else {
-            Utils.psLog("API Need to update as un register from this device.");
-        }
-    }
-    */
-
-    private void serverSubmit(String postURL, HashMap<String, String> params, final View view) {
-        RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
-        JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String success_status = response.getString("success");
-                            Utils.psLog(success_status);
-                            //requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/shop_id/" + selected_shop_id, success_status);
-                            saveSetting();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("Error: ", error.getMessage());
-            }
-        });
-
-        // add the request object to the queue to be executed
-        mRequestQueue.add(req);
-    }
-
-    public void showNoServicePopup() {
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.sorry_title)
-                .content(R.string.no_google_play)
-                .positiveText(R.string.OK)
-                .show();
-    }
-
-    private void saveSetting() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("_push_noti_setting", true);
-        editor.commit();
     }
 
 }

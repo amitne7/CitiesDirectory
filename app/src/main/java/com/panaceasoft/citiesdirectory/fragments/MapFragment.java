@@ -19,7 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -28,7 +28,6 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -52,8 +51,6 @@ import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rey.material.widget.Slider;
 
-import android.widget.RelativeLayout.LayoutParams;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,30 +64,34 @@ import java.util.Locale;
 
 public class MapFragment extends Fragment {
 
-    MapView mMapView;
     private GoogleMap googleMap;
     private Marker customMarker;
     private LatLng markerLatLng;
 
     private ProgressWheel progressWheel;
-    private ArrayList<PItemData> sh;
+    private ArrayList<PItemData> items;
     private TextView display_message;
     private RequestQueue queue;
 
-    double currentLongitude;
-    double currentLatitude;
     private Bitmap bm;
-    View marker;
-    MaterialDialog dialog;
     private boolean checkingLatLng = false;
-    private HashMap<String, Uri> images=new HashMap<String, Uri>();
-    private HashMap<String, Bitmap> markerImages =new HashMap<String, Bitmap>();
+    private HashMap<String, Uri> images = new HashMap<String, Uri>();
+    private HashMap<String, Uri> markerImages = new HashMap<String, Uri>();
     private HashMap<Marker, PItemData> markerInfo = new HashMap<Marker, PItemData>();
     private HashMap<String, String> markerAddress = new HashMap<String, String>();
     private SharedPreferences pref;
 
     private int selectedCityId;
     private int selectedSubCatId;
+
+    private double selectedRegionLat;
+    private double selectedRegionLng;
+    private double currentLongitude;
+    private double currentLatitude;
+
+    View marker;
+    MaterialDialog dialog;
+    MapView mMapView;
 
     public MapFragment() {
         // Required empty public constructor
@@ -103,38 +104,11 @@ public class MapFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_map, container, false);
         if(Utils.isGooglePlayServicesOK(getActivity())) {
             Utils.psLog("Google Play Service is ready for Google Map");
-
-            queue = Volley.newRequestQueue(getActivity().getApplicationContext());
             setUpFAB(v);
-
-            display_message = (TextView) v.findViewById(R.id.display_message);
-            display_message.setVisibility(v.GONE);
-
-            mMapView = (MapView) v.findViewById(R.id.mapView);
-
-            ViewGroup.LayoutParams params = mMapView.getLayoutParams();
-            params.height = Utils.getScreenHeight(getActivity()) - 100;
-            mMapView.setLayoutParams(params);
-
-            mMapView.onCreate(savedInstanceState);
-
-            mMapView.onResume();
-
-            try {
-                MapsInitializer.initialize(getActivity().getApplicationContext());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            marker = inflater.inflate(R.layout.custom_marker, container, false);
-
-            pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
-            selectedCityId = pref.getInt("_selected_city_id", 0);
-            selectedSubCatId = pref.getInt("_selected_sub_cat_id",0);
-
-            //Log.d("TEAMPS", "URL : " + Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/");
-
-            requestData(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityId + "/sub_cat_id/" + selectedSubCatId + "/item/all/", marker);
-
+            setUpUI(v);
+            loadPreferenceData();
+            loadMap(v, savedInstanceState,inflater,container);
+            queue = Volley.newRequestQueue(getActivity().getApplicationContext());
         } else {
             showNoServicePopup();
         }
@@ -190,6 +164,44 @@ public class MapFragment extends Fragment {
 
     }
 
+    private void setUpUI(View v) {
+        display_message = (TextView) v.findViewById(R.id.display_message);
+        display_message.setVisibility(v.GONE);
+
+        progressWheel = (ProgressWheel) v.findViewById(R.id.progress_wheel);
+        progressWheel.setVisibility(v.VISIBLE);
+    }
+
+    private void loadMap(View v,Bundle savedInstanceState,LayoutInflater inflater, ViewGroup container) {
+        mMapView = (MapView) v.findViewById(R.id.mapView);
+
+        ViewGroup.LayoutParams params = mMapView.getLayoutParams();
+        params.height = Utils.getScreenHeight(getActivity()) - 100;
+        mMapView.setLayoutParams(params);
+
+        mMapView.onCreate(savedInstanceState);
+
+        mMapView.onResume();
+
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        marker = inflater.inflate(R.layout.custom_marker, container, false);
+
+        requestData(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityId + "/sub_cat_id/" + selectedSubCatId + "/item/all/", marker);
+
+    }
+
+    private void loadPreferenceData() {
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
+        selectedCityId = pref.getInt("_selected_city_id", 0);
+        selectedSubCatId = pref.getInt("_selected_sub_cat_id",0);
+        selectedRegionLat = Double.parseDouble(pref.getString("_city_region_lat", ""));
+        selectedRegionLng = Double.parseDouble(pref.getString("_city_region_lng", ""));
+    }
+
     public void showSearchPopup(View view) {
         checkingLatLng = false;
         boolean wrapInScrollView = true;
@@ -207,13 +219,12 @@ public class MapFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                Utils.psLog(String.valueOf(slider.getValue()));
-                //mile = slider.getValue();
-                Utils.psLog(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId);
-                //Log.d("TEAMPS", "URL : " + Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/");
-                googleMap.clear();
-                requestData(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId, marker);
                 dialog.hide();
+                Utils.psLog(String.valueOf(slider.getValue()));
+                googleMap.clear();
+                Utils.psLog(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId);
+                requestData(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId, marker);
+
             }
         });
     }
@@ -276,12 +287,9 @@ public class MapFragment extends Fragment {
         try {
             Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-            Utils.psLog(" Is present : " + geocoder.isPresent() + " = " + LATITUDE + " = " + LONGITUDE);
             if (addresses != null) {
-                Utils.psLog("Address is not null. " + addresses.size());
                 Address returnedAddress = addresses.get(0);
                 StringBuilder strReturnedAddress = new StringBuilder("Current Address ( ");
-
                 Utils.psLog("Getting Address.");
                 for (int i = 0; i < returnedAddress.getMaxAddressLineIndex(); i++) {
                     if(i != returnedAddress.getMaxAddressLineIndex()-1){
@@ -303,9 +311,6 @@ public class MapFragment extends Fragment {
         return strAdd;
     }
 
-
-
-    // Convert a view to bitmap
     public static Bitmap createDrawableFromView(Context context, View view) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -330,114 +335,70 @@ public class MapFragment extends Fragment {
 
                     @Override
                     public void onResponse(String response) {
-
-                        //progressWheel.setVisibility(View.GONE);
+                        progressWheel.setVisibility(View.GONE);
                         Gson gson = new Gson();
                         Type listType = new TypeToken<List<PItemData>>() {}.getType();
-                        sh = gson.fromJson(response,listType);
+                        items = gson.fromJson(response,listType);
 
-                        Utils.psLog("Total : " + sh.size());
+                        Utils.psLog("Total : " + items.size());
 
                         googleMap = mMapView.getMap();
-                        Utils.psLog("City " + sh.get(0).name);
 
-                        for (final PItemData s: sh){
-                            Utils.psLog("Item Name : " + s.name);
-                            //Utils.psLog("Img Path >" + Config.APP_IMAGES_URL + s.images.get(0).path);
+                        for(final PItemData itd: items) {
+                            double latitude = Double.parseDouble(itd.lat);
+                            double longitude = Double.parseDouble(itd.lng);
 
-                            final ImageView pin = (ImageView) marker.findViewById(R.id.img_pin);
-                            try {
-                                Utils.psLog("Img Path >" + Config.APP_IMAGES_URL + s.images.get(0).path);
-                                ImageRequest request = new ImageRequest(Config.APP_IMAGES_URL + s.images.get(0).path,
-                                        new Response.Listener<Bitmap>() {
+                            markerLatLng = new LatLng(latitude,longitude);
 
-                                            @Override
-                                            public void onResponse(Bitmap arg0) {
-                                                pin.setImageBitmap(arg0);
-                                                //imageCache.put(shop.getId(), arg0);
-
-
-
-                                                double latitude = Double.parseDouble(s.lat);
-                                                double longitude = Double.parseDouble(s.lng);
-
-                                                markerLatLng = new LatLng(latitude,longitude);
-
-                                                customMarker = googleMap.addMarker(new MarkerOptions()
-                                                        .position(markerLatLng)
-                                                        .title(s.name)
-                                                        .snippet(s.description.substring(0, Math.min(s.description.length(), 80)) + "...")
-                                                        .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker)))
-                                                        .anchor(0.5f, 1));
-                                                CameraPosition cameraPosition = new CameraPosition.Builder()
-                                                        .target(new LatLng(Config.REGION_LAT, Config.REGION_LNG)).zoom(10).build();
-                                                googleMap.animateCamera(CameraUpdateFactory
-                                                        .newCameraPosition(cameraPosition));
+                            customMarker = googleMap.addMarker(new MarkerOptions()
+                                    .position(markerLatLng)
+                                    .title(itd.name)
+                                    .snippet(itd.description.substring(0, Math.min(itd.description.length(), 80)) + "...")
+                                    .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker)))
+                                    .anchor(0.5f, 1));
+                            CameraPosition cameraPosition = new CameraPosition.Builder()
+                                    .target(new LatLng(selectedRegionLat, selectedRegionLng)).zoom(10).build();
+                            googleMap.animateCamera(CameraUpdateFactory
+                                    .newCameraPosition(cameraPosition));
 
 
-                                                if(markerImages != null){
-                                                    markerImages.put(customMarker.getId(),arg0);
-                                                }
-
-                                                if(markerInfo != null) {
-                                                    markerInfo.put(customMarker, s);
-                                                }
-
-                                                if(markerAddress != null) {
-                                                    markerAddress.put(customMarker.getId(),s.address);
-                                                }
-
-                                                googleMap.setInfoWindowAdapter(new MapPopupAdapter(getActivity(),getActivity().getLayoutInflater(), markerImages, markerAddress));
-                                                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                                    @Override
-                                                    public boolean onMarkerClick(Marker marker) {
-                                                        marker.showInfoWindow();
-                                                        googleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-                                                        return true;
-                                                    }
-                                                });
-
-                                                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                                                    @Override
-                                                    public void onInfoWindowClick(Marker marker) {
-
-                                                        PItemData ct = markerInfo.get(marker);
-                                                        Utils.psLog("Selected Item Name : " + ct.name);
-                                                        Utils.psLog("(: Ready to open Detail Page :)");
-                                                        final Intent intent;
-                                                        intent = new Intent(getActivity(), DetailActivity.class);
-                                                        intent.putExtra("selected_item_id", ct.id);
-                                                        intent.putExtra("selected_city_id", selectedCityId + "");
-                                                        startActivity(intent);
-
-                                                    }
-                                                });
-
-                                            }
-                                        },
-                                        80, 60,
-                                        Bitmap.Config.ARGB_8888,
-
-                                        new Response.ErrorListener() {
-
-                                            @Override
-                                            public void onErrorResponse(VolleyError arg0) {
-                                                Log.d("Shop Adapter : ", arg0.getMessage());
-                                            }
-                                        }
-
-                                );
-
-
-                                queue.add(request);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Utils.psLog(e.getMessage());
+                            if(markerImages != null){
+                                markerImages.put(customMarker.getId(),Uri.parse(Config.APP_IMAGES_URL + itd.images.get(0).path));
                             }
 
+                            if(markerInfo != null) {
+                                markerInfo.put(customMarker, itd);
+                            }
 
+                            if(markerAddress != null) {
+                                markerAddress.put(customMarker.getId(),itd.address);
+                            }
+
+                            googleMap.setInfoWindowAdapter(new MapPopupAdapter(getActivity(),getActivity().getLayoutInflater(), markerImages, markerAddress));
+                            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    marker.showInfoWindow();
+                                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+                                    return true;
+                                }
+                            });
+
+                            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                                @Override
+                                public void onInfoWindowClick(Marker marker) {
+
+                                    PItemData ct = markerInfo.get(marker);
+                                    Utils.psLog("Selected Item Name : " + ct.name);
+                                    final Intent intent;
+                                    intent = new Intent(getActivity(), DetailActivity.class);
+                                    intent.putExtra("selected_item_id", ct.id);
+                                    intent.putExtra("selected_city_id", selectedCityId + "");
+                                    startActivity(intent);
+
+                                }
+                            });
                         }
-
 
                     }
                 },
@@ -449,13 +410,12 @@ public class MapFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError ex) {
                         Log.d(">> Volley Error ", ex.getMessage() + "");
-                        //progressWheel.setVisibility(View.GONE);
+                        progressWheel.setVisibility(View.GONE);
 
 
                         NetworkResponse response = ex.networkResponse;
                         if(response != null && response.data != null){
 
-                            // Log.d(">> Status Code " , String.valueOf(response.statusCode));
 
                         } else {
                             display_message.setVisibility(View.VISIBLE);
@@ -477,10 +437,6 @@ public class MapFragment extends Fragment {
         RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
         queue.add(request);
     }
-
-
-
-
 
 
 }
