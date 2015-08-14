@@ -37,14 +37,14 @@ import java.util.HashMap;
 public class UserRegisterFragment extends Fragment {
 
     private View view;
-    private EditText input_name;
-    private EditText input_email;
-    private EditText input_password;
+    private EditText txtName;
+    private EditText txtEmail;
+    private EditText txtPassword;
     private String userName;
     private String email;
     private ProgressBar pb;
-    private Button button_register;
-    private Button button_cancel;
+    private Button btnRegister;
+    private Button btnCancel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,21 +59,21 @@ public class UserRegisterFragment extends Fragment {
     }
 
     private void initUI() {
-        input_name = (EditText) this.view.findViewById(R.id.input_name);
-        input_email = (EditText) this.view.findViewById(R.id.input_email);
-        input_password = (EditText) this.view.findViewById(R.id.input_password);
+        txtName = (EditText) this.view.findViewById(R.id.input_name);
+        txtEmail = (EditText) this.view.findViewById(R.id.input_email);
+        txtPassword = (EditText) this.view.findViewById(R.id.input_password);
         pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
-        button_register = (Button) this.view.findViewById(R.id.button_register);
-        button_cancel = (Button) this.view.findViewById(R.id.button_cancel);
+        btnRegister = (Button) this.view.findViewById(R.id.button_register);
+        btnCancel = (Button) this.view.findViewById(R.id.button_cancel);
 
-        button_register.setOnClickListener(new View.OnClickListener() {
+        btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doRegister();
             }
         });
 
-        button_cancel.setOnClickListener(new View.OnClickListener() {
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doCancel();
@@ -91,19 +91,19 @@ public class UserRegisterFragment extends Fragment {
 
     private boolean inputValidation() {
 
-        if(input_name.getText().toString().equals("")) {
+        if(txtName.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.name_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(input_email.getText().toString().equals("")) {
+        if(txtEmail.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.email_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(input_password.getText().toString().equals("")) {
+        if(txtPassword.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.password_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
@@ -120,16 +120,15 @@ public class UserRegisterFragment extends Fragment {
             final String URL = Config.APP_API_URL + Config.POST_USER_REGISTER;
             Utils.psLog(URL);
 
-            userName = input_name.getText().toString().trim();
-            email = input_email.getText().toString().trim();
+            userName = txtName.getText().toString().trim();
+            email = txtEmail.getText().toString().trim();
 
             HashMap<String, String> params = new HashMap<>();
-            params.put("username", input_name.getText().toString().trim());
-            params.put("email", input_email.getText().toString().trim());
-            params.put("password", input_password.getText().toString().trim());
+            params.put("username", txtName.getText().toString().trim());
+            params.put("email", txtEmail.getText().toString().trim());
+            params.put("password", txtPassword.getText().toString().trim());
 
             doSubmit(URL, params, view);
-
 
         }
 

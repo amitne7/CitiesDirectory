@@ -300,17 +300,7 @@
                     android:layout_gravity="center_horizontal">
 
                     <Button
-                        android:layout_gravity="center_horizontal"
-                        android:layout_width="wrap_content"
-                        android:textSize="@dimen/button"
-                        android:textColor="@color/colorAccent"
-                        android:background="?attr/selectableItemBackground"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="@dimen/space_1"
-                        android:paddingRight="@dimen/space_1"
-                        android:text="@string/more_info"/>
-
-                    <Button
+                        android:id="@+id/btn_inquiry"
                         android:layout_gravity="center_horizontal"
                         android:layout_width="wrap_content"
                         android:textSize="@dimen/button"
@@ -344,13 +334,12 @@
                     android:paddingBottom="@dimen/space_1"
                     android:id="@+id/total_review"
                     android:textColor="@color/textColorSecondary"
-                    android:text=" 5 Reviews "></TextView>
+                    android:text=" 5 Reviews "/>
 
                 <ImageView
                     android:layout_gravity="center_horizontal"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-
                     android:src="@drawable/ic_person_black"
                     android:id="@+id/user_photo"
                     />

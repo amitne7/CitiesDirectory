@@ -22,8 +22,8 @@ public class ReviewListActivity extends AppCompatActivity {
     private ListView listView;
     private ReviewAdapter adapter;
     private Toolbar toolbar;
-    private int selected_item_id;
-    private int selected_city_id;
+    private int selectedItemId;
+    private int selectedCityId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +41,8 @@ public class ReviewListActivity extends AppCompatActivity {
     }
 
     private void prepareData() {
-        selected_item_id = getIntent().getIntExtra("selected_item_id", 0);
-        selected_city_id = getIntent().getIntExtra("selected_city_id", 0);
+        selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
+        selectedCityId = getIntent().getIntExtra("selected_city_id", 0);
 
         ArrayList<PItemData> lists = getIntent().getParcelableArrayListExtra("list");
         Utils.psLog(" Count " + lists.size() + " . First name : "+ lists.get(0).name);
@@ -78,8 +78,8 @@ public class ReviewListActivity extends AppCompatActivity {
                 DatabaseHelper db = new DatabaseHelper(getApplication());
                 if(db.getUserCount() > 0) {
                     Intent intent = new Intent(getApplicationContext(), ReviewEntry.class);
-                    intent.putExtra("selected_item_id", selected_item_id);
-                    intent.putExtra("selected_city_id", selected_city_id);
+                    intent.putExtra("selected_item_id", selectedItemId);
+                    intent.putExtra("selected_city_id", selectedCityId);
 
                     startActivityForResult(intent, 1);
                 } else {

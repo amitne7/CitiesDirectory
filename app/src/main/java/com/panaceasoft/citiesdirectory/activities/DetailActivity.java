@@ -86,6 +86,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView title;
     private ImageView userPhoto;
     private Button btnMoreReview;
+    private Button btnInquiry;
     private FloatingActionButton fab;
     private int selected_item_id;
     private String selected_city_id;
@@ -150,6 +151,9 @@ public class DetailActivity extends AppCompatActivity {
 
         btnMoreReview = (Button) findViewById(R.id.btn_more_review);
         btnMoreReview.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
+        btnInquiry = (Button) findViewById(R.id.btn_inquiry);
+        btnInquiry.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

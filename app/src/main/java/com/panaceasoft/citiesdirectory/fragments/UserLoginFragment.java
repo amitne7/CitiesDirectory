@@ -38,11 +38,11 @@ import java.util.HashMap;
 
 public class UserLoginFragment extends Fragment {
     private View view;
-    private EditText input_email;
-    private EditText input_password;
-    private Button button_login;
-    private Button button_forgot;
-    private Button button_register;
+    private EditText txtEmail;
+    private EditText txtPassword;
+    private Button btnLogin;
+    private Button btnForgot;
+    private Button btnRegister;
     private ProgressBar pb;
     private MaterialDialog dialog;
 
@@ -56,20 +56,30 @@ public class UserLoginFragment extends Fragment {
 
     private void initUI() {
         pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
-        input_email = (EditText) this.view.findViewById(R.id.input_email);
-        input_password = (EditText) this.view.findViewById(R.id.input_password);
-        button_login = (Button) this.view.findViewById(R.id.button_login);
-        button_forgot = (Button) this.view.findViewById(R.id.button_forgot);
-        button_register = (Button) this.view.findViewById(R.id.button_register);
 
-        button_login.setOnClickListener(new View.OnClickListener() {
+        txtEmail = (EditText) this.view.findViewById(R.id.input_email);
+        txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
+        txtPassword = (EditText) this.view.findViewById(R.id.input_password);
+        txtPassword.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
+        btnLogin = (Button) this.view.findViewById(R.id.button_login);
+        btnLogin.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
+        btnForgot = (Button) this.view.findViewById(R.id.button_forgot);
+        btnForgot.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
+        btnRegister = (Button) this.view.findViewById(R.id.button_register);
+        btnRegister.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doLogin();
             }
         });
 
-        button_forgot.setOnClickListener(new View.OnClickListener() {
+        btnForgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Utils.psLog("Forgot Click Here");
@@ -77,7 +87,7 @@ public class UserLoginFragment extends Fragment {
             }
         });
 
-        button_register.setOnClickListener(new View.OnClickListener() {
+        btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doRegister();
@@ -95,8 +105,8 @@ public class UserLoginFragment extends Fragment {
             Utils.psLog(URL);
 
             HashMap<String, String> params = new HashMap<>();
-            params.put("email", input_email.getText().toString().trim());
-            params.put("password",input_password.getText().toString().trim());
+            params.put("email", txtEmail.getText().toString().trim());
+            params.put("password",txtPassword.getText().toString().trim());
 
             doSubmit(URL, params, view);
 
@@ -197,13 +207,13 @@ public class UserLoginFragment extends Fragment {
 
     private boolean inputValidation() {
 
-        if(input_email.getText().toString().equals("")) {
+        if(txtEmail.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.email_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(input_password.getText().toString().equals("")) {
+        if(txtPassword.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.password_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;

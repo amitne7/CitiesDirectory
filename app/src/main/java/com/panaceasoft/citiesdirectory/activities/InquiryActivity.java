@@ -20,7 +20,7 @@ import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
+import android.widget.Button;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,11 +29,12 @@ import java.util.HashMap;
 
 public class InquiryActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private EditText input_name;
-    private EditText input_email;
-    private EditText input_message;
+    private EditText txtName;
+    private EditText txtEmail;
+    private EditText txtMessage;
     private SharedPreferences pref;
     private ProgressBar pb;
+    private Button btnSubmit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +42,19 @@ public class InquiryActivity extends AppCompatActivity {
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         setContentView(R.layout.activity_inquiry);
         setupToolbar();
+        initUI();
     }
 
+    private void initUI() {
+        txtName = (EditText) findViewById(R.id.input_name);
+        txtName.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+        txtEmail = (EditText) findViewById(R.id.input_email);
+        txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+        txtMessage = (EditText) findViewById(R.id.input_message);
+        txtMessage.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+        btnSubmit = (Button) findViewById(R.id.button_submit);
+        btnSubmit.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+    }
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -64,13 +76,11 @@ public class InquiryActivity extends AppCompatActivity {
 
             final String URL = Config.APP_API_URL + Config.POST_SHOP_INQUIRY + pref.getInt("_id", 0);
             Utils.psLog(URL);
-            input_name = (EditText) findViewById(R.id.input_name);
-            input_email = (EditText) findViewById(R.id.input_email);
-            input_message = (EditText) findViewById(R.id.input_message);
+
             HashMap<String, String> params = new HashMap<String, String>();
-            params.put("name", input_name.getText().toString());
-            params.put("email", input_email.getText().toString());
-            params.put("message", input_message.getText().toString());
+            params.put("name", txtName.getText().toString());
+            params.put("email", txtEmail.getText().toString());
+            params.put("message", txtMessage.getText().toString());
             doSubmit(URL, params, view);
         }
     }
@@ -131,29 +141,25 @@ public class InquiryActivity extends AppCompatActivity {
 
     public boolean inputValidation() {
 
-        input_name = (EditText) findViewById(R.id.input_name);
-        input_email = (EditText) findViewById(R.id.input_email);
-        input_message = (EditText) findViewById(R.id.input_message);
-
-        if(input_name.getText().toString().equals("")){
+        if(txtName.getText().toString().equals("")){
             Toast.makeText(getApplicationContext(), R.string.name_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(input_email.getText().toString().equals("")) {
+        if(txtEmail.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), R.string.email_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         } else {
-            if(!Utils.isEmailFormatValid(input_email.getText().toString())) {
+            if(!Utils.isEmailFormatValid(txtEmail.getText().toString())) {
                 Toast.makeText(getApplicationContext(), R.string.email_format_validation_message,
                         Toast.LENGTH_LONG).show();
                 return false;
             }
         }
 
-        if(input_message.getText().toString().equals("")){
+        if(txtMessage.getText().toString().equals("")){
             Toast.makeText(getApplicationContext(), R.string.inquiry_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;

@@ -18,12 +18,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 
 public class UserForgotPasswordFragment extends Fragment {
     private View view;
-    private EditText input_email;
-    private Button button_request;
+    private EditText txtEmail;
+    private Button btnRequest;
     private ProgressBar pb;
 
     @Override
@@ -35,9 +36,11 @@ public class UserForgotPasswordFragment extends Fragment {
     }
 
     private void initUI() {
-        input_email = (EditText) this.view.findViewById(R.id.input_email);
-        button_request = (Button) this.view.findViewById(R.id.button_request);
-        button_request.setOnClickListener(new View.OnClickListener() {
+        txtEmail = (EditText) this.view.findViewById(R.id.input_email);
+        txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+        btnRequest = (Button) this.view.findViewById(R.id.button_request);
+        btnRequest.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+        btnRequest.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -55,7 +58,7 @@ public class UserForgotPasswordFragment extends Fragment {
     }
 
     private boolean inputValidation() {
-        if(input_email.getText().toString().equals("")) {
+        if(txtEmail.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.email_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;

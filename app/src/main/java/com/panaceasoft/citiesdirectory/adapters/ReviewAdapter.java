@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.models.PReviewData;
+import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -56,8 +57,11 @@ public class ReviewAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.review_row, null);
 
         TextView txtUserName = (TextView) convertView.findViewById(R.id.user_name);
+        txtUserName.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         TextView txtMessage = (TextView) convertView.findViewById(R.id.message);
+        txtMessage.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         TextView txtAgo = (TextView) convertView.findViewById(R.id.ago);
+        txtAgo.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         final ImageView imgUserPhoto = (ImageView) convertView.findViewById(R.id.thumbnail);
 
         PReviewData review = reviewData.get(position);

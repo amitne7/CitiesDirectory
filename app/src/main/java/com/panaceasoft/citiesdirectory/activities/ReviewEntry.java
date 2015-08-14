@@ -38,11 +38,11 @@ public class ReviewEntry extends AppCompatActivity {
 
     private Toolbar toolbar;
     private SharedPreferences pref;
-    private TextView login_user_name;
-    private TextView login_user_email;
-    private EditText input_review_message;
-    private int selected_item_id;
-    private int selected_city_id;
+    private TextView txtUserName;
+    private TextView txtUserEmail;
+    private EditText txtReviewMessage;
+    private int selectedItemId;
+    private int selectedCityId;
     private ProgressBar pb;
 
     @Override
@@ -56,21 +56,21 @@ public class ReviewEntry extends AppCompatActivity {
 
     private void prepareData() {
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        selected_item_id = getIntent().getIntExtra("selected_item_id", 0);
-        selected_city_id = getIntent().getIntExtra("selected_city_id", 0);
+        selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
+        selectedCityId = getIntent().getIntExtra("selected_city_id", 0);
     }
 
     private void setupUserInfo() {
-        login_user_name = (TextView) findViewById(R.id.login_user_name);
-        login_user_email = (TextView) findViewById(R.id.login_user_email);
+        txtUserName = (TextView) findViewById(R.id.login_user_name);
+        txtUserEmail = (TextView) findViewById(R.id.login_user_email);
 
-        login_user_name.setText(pref.getString("_login_user_name", "").toString());
-        login_user_email.setText(pref.getString("_login_user_email", "").toString());
+        txtUserName.setText(pref.getString("_login_user_name", "").toString());
+        txtUserEmail.setText(pref.getString("_login_user_email", "").toString());
     }
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.inquiry));
+        toolbar.setTitle(getString(R.string.review));
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,10 +87,10 @@ public class ReviewEntry extends AppCompatActivity {
             pb.setVisibility(view.VISIBLE);
 
             final String URL = Config.APP_API_URL + Config.POST_REVIEW + getIntent().getExtras().getInt("selected_item_id");
-            input_review_message = (EditText) findViewById(R.id.input_review_message);
+            txtReviewMessage = (EditText) findViewById(R.id.input_review_message);
 
             HashMap<String, String> params = new HashMap<>();
-            params.put("review", input_review_message.getText().toString().trim());
+            params.put("review", txtReviewMessage.getText().toString().trim());
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
 
@@ -108,7 +108,7 @@ public class ReviewEntry extends AppCompatActivity {
                         try {
                             String success_status = response.getString("success");
 
-                            requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/city_id/" + selected_city_id, success_status);
+                            requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selectedItemId + "/city_id/" + selectedCityId, success_status);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -190,9 +190,9 @@ public class ReviewEntry extends AppCompatActivity {
     }
 
     private boolean inputValidation() {
-        input_review_message = (EditText) findViewById(R.id.input_review_message);
+        txtReviewMessage = (EditText) findViewById(R.id.input_review_message);
 
-        if(input_review_message.getText().toString().equals("")) {
+        if(txtReviewMessage.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), R.string.review_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;

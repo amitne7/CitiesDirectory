@@ -61,14 +61,17 @@ public class MapPopupAdapter implements GoogleMap.InfoWindowAdapter {
                 || !lastMarker.getId().equals(marker.getId())) {
             lastMarker=marker;
 
-            TextView tv=(TextView)popup.findViewById(R.id.title);
+            TextView txtTitle =(TextView)popup.findViewById(R.id.title);
+            txtTitle.setText(marker.getTitle());
+            txtTitle.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
-            tv.setText(marker.getTitle());
-            tv = (TextView)popup.findViewById(R.id.snippet);
-            tv.setText(marker.getSnippet());
+            TextView txtDescription = (TextView)popup.findViewById(R.id.snippet);
+            txtDescription.setText(marker.getSnippet());
+            txtDescription.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
-            tv = (TextView) popup.findViewById(R.id.address);
-            tv.setText(addressInfo.get(marker.getId()));
+            TextView txtAddress = (TextView) popup.findViewById(R.id.address);
+            txtAddress.setText(addressInfo.get(marker.getId()));
+            txtAddress.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
             Uri image=images.get(marker.getId());
             ImageView icon=(ImageView)popup.findViewById(R.id.icon);
