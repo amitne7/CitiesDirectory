@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.models.PItemData;
+import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -181,8 +182,8 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if(holder instanceof MyViewHolder){
             ((MyViewHolder)holder).title.setText(mDataset.get(position).name);
             Picasso.with(((MyViewHolder)holder).icon.getContext()).load(Config.APP_IMAGES_URL + mDataset.get(position).images.get(0).path).into(((MyViewHolder) holder).icon);
-            ((MyViewHolder)holder).like_count.setText(mDataset.get(position).like_count);
-            ((MyViewHolder)holder).review_count.setText(mDataset.get(position).review_count);
+            ((MyViewHolder)holder).likeCount.setText(mDataset.get(position).like_count);
+            ((MyViewHolder)holder).reviewCount.setText(mDataset.get(position).review_count);
         }else{
             // For staggeredGridLayout Manager only
             StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
@@ -221,16 +222,19 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         TextView title;
         ImageView icon;
-        TextView like_count;
-        TextView review_count;
+        TextView likeCount;
+        TextView reviewCount;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-
             title = (TextView) itemView.findViewById(R.id.item_name);
             icon = (ImageView) itemView.findViewById(R.id.item_image);
-            like_count = (TextView) itemView.findViewById(R.id.like_count);
-            review_count = (TextView) itemView.findViewById(R.id.review_count);
+            likeCount = (TextView) itemView.findViewById(R.id.like_count);
+            reviewCount = (TextView) itemView.findViewById(R.id.review_count);
+
+            title.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            likeCount.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            reviewCount.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         }
     }
 }

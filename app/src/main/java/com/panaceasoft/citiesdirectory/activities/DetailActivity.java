@@ -113,19 +113,44 @@ public class DetailActivity extends AppCompatActivity {
     private void initUI() {
 
         txtLikeCount = (TextView) findViewById(R.id.total_like_count);
+        txtLikeCount.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         txtReviewCount = (TextView) findViewById(R.id.total_review_count);
+        txtReviewCount.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         txtTotalReview = (TextView) findViewById(R.id.total_review);
+        txtTotalReview.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         txtReviewMessage = (TextView) findViewById(R.id.review_message);
+        txtReviewMessage.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         txtNameTime = (TextView) findViewById(R.id.name_time);
+        txtNameTime.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         txtAddress = (TextView) findViewById(R.id.address);
+        txtAddress.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         txtPhone = (TextView) findViewById(R.id.phone);
+        txtPhone.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         txtEmail = (TextView) findViewById(R.id.mail);
+        txtPhone.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         txtDescription = (TextView) findViewById(R.id.txtDescription);
+        txtDescription.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
+        txtTitle = (TextView) findViewById(R.id.title);
+        txtTitle.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         title = (TextView) findViewById(R.id.title);
+        title.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         userPhoto = (ImageView) findViewById(R.id.user_photo);
         detailImage = (ImageView) findViewById(R.id.detail_image);
-        txtTitle = (TextView) findViewById(R.id.title);
+
         btnMoreReview = (Button) findViewById(R.id.btn_more_review);
+        btnMoreReview.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

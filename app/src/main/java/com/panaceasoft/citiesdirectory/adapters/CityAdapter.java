@@ -50,7 +50,7 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
             cityName = (TextView)itemView.findViewById(R.id.city_name);
             cityDesc = (TextView)itemView.findViewById(R.id.city_desc);
             cityPhoto = (ImageView)itemView.findViewById(R.id.city_photo);
-            cityName.setTypeface(Utils.getTypeFace(Utils.Fonts.NOTO_SANS));
+            cityName.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
             cityDesc.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         }
     }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.models.CategoryRowData;
+import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -173,9 +174,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         ImageView icon;
         public MyViewHolder(View itemView) {
             super(itemView);
-
             title = (TextView) itemView.findViewById(R.id.category_name);
             icon = (ImageView) itemView.findViewById(R.id.category_image);
+            title.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         }
     }
 }
