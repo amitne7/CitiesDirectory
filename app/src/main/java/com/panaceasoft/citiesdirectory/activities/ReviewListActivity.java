@@ -11,11 +11,8 @@ import android.widget.ListView;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.adapters.ReviewAdapter;
-import com.panaceasoft.citiesdirectory.models.PItemData;
-import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
+import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
-import java.util.ArrayList;
 
 public class ReviewListActivity extends AppCompatActivity {
 

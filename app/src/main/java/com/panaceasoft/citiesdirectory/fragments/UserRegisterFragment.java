@@ -23,7 +23,7 @@ import com.panaceasoft.citiesdirectory.activities.MainActivity;
 import com.panaceasoft.citiesdirectory.activities.UserLoginActivity;
 import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
 import com.panaceasoft.citiesdirectory.models.Users;
-import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
+import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -127,7 +127,7 @@ public class UserRegisterFragment extends Fragment {
             params.put("username", txtName.getText().toString().trim());
             params.put("email", txtEmail.getText().toString().trim());
             params.put("password", txtPassword.getText().toString().trim());
-
+            params.put("about_me", "");
             doSubmit(URL, params, view);
 
         }

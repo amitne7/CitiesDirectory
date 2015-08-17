@@ -25,7 +25,7 @@ import com.panaceasoft.citiesdirectory.activities.UserForgotPasswordActivity;
 import com.panaceasoft.citiesdirectory.activities.UserLoginActivity;
 import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
 import com.panaceasoft.citiesdirectory.models.Users;
-import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
+import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;

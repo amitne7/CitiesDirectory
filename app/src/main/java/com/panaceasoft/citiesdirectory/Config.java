@@ -48,6 +48,10 @@ public class Config extends Application{
 
     public static final String POST_ITEM_SEARCH = "/rest/items/search/city_id/";
 
+    public static final String GET_FAVOURITE = "/rest/items/is_favourite/id/";
+
+    public static final String GET_LIKE = "/rest/items/is_like/id/";
+
     public static final String GET_FORGOT_PASSWORD = "/rest/appusers/reset/email/";
 
     public static final String GET_FAVOURITE_ITEMS = "/rest/items/user_favourites/user_id/";

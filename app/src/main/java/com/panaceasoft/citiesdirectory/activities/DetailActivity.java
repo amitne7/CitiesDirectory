@@ -2,7 +2,9 @@ package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +41,7 @@ import com.google.gson.reflect.TypeToken;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.models.FavouriteHelper;
 import com.panaceasoft.citiesdirectory.models.PImageData;
 import com.panaceasoft.citiesdirectory.models.PItemAttributeData;
 import com.panaceasoft.citiesdirectory.models.PItemAttributeDetailData;
@@ -95,6 +98,7 @@ public class DetailActivity extends AppCompatActivity {
     private String selected_city_id;
     private Bundle bundle;
     private Intent intent;
+    private Boolean isFavourite =  false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +166,7 @@ public class DetailActivity extends AppCompatActivity {
         btnInquiry.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,7 +182,14 @@ public class DetailActivity extends AppCompatActivity {
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        fab.setImageResource(R.drawable.ic_star_white);
+                        if(isFavourite){
+                            isFavourite = false;
+                            fab.setImageResource(R.drawable.ic_star_border_white);
+                        }else {
+                            isFavourite = true;
+                            fab.setImageResource(R.drawable.ic_star_white);
+                        }
+
                     }
 
                     @Override
@@ -192,6 +204,8 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+                doLike(v);
+
                 Animation rotate = AnimationUtils.loadAnimation(getBaseContext(), R.anim.pop_out);
                 btnLike.startAnimation(rotate);
                 rotate.setAnimationListener(new Animation.AnimationListener() {
@@ -202,6 +216,7 @@ public class DetailActivity extends AppCompatActivity {
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
+
                         Utils.psLog("End Animation.");
                     }
 
@@ -221,6 +236,12 @@ public class DetailActivity extends AppCompatActivity {
         selected_item_id = getIntent().getIntExtra("selected_item_id", 0);
         selected_city_id = getIntent().getStringExtra("selected_city_id");
         requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/city_id/" + selected_city_id);
+
+
+//        FavouriteHelper favouriteHelper = new FavouriteHelper(getApplicationContext());
+//        String is_favourite = favouriteHelper.get(selected_item_id);
+//        String a = "dfd";
+
     }
 
     private void refreshData() {
@@ -231,6 +252,9 @@ public class DetailActivity extends AppCompatActivity {
         setupDescription();
         setupShopInfo();
         setupReview();
+
+        isFavourite(fab);
+        isLike(txtLikeCount);
     }
 
     public void doPhoneCall(View view) {
@@ -259,6 +283,64 @@ public class DetailActivity extends AppCompatActivity {
 
         startActivityForResult(intent, 1);
 
+    }
+
+    private void getFavourite(String postURL, HashMap<String, String> params, final View view) {
+        RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+        JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String success_status = response.getString("status");
+
+                            if(success_status.equals("yes")){
+                                isFavourite = true;
+                                fab.setImageResource(R.drawable.ic_star_white);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+            }
+        });
+
+        // add the request object to the queue to be executed
+        mRequestQueue.add(req);
+    }
+
+    private void getLike(String postURL, HashMap<String, String> params, final View view) {
+        RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+        JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String success_status = response.getString("status");
+
+                            if(success_status.equals("yes")){
+                                txtLikeCount.setText(response.getString("total"));
+                                btnLike.setBackgroundResource(R.drawable.ic_done);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+            }
+        });
+
+        // add the request object to the queue to be executed
+        mRequestQueue.add(req);
     }
 
     @Override
@@ -457,6 +539,32 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+
+    public void isLike(View view) {
+        if (pref.getInt("_login_user_id", 0) != 0) {
+            final String URL = Config.APP_API_URL + Config.GET_LIKE + GlobalData.itemData.id;
+            Utils.psLog(URL);
+            HashMap<String, String> params = new HashMap<>();
+            params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
+            params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
+            getLike(URL, params, view);
+        } else {
+            showNeedLogin();
+        }
+    }
+
+    public void isFavourite(View view) {
+        if (pref.getInt("_login_user_id", 0) != 0) {
+            final String URL = Config.APP_API_URL + Config.GET_FAVOURITE + GlobalData.itemData.id;
+            Utils.psLog(URL);
+            HashMap<String, String> params = new HashMap<>();
+            params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
+            params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
+            getFavourite(URL, params, view);
+        } else {
+            showNeedLogin();
+        }
+    }
 
     public void doFavourite(View view) {
         if (pref.getInt("_login_user_id", 0) != 0) {
