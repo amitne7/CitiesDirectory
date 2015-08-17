@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -85,6 +87,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView txtDescription;
     private TextView title;
     private ImageView userPhoto;
+    private Button btnLike;
     private Button btnMoreReview;
     private Button btnInquiry;
     private FloatingActionButton fab;
@@ -112,6 +115,9 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void initUI() {
+
+        btnLike = (Button) findViewById(R.id.btn_like);
+        btnLike.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
         txtLikeCount = (TextView) findViewById(R.id.total_like_count);
         txtLikeCount.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
@@ -160,8 +166,54 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 doFavourite(v);
+
+                Animation rotate = AnimationUtils.loadAnimation(getBaseContext(), R.anim.pop_out);
+                fab.startAnimation(rotate);
+                rotate.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        fab.setImageResource(R.drawable.ic_star_white);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
             }
         });
+
+        btnLike.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Animation rotate = AnimationUtils.loadAnimation(getBaseContext(), R.anim.pop_out);
+                btnLike.startAnimation(rotate);
+                rotate.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        Utils.psLog("End Animation.");
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+        });
+
+
 
     }
 
@@ -205,15 +257,6 @@ public class DetailActivity extends AppCompatActivity {
         intent.putExtra("selected_item_id", selected_item_id);
         intent.putExtra("selected_city_id", selected_city_id);
 
-        // Testing Code
-        ArrayList<PItemData> PID = new ArrayList<PItemData>();
-        PItemData p = GlobalData.itemData;
-        PID.add(p);
-        PID.add(p);
-        PID.add(p);
-        intent.putParcelableArrayListExtra("list", PID);
-
-        intent.putExtra("obj", p);
         startActivityForResult(intent, 1);
 
     }
