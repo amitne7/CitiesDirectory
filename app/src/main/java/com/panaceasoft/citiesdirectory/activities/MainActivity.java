@@ -1,13 +1,9 @@
 package com.panaceasoft.citiesdirectory.activities;
 
-import android.annotation.TargetApi;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -22,11 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
@@ -43,7 +36,7 @@ import com.panaceasoft.citiesdirectory.fragments.UserLoginFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserRegisterFragment;
 
 import com.panaceasoft.citiesdirectory.models.Users;
-import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
+import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -70,12 +63,13 @@ public class MainActivity extends AppCompatActivity {
     private MenuItem searchItem;
     private Fragment fragment = null;
     private boolean notiFlag;
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         notiFlag = getIntent().getBooleanExtra("show_noti", false);
 
         setupToolbar();
@@ -93,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeMenu() {
+        /*
         DatabaseHelper db = new DatabaseHelper(getApplication());
         if (db != null && db.getUserCount() > 0) {
             navigationView.getMenu().setGroupVisible(R.id.group_after_login, true);
@@ -101,7 +96,14 @@ public class MainActivity extends AppCompatActivity {
             navigationView.getMenu().setGroupVisible(R.id.group_before_login, true);
             navigationView.getMenu().setGroupVisible(R.id.group_after_login, false);
         }
-
+        */
+        if (pref.getInt("_login_user_id", 0) != 0) {
+            navigationView.getMenu().setGroupVisible(R.id.group_after_login, true);
+            navigationView.getMenu().setGroupVisible(R.id.group_before_login, false);
+        } else {
+            navigationView.getMenu().setGroupVisible(R.id.group_before_login, true);
+            navigationView.getMenu().setGroupVisible(R.id.group_after_login, false);
+        }
     }
 
     private void setupToolbar() {
@@ -235,9 +237,19 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.nav_profile:
             case R.id.nav_profile_login:
-
+                /*
                 DatabaseHelper db = new DatabaseHelper(getApplication());
                 if (db != null && db.getUserCount() > 0) {
+                    enableFAB();
+                    updateFABIcon(R.drawable.ic_edit_white);
+                    updateFABAction(FABActions.PROFILE);
+                    fragment = new ProfileFragment();
+                } else {
+                    fragment = new UserLoginFragment();
+                }
+                break;
+                */
+                if (pref.getInt("_login_user_id", 0) != 0) {
                     enableFAB();
                     updateFABIcon(R.drawable.ic_edit_white);
                     updateFABAction(FABActions.PROFILE);
@@ -303,14 +315,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void doLogout() {
+        /*
         DatabaseHelper db = new DatabaseHelper(getApplication());
         db.deleteAllUser();
         changeMenu();
         openFragment(R.id.nav_home);
+        */
+        pref.edit().remove("_login_user_id").commit();
+        pref.edit().remove("_login_user_name").commit();
+        pref.edit().remove("_login_user_email").commit();
+        pref.edit().remove("_login_user_about_me").commit();
     }
 
 
     private void loadLoginUserInfo() {
+        Utils.psLog("Login User Id " + pref.getInt("_login_user_id", 0));
+        /*
         DatabaseHelper db = new DatabaseHelper(getApplication());
         ArrayList<Users> usersArrayList = db.getAllUsers();
 
@@ -328,6 +348,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putInt("_login_user_id", 0);
         }
         editor.commit();
+        */
     }
 
     @Override
@@ -364,43 +385,48 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void loadProfileImage(String name, String path){
-        final String fileName = name + ".jpg";
-        Target target = new Target() {
+    public void loadProfileImage(String name, String path) {
 
-            @Override
-            public void onPrepareLoad(Drawable arg0) {
-                Utils.psLog("Prepare Image to load.");
-                return;
-            }
+        if(!path.toString().equals("")){
+            final String fileName = name + ".jpg";
+            Target target = new Target() {
 
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom arg1) {
-
-                try {
-                    File file = null;
-
-                    file = new File(Environment.getExternalStorageDirectory()+ "/"+fileName);
-
-                    file.createNewFile();
-                    FileOutputStream ostream = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
-                    ostream.close();
-                    Utils.psLog("Success Image Loaded.");
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                @Override
+                public void onPrepareLoad(Drawable arg0) {
+                    Utils.psLog("Prepare Image to load.");
+                    return;
                 }
-            }
 
-            @Override
-            public void onBitmapFailed(Drawable arg0) {
-                return;
-            }
-        };
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom arg1) {
 
-        Picasso.with(this)
-                .load("http://www.cindyomidi.net/wp-content/uploads/2015/03/Fine-art1.jpg")
-                .into(target);
+                    try {
+                        File file = null;
+
+                        file = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
+
+                        file.createNewFile();
+                        FileOutputStream ostream = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+                        ostream.close();
+                        Utils.psLog("Success Image Loaded.");
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable arg0) {
+                    return;
+                }
+            };
+
+            Picasso.with(this)
+                    //.load("http://www.cindyomidi.net/wp-content/uploads/2015/03/Fine-art1.jpg")
+                    .load(Config.APP_IMAGES_URL + path)
+                    .into(target);
+        }
+
     }
 }

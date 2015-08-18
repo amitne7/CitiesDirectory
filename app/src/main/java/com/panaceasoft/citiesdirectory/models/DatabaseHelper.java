@@ -1,4 +1,4 @@
-package com.panaceasoft.citiesdirectory.utilities;
+package com.panaceasoft.citiesdirectory.models;
 
 import android.content.ContentValues;
 import android.content.Context;

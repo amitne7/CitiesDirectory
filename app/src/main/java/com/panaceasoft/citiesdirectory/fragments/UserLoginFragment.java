@@ -25,7 +25,7 @@ import com.panaceasoft.citiesdirectory.activities.UserForgotPasswordActivity;
 import com.panaceasoft.citiesdirectory.activities.UserLoginActivity;
 import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
 import com.panaceasoft.citiesdirectory.models.Users;
-import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
+import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -154,13 +154,13 @@ public class UserLoginFragment extends Fragment {
                             String user_profile_photo = response.getString("profile_photo");
 
                             if(user_id != null){
-                                Utils.psLog("Successful Login, Need to Store in SQLite DB.");
+                                //Utils.psLog("Successful Login, Need to Store in SQLite DB.");
 
-                                DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
-                                Utils.psLog("..... Inserting into DB....");
-                                db.addUser(new Users(Integer.parseInt(user_id), user_name, email, about_me, Integer.parseInt(is_banned), user_profile_photo));
+                                //DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
+                                //Utils.psLog("..... Inserting into DB....");
+                                //db.addUser(new Users(Integer.parseInt(user_id), user_name, email, about_me, Integer.parseInt(is_banned), user_profile_photo));
 
-                                Utils.psLog(" User Count : " + db.getUserCount());
+                                //Utils.psLog(" User Count : " + db.getUserCount());
 
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                                 SharedPreferences.Editor editor = prefs.edit();

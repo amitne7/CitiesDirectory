@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -85,13 +87,15 @@ public class DetailActivity extends AppCompatActivity {
     private TextView txtDescription;
     private TextView title;
     private ImageView userPhoto;
+    private Button btnLike;
     private Button btnMoreReview;
     private Button btnInquiry;
     private FloatingActionButton fab;
-    private int selected_item_id;
-    private String selected_city_id;
+    private int selectedItemId;
+    private String selectedCityId;
     private Bundle bundle;
     private Intent intent;
+    private Boolean isFavourite =  false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,9 +113,14 @@ public class DetailActivity extends AppCompatActivity {
 
         initilizeMap(savedInstanceState);
 
+        doTouchCount(selectedItemId);
+
     }
 
     private void initUI() {
+
+        btnLike = (Button) findViewById(R.id.btn_like);
+        btnLike.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
         txtLikeCount = (TextView) findViewById(R.id.total_like_count);
         txtLikeCount.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
@@ -156,19 +165,76 @@ public class DetailActivity extends AppCompatActivity {
         btnInquiry.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doFavourite(v);
+
+                Animation rotate = AnimationUtils.loadAnimation(getBaseContext(), R.anim.pop_out);
+                fab.startAnimation(rotate);
+                rotate.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        if(isFavourite){
+                            isFavourite = false;
+                            fab.setImageResource(R.drawable.ic_star_border_white);
+                        }else {
+                            isFavourite = true;
+                            fab.setImageResource(R.drawable.ic_star_white);
+                        }
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
             }
         });
+
+        btnLike.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                doLike(v);
+
+                Animation rotate = AnimationUtils.loadAnimation(getBaseContext(), R.anim.pop_out);
+                btnLike.startAnimation(rotate);
+                rotate.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+
+                        Utils.psLog("End Animation.");
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+        });
+
+
 
     }
 
     private void loadData() {
-        selected_item_id = getIntent().getIntExtra("selected_item_id", 0);
-        selected_city_id = getIntent().getStringExtra("selected_city_id");
-        requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/city_id/" + selected_city_id);
+        selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
+        selectedCityId = getIntent().getStringExtra("selected_city_id");
+        requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selectedItemId + "/city_id/" + selectedCityId);
     }
 
     private void refreshData() {
@@ -179,6 +245,9 @@ public class DetailActivity extends AppCompatActivity {
         setupDescription();
         setupShopInfo();
         setupReview();
+
+        isFavourite(fab);
+        isLike(txtLikeCount);
     }
 
     public void doPhoneCall(View view) {
@@ -202,20 +271,69 @@ public class DetailActivity extends AppCompatActivity {
 
     public void doReview(View view) {
         Intent intent = new Intent(this, ReviewListActivity.class);
-        intent.putExtra("selected_item_id", selected_item_id);
-        intent.putExtra("selected_city_id", selected_city_id);
+        intent.putExtra("selected_item_id", selectedItemId);
+        intent.putExtra("selected_city_id", selectedCityId);
 
-        // Testing Code
-        ArrayList<PItemData> PID = new ArrayList<PItemData>();
-        PItemData p = GlobalData.itemData;
-        PID.add(p);
-        PID.add(p);
-        PID.add(p);
-        intent.putParcelableArrayListExtra("list", PID);
-
-        intent.putExtra("obj", p);
         startActivityForResult(intent, 1);
 
+    }
+
+    private void getFavourite(String postURL, HashMap<String, String> params, final View view) {
+        RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+        JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String success_status = response.getString("status");
+
+                            if(success_status.equals("yes")){
+                                isFavourite = true;
+                                fab.setImageResource(R.drawable.ic_star_white);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+            }
+        });
+
+        // add the request object to the queue to be executed
+        mRequestQueue.add(req);
+    }
+
+    private void getLike(String postURL, HashMap<String, String> params, final View view) {
+        RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+        JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String success_status = response.getString("status");
+
+                            if(success_status.equals("yes")){
+                                txtLikeCount.setText(response.getString("total"));
+                                btnLike.setBackgroundResource(R.drawable.ic_done);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+            }
+        });
+
+        // add the request object to the queue to be executed
+        mRequestQueue.add(req);
     }
 
     @Override
@@ -415,6 +533,28 @@ public class DetailActivity extends AppCompatActivity {
     }
 
 
+    public void isLike(View view) {
+        if (pref.getInt("_login_user_id", 0) != 0) {
+            final String URL = Config.APP_API_URL + Config.GET_LIKE + GlobalData.itemData.id;
+            Utils.psLog(URL);
+            HashMap<String, String> params = new HashMap<>();
+            params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
+            params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
+            getLike(URL, params, view);
+        }
+    }
+
+    public void isFavourite(View view) {
+        if (pref.getInt("_login_user_id", 0) != 0) {
+            final String URL = Config.APP_API_URL + Config.GET_FAVOURITE + GlobalData.itemData.id;
+            Utils.psLog(URL);
+            HashMap<String, String> params = new HashMap<>();
+            params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
+            params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
+            getFavourite(URL, params, view);
+        }
+    }
+
     public void doFavourite(View view) {
         if (pref.getInt("_login_user_id", 0) != 0) {
             final String URL = Config.APP_API_URL + Config.POST_ITEM_FAVOURITE + GlobalData.itemData.id;
@@ -422,7 +562,7 @@ public class DetailActivity extends AppCompatActivity {
             HashMap<String, String> params = new HashMap<>();
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
-            doSubmit(URL, params, view);
+            doSubmit(URL, params, "favourite");
         } else {
             showNeedLogin();
         }
@@ -436,14 +576,23 @@ public class DetailActivity extends AppCompatActivity {
             HashMap<String, String> params = new HashMap<>();
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
-            doSubmit(URL, params, view);
+            doSubmit(URL, params, "like");
         } else {
             showNeedLogin();
         }
 
     }
 
-    private void doSubmit(String postURL, HashMap<String, String> params, final View view) {
+    public void doTouchCount(int selectedItemId) {
+        final String URL = Config.APP_API_URL + Config.POST_TOUCH_COUNT + selectedItemId;
+        Utils.psLog(URL);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
+        params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
+        doSubmit(URL, params, "touch");
+    }
+
+    private void doSubmit(String postURL, HashMap<String, String> params, final String fromWhere) {
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
@@ -453,12 +602,11 @@ public class DetailActivity extends AppCompatActivity {
                             String success_status = response.getString("success");
 
                             if (success_status != null) {
-                                //showSuccessPopup();
-                                // txtLikeCount.setText(" " + GlobalData.itemData.like_count + " ");
-                                Utils.psLog("Count From Server : " + response.getString("total"));
-                                GlobalData.itemData.like_count = response.getString("total");
-                                //GlobalData.itemData.like_count = response.getInt("total");
-                                txtLikeCount.setText(" " + GlobalData.itemData.like_count + " ");
+                                if(!fromWhere.toString().equals("touch")) {
+                                    Utils.psLog("Count From Server : " + response.getString("total"));
+                                    GlobalData.itemData.like_count = response.getString("total");
+                                    txtLikeCount.setText(" " + GlobalData.itemData.like_count + " ");
+                                }
                             } else {
                                 showFailPopup();
                             }

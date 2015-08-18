@@ -95,6 +95,7 @@
                             <Button
                                 android:layout_width="@dimen/icon_width"
                                 android:layout_height="@dimen/icon_width"
+                                android:id = "@+id/btn_like"
                                 android:backgroundTint="@color/iconColor"
                                 android:background="@drawable/ic_thumb_up"
                                 android:onClick="doLike"/>

@@ -11,11 +11,8 @@ import android.widget.ListView;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.adapters.ReviewAdapter;
-import com.panaceasoft.citiesdirectory.models.PItemData;
-import com.panaceasoft.citiesdirectory.utilities.DatabaseHelper;
+import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
-import java.util.ArrayList;
 
 public class ReviewListActivity extends AppCompatActivity {
 
@@ -44,11 +41,6 @@ public class ReviewListActivity extends AppCompatActivity {
         selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
         selectedCityId = getIntent().getIntExtra("selected_city_id", 0);
 
-        ArrayList<PItemData> lists = getIntent().getParcelableArrayListExtra("list");
-        Utils.psLog(" Count " + lists.size() + " . First name : "+ lists.get(0).name);
-
-        PItemData pid = getIntent().getParcelableExtra("obj");
-        Utils.psLog(" item data name : " + pid.name);
     }
 
 
