@@ -127,7 +127,7 @@ public class UserRegisterFragment extends Fragment {
             params.put("username", txtName.getText().toString().trim());
             params.put("email", txtEmail.getText().toString().trim());
             params.put("password", txtPassword.getText().toString().trim());
-
+            params.put("about_me", "");
             doSubmit(URL, params, view);
 
         }
