@@ -32,6 +32,7 @@ import com.panaceasoft.citiesdirectory.fragments.NotificationFragment;
 import com.panaceasoft.citiesdirectory.fragments.ProfileFragment;
 
 import com.panaceasoft.citiesdirectory.fragments.SearchFragment;
+import com.panaceasoft.citiesdirectory.fragments.UserForgotPasswordFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserLoginFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserRegisterFragment;
 
@@ -269,9 +270,13 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new UserRegisterFragment();
                 break;
 
+            case R.id.nav_forgot:
+                fragment = new UserForgotPasswordFragment();
+                Utils.psLog("Forgot PW");
+                break;
+
             case R.id.nav_logout:
                 doLogout();
-
                 break;
 
             case R.id.nav_search_keyword:

@@ -54,6 +54,7 @@ public class InquiryActivity extends AppCompatActivity {
         txtMessage.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         btnSubmit = (Button) findViewById(R.id.button_submit);
         btnSubmit.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+        pb = (ProgressBar) findViewById(R.id.loading_spinner);
     }
 
     private void setupToolbar() {
@@ -92,7 +93,6 @@ public class InquiryActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            pb = (ProgressBar) findViewById(R.id.loading_spinner);
                             pb.setVisibility(view.GONE);
 
                             String success_status = response.getString("success");

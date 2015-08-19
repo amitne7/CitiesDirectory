@@ -62,4 +62,6 @@ public class Config extends Application{
 
     public static final String POST_PROFILE_IMAGE = "/rest/images/upload";
 
+    public static final String POST_GCM_REGISTER = "/rest/gcm/register";
+
 }

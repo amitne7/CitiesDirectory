@@ -116,20 +116,16 @@ public class UserLoginFragment extends Fragment {
 
     private void doForgot() {
         if(getActivity() instanceof MainActivity) {
-
-            ((MainActivity) getActivity()).openFragment(R.id.nav_register);
+            ((MainActivity) getActivity()).openFragment(R.id.nav_forgot);
         }else if(getActivity() instanceof UserLoginActivity) {
-
             startActivity(new Intent(getActivity(),UserForgotPasswordActivity.class));
         }
     }
 
     private void doRegister() {
         if(getActivity() instanceof MainActivity) {
-
             ((MainActivity) getActivity()).openFragment(R.id.nav_register);
         }else if(getActivity() instanceof UserLoginActivity) {
-
             startActivity(new Intent(getActivity(),UserRegisterActivity.class));
         }
     }
