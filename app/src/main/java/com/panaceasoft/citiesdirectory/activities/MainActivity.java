@@ -18,6 +18,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TypefaceSpan;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -78,6 +81,13 @@ public class MainActivity extends AppCompatActivity {
         loadLoginUserInfo();
         changeMenu();
 
+
+        SpannableString s = new SpannableString("My Title");
+
+       // s.setSpan(Utils.getTypeFace(Utils.Fonts.NOTO_SANS), 0, s.length(),
+         //        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        toolbar.setTitle("s");
+
     }
 
     private void setUpUtils() {
@@ -98,13 +108,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("ss");
         if (toolbar != null) {
             setSupportActionBar(toolbar);
+
         }
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         }
+
+
     }
 
     public void setUpDrawerLayout() {

@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.text.style.TypefaceSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -45,8 +46,10 @@ public class Utils {
 
     public static MainActivity activity;
     private static Typeface fromAsset;
+    private static TypefaceSpan fromAssetSpan;
 
     private static Fonts currentTypeface;
+
 
     public Utils(Context context){
         this.activity = (MainActivity) context;
@@ -221,6 +224,10 @@ public class Utils {
         return fromAsset;
     }
 
+
+    public static TypefaceSpan getTypeFaceSpan(Fonts fonts){
+        return fromAssetSpan;
+    }
 
     public enum Fonts{
         ROBOTO,

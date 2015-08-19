@@ -151,8 +151,9 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     private void loadCategoryUI(int id){
         Intent intent = new Intent(this,SubCategoryActivity.class);
-        intent.putExtra("selected_categories", categoriesList);
+        //intent.putExtra("selected_categories", categoriesList);
         intent.putExtra("selected_category_index", id);
+        intent.putExtra("selected_city_id", selectedCityId);
         startActivity(intent);
         this.finish();
     }
