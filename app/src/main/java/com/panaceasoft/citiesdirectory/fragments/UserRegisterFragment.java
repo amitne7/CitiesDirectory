@@ -152,11 +152,11 @@ public class UserRegisterFragment extends Fragment {
                                 Utils.psLog("Successful Register, Need to Store in SQLite DB.");
 
 
-                                DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
-                                Utils.psLog("..... Inserting into DB....");
-                                db.addUser(new Users(Integer.parseInt(user_id), userName, email, "", 0, ""));
+                                //DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
+                                //Utils.psLog("..... Inserting into DB....");
+                                //db.addUser(new Users(Integer.parseInt(user_id), userName, email, "", 0, ""));
 
-                                Utils.psLog(" User Count : " + db.getUserCount());
+                                //Utils.psLog(" User Count : " + db.getUserCount());
 
                                 //Save Login User Info
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());

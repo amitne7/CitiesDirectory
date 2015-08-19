@@ -116,20 +116,16 @@ public class UserLoginFragment extends Fragment {
 
     private void doForgot() {
         if(getActivity() instanceof MainActivity) {
-
-            ((MainActivity) getActivity()).openFragment(R.id.nav_register);
+            ((MainActivity) getActivity()).openFragment(R.id.nav_forgot);
         }else if(getActivity() instanceof UserLoginActivity) {
-
             startActivity(new Intent(getActivity(),UserForgotPasswordActivity.class));
         }
     }
 
     private void doRegister() {
         if(getActivity() instanceof MainActivity) {
-
             ((MainActivity) getActivity()).openFragment(R.id.nav_register);
         }else if(getActivity() instanceof UserLoginActivity) {
-
             startActivity(new Intent(getActivity(),UserRegisterActivity.class));
         }
     }
@@ -154,13 +150,13 @@ public class UserLoginFragment extends Fragment {
                             String user_profile_photo = response.getString("profile_photo");
 
                             if(user_id != null){
-                                Utils.psLog("Successful Login, Need to Store in SQLite DB.");
+                                //Utils.psLog("Successful Login, Need to Store in SQLite DB.");
 
-                                DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
-                                Utils.psLog("..... Inserting into DB....");
-                                db.addUser(new Users(Integer.parseInt(user_id), user_name, email, about_me, Integer.parseInt(is_banned), user_profile_photo));
+                                //DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
+                                //Utils.psLog("..... Inserting into DB....");
+                                //db.addUser(new Users(Integer.parseInt(user_id), user_name, email, about_me, Integer.parseInt(is_banned), user_profile_photo));
 
-                                Utils.psLog(" User Count : " + db.getUserCount());
+                                //Utils.psLog(" User Count : " + db.getUserCount());
 
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                                 SharedPreferences.Editor editor = prefs.edit();

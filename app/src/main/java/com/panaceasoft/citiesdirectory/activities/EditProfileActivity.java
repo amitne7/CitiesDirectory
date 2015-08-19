@@ -274,7 +274,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
         RequestQueue rq = Volley.newRequestQueue(this);
         //String url = Config.APP_API_URL + Config.POST_IMAGE_PROFILE + userId + "/fileType/profile";
-        String url = "http://192.168.1.2/test/php_upload.php";
+        //String url = "http://192.168.1.2/test/php_upload.php";
+        String url = Config.APP_API_URL + Config.POST_PROFILE_IMAGE;
         Utils.psLog("URL" + url);
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 url, new Response.Listener<String>() {
@@ -313,6 +314,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                 params.put("image", encodedString);
                 params.put("filename", fileName);
+                params.put("userId", String.valueOf(userId));
 
                 return params;
 

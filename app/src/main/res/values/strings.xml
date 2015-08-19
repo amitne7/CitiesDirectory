@@ -121,4 +121,8 @@
     <string name="explore_on_map">Explore On Map</string>
     <string name="news_list">News List</string>
     <string name="title_activity_news_detail">NewsDetailActivity</string>
+    <string name="forgot_success">Your request has been submitted to system. Please take a look your email for the next instruction.</string>
+    <string name="request_not_found">Requested resource not found</string>
+    <string name="something_wrong">Something went wrong at server end</string>
+    <string name="cannot_connect">Oops! Cannot connect to Internet or remote server is not up and running</string>
 </resources>

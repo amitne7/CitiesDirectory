@@ -2,9 +2,7 @@ package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,7 +39,6 @@ import com.google.gson.reflect.TypeToken;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
-import com.panaceasoft.citiesdirectory.models.FavouriteHelper;
 import com.panaceasoft.citiesdirectory.models.PImageData;
 import com.panaceasoft.citiesdirectory.models.PItemAttributeData;
 import com.panaceasoft.citiesdirectory.models.PItemAttributeDetailData;
@@ -94,8 +91,8 @@ public class DetailActivity extends AppCompatActivity {
     private Button btnMoreReview;
     private Button btnInquiry;
     private FloatingActionButton fab;
-    private int selected_item_id;
-    private String selected_city_id;
+    private int selectedItemId;
+    private String selectedCityId;
     private Bundle bundle;
     private Intent intent;
     private Boolean isFavourite =  false;
@@ -115,6 +112,8 @@ public class DetailActivity extends AppCompatActivity {
         setupToolbar();
 
         initilizeMap(savedInstanceState);
+
+        doTouchCount(selectedItemId);
 
     }
 
@@ -233,15 +232,9 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        selected_item_id = getIntent().getIntExtra("selected_item_id", 0);
-        selected_city_id = getIntent().getStringExtra("selected_city_id");
-        requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selected_item_id + "/city_id/" + selected_city_id);
-
-
-//        FavouriteHelper favouriteHelper = new FavouriteHelper(getApplicationContext());
-//        String is_favourite = favouriteHelper.get(selected_item_id);
-//        String a = "dfd";
-
+        selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
+        selectedCityId = getIntent().getStringExtra("selected_city_id");
+        requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selectedItemId + "/city_id/" + selectedCityId);
     }
 
     private void refreshData() {
@@ -278,8 +271,8 @@ public class DetailActivity extends AppCompatActivity {
 
     public void doReview(View view) {
         Intent intent = new Intent(this, ReviewListActivity.class);
-        intent.putExtra("selected_item_id", selected_item_id);
-        intent.putExtra("selected_city_id", selected_city_id);
+        intent.putExtra("selected_item_id", selectedItemId);
+        intent.putExtra("selected_city_id", selectedCityId);
 
         startActivityForResult(intent, 1);
 
@@ -548,8 +541,6 @@ public class DetailActivity extends AppCompatActivity {
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
             getLike(URL, params, view);
-        } else {
-            showNeedLogin();
         }
     }
 
@@ -561,8 +552,6 @@ public class DetailActivity extends AppCompatActivity {
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
             getFavourite(URL, params, view);
-        } else {
-            showNeedLogin();
         }
     }
 
@@ -573,7 +562,7 @@ public class DetailActivity extends AppCompatActivity {
             HashMap<String, String> params = new HashMap<>();
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
-            doSubmit(URL, params, view);
+            doSubmit(URL, params, "favourite");
         } else {
             showNeedLogin();
         }
@@ -587,14 +576,23 @@ public class DetailActivity extends AppCompatActivity {
             HashMap<String, String> params = new HashMap<>();
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
-            doSubmit(URL, params, view);
+            doSubmit(URL, params, "like");
         } else {
             showNeedLogin();
         }
 
     }
 
-    private void doSubmit(String postURL, HashMap<String, String> params, final View view) {
+    public void doTouchCount(int selectedItemId) {
+        final String URL = Config.APP_API_URL + Config.POST_TOUCH_COUNT + selectedItemId;
+        Utils.psLog(URL);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
+        params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
+        doSubmit(URL, params, "touch");
+    }
+
+    private void doSubmit(String postURL, HashMap<String, String> params, final String fromWhere) {
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
@@ -604,12 +602,11 @@ public class DetailActivity extends AppCompatActivity {
                             String success_status = response.getString("success");
 
                             if (success_status != null) {
-                                //showSuccessPopup();
-                                // txtLikeCount.setText(" " + GlobalData.itemData.like_count + " ");
-                                Utils.psLog("Count From Server : " + response.getString("total"));
-                                GlobalData.itemData.like_count = response.getString("total");
-                                //GlobalData.itemData.like_count = response.getInt("total");
-                                txtLikeCount.setText(" " + GlobalData.itemData.like_count + " ");
+                                if(!fromWhere.toString().equals("touch")) {
+                                    Utils.psLog("Count From Server : " + response.getString("total"));
+                                    GlobalData.itemData.like_count = response.getString("total");
+                                    txtLikeCount.setText(" " + GlobalData.itemData.like_count + " ");
+                                }
                             } else {
                                 showFailPopup();
                             }
