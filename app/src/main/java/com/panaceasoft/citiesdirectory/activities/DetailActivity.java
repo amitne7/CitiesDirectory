@@ -483,6 +483,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupTitle() {
+        title.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         title.setText(GlobalData.itemData.name);
     }
 

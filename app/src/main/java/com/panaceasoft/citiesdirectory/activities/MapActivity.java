@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 public class MapActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -23,7 +24,8 @@ public class MapActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.explore_on_map));
+        toolbar.setTitle("");
+
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,6 +34,8 @@ public class MapActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle(Utils.getSpannableString(getString(R.string.explore_on_map)));
 
     }
 

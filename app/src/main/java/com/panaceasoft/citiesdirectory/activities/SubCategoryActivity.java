@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
@@ -64,6 +65,7 @@ public class SubCategoryActivity extends AppCompatActivity {
         }
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -95,11 +97,14 @@ public class SubCategoryActivity extends AppCompatActivity {
         Adapter adapter = new Adapter(getSupportFragmentManager());
         C_FRAGMENTS_TO_KEEP_IN_MEMORY = subCategoryArrayList.size();
         for(PSubCategoryData scd : subCategoryArrayList) {
-            adapter.addFragment(new TabFragment().newInstance(scd, selectedCityId), "" + scd.name);
+            adapter.addFragment(new TabFragment().newInstance(scd, selectedCityId),Utils.getSpannableString( scd.name)+"");
+
         }
+
         viewPager.setOffscreenPageLimit(C_FRAGMENTS_TO_KEEP_IN_MEMORY);
 
         viewPager.setAdapter(adapter);
+
 
     }
 
@@ -160,7 +165,7 @@ public class SubCategoryActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(categoriesList.get(selectedCategoryIndex).name);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +174,8 @@ public class SubCategoryActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle(Utils.getSpannableString(categoriesList.get(selectedCategoryIndex).name));
     }
 
     static class Adapter extends FragmentPagerAdapter {
@@ -181,6 +188,12 @@ public class SubCategoryActivity extends AppCompatActivity {
             mFragments.add(fragment);
             mFragmentTitles.add(title);
         }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            return super.instantiateItem(container, position);
+        }
+
         @Override
         public Fragment getItem(int position) {
             return mFragments.get(position);
@@ -195,5 +208,9 @@ public class SubCategoryActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitles.get(position);
         }
+
+
     }
+
+
 }

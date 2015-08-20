@@ -2,6 +2,7 @@ package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextPaint;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.panaceasoft.citiesdirectory.models.PSubCategoryData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,13 +128,32 @@ public class SelectedCityActivity extends AppCompatActivity {
 
     private void setUpShopInfo() {
         if(collapsingToolbar != null){
-            collapsingToolbar.setTitle(pCity.name);
+
+            collapsingToolbar.setTitle(Utils.getSpannableString(pCity.name));
+            makeCollapsingToolbarLayoutLooksGood(collapsingToolbar);
+
         }
         Picasso.with(getApplicationContext()).load(Config.APP_IMAGES_URL + pCity.cover_image_file).into(detailImage);
     }
 
+    private void makeCollapsingToolbarLayoutLooksGood(CollapsingToolbarLayout collapsingToolbarLayout) {
+        try {
+            final Field field = collapsingToolbarLayout.getClass().getDeclaredField("mCollapsingTextHelper");
+            field.setAccessible(true);
+
+            final Object object = field.get(collapsingToolbarLayout);
+            final Field tpf = object.getClass().getDeclaredField("mTextPaint");
+            tpf.setAccessible(true);
+
+            ((TextPaint) tpf.get(object)).setTypeface(Utils.getTypeFace(Utils.Fonts.NOTO_SANS));
+            ((TextPaint) tpf.get(object)).setColor(getResources().getColor(R.color.colorAccent));
+        } catch (Exception ignored) {
+        }
+    }
+
     private void setupCollapsingToolbarLayout(){
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
     }
 
     @Override
@@ -163,6 +185,11 @@ public class SelectedCityActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle("");
+
+
+
 
     }
 
