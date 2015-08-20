@@ -189,16 +189,8 @@
                             android:layout_height="wrap_content"
                             android:layout_toRightOf="@+id/set_rating"
                             android:paddingLeft="10dp"
-                            android:text="4.7 Rating" />
+                            />
 
-                        <TextView
-                            android:id="@+id/rating_count2"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/set_rating"
-                            android:paddingLeft="@dimen/space_1"
-                            android:text="232 users"
-                            android:textSize="@dimen/caption" />
                     </RelativeLayout>
 
                 </LinearLayout>

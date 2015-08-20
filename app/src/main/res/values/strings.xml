@@ -125,4 +125,7 @@
     <string name="request_not_found">Requested resource not found</string>
     <string name="something_wrong">Something went wrong at server end</string>
     <string name="cannot_connect">Oops! Cannot connect to Internet or remote server is not up and running</string>
+    <string name="rating_fail">Your rating could not submit to system. Please try again.</string>
+    <string name="login_required">You may need to login first.</string>
+    <string name="first_rating">Welcome for first rating</string>
 </resources>

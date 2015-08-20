@@ -16,7 +16,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.RequestQueue;
@@ -52,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +99,9 @@ public class DetailActivity extends AppCompatActivity {
     private Bundle bundle;
     private Intent intent;
     private Boolean isFavourite =  false;
+    private RatingBar getRatingBar;
+    private RatingBar setRatingBar;
+    private TextView ratingCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +170,12 @@ public class DetailActivity extends AppCompatActivity {
         btnInquiry = (Button) findViewById(R.id.btn_inquiry);
         btnInquiry.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
+        getRatingBar = (RatingBar) findViewById(R.id.get_rating);
+        setRatingBar = (RatingBar) findViewById(R.id.set_rating);
+        ratingCount = (TextView) findViewById(R.id.rating_count);
+
+
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -227,7 +239,62 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+        getRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if(pref.getInt("_login_user_id",0) != 0) {
+                    ratingChanged(ratingBar, rating, fromUser);
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.login_required,
+                            Toast.LENGTH_LONG).show();
+                    getRatingBar.setRating(0);
+                }
+            }
+        });
 
+
+
+    }
+
+    public void ratingChanged(RatingBar ratingBar, float rating, boolean fromUser){
+
+        Utils.psLog(String.valueOf(rating));
+
+        final String URL = Config.APP_API_URL + Config.POST_ITEM_RATING + selectedItemId;
+        Utils.psLog(URL);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
+        params.put("rating", String.valueOf(rating));
+        params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
+
+        RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+        JsonObjectRequest req = new JsonObjectRequest(URL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String success_status = response.getString("success");
+
+                            if (success_status != null) {
+                                setRatingBar.setRating(Float.parseFloat(response.getString("rating")));
+                                ratingCount.setText("Total Rating : " + response.getString("rating"));
+                            } else {
+                                showRatingFailPopup();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+            }
+        });
+
+        // add the request object to the queue to be executed
+        mRequestQueue.add(req);
 
     }
 
@@ -248,6 +315,7 @@ public class DetailActivity extends AppCompatActivity {
 
         isFavourite(fab);
         isLike(txtLikeCount);
+        isRate();
     }
 
     public void doPhoneCall(View view) {
@@ -555,6 +623,47 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    public void isRate() {
+        final String URL = Config.APP_API_URL + Config.POST_ITEM_IS_RATE + GlobalData.itemData.id;
+        Utils.psLog(URL);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
+        getRate(URL, params);
+    }
+
+    private void getRate(String postURL, HashMap<String, String> params) {
+        RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+        JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String success_status = response.getString("status");
+
+                            if(success_status.equals("yes")){
+                                setRatingBar.setRating(Float.parseFloat(response.getString("total")));
+                                if(Float.parseFloat(response.getString("total")) != 0.0) {
+                                    ratingCount.setText("Total Rating : " + response.getString("total"));
+                                }
+                            } else {
+                                ratingCount.setText(getString(R.string.first_rating));
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+            }
+        });
+
+        // add the request object to the queue to be executed
+        mRequestQueue.add(req);
+    }
+
     public void doFavourite(View view) {
         if (pref.getInt("_login_user_id", 0) != 0) {
             final String URL = Config.APP_API_URL + Config.POST_ITEM_FAVOURITE + GlobalData.itemData.id;
@@ -628,16 +737,24 @@ public class DetailActivity extends AppCompatActivity {
 
     private void showFailPopup() {
         new MaterialDialog.Builder(this)
-                .title(R.string.like)
+                .title(R.string.sorry_title)
                 .content(R.string.like_fail)
+                .positiveText(R.string.OK)
+                .show();
+    }
+
+    private void showRatingFailPopup() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.sorry_title)
+                .content(R.string.rating_fail)
                 .positiveText(R.string.OK)
                 .show();
     }
 
     private void showNeedLogin() {
         new MaterialDialog.Builder(this)
-                .title(R.string.like)
-                .content(R.string.like_need_auth)
+                .title(R.string.sorry_title)
+                .content(R.string.login_required)
                 .positiveText(R.string.OK)
                 .show();
     }
