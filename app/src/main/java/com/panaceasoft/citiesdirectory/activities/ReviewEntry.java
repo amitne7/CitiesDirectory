@@ -70,7 +70,7 @@ public class ReviewEntry extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.review));
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +79,8 @@ public class ReviewEntry extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle(Utils.getSpannableString(getString(R.string.review)));
     }
 
     public void doReview(View view) {

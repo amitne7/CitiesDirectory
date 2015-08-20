@@ -67,7 +67,7 @@ public class PasswordUpdateActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.password_change));
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +77,7 @@ public class PasswordUpdateActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        toolbar.setTitle(Utils.getSpannableString(getString(R.string.password_change)));
     }
 
     private void setupUI() {

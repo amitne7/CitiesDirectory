@@ -41,6 +41,7 @@ import com.panaceasoft.citiesdirectory.fragments.UserRegisterFragment;
 
 import com.panaceasoft.citiesdirectory.models.Users;
 import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
+import com.panaceasoft.citiesdirectory.utilities.PSTypefaceSpan;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -76,20 +77,16 @@ public class MainActivity extends AppCompatActivity {
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         notiFlag = getIntent().getBooleanExtra("show_noti", false);
 
+        setUpUtils();
+
         setupToolbar();
         setUpDrawerLayout();
         setUpNavigationView();
         setUpFAB();
-        setUpUtils();
+
         loadLoginUserInfo();
         changeMenu();
 
-
-        SpannableString s = new SpannableString("My Title");
-
-       // s.setSpan(Utils.getTypeFace(Utils.Fonts.NOTO_SANS), 0, s.length(),
-         //        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        toolbar.setTitle("s");
 
     }
 
@@ -119,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("ss");
+        toolbar.setTitle("");
         if (toolbar != null) {
             setSupportActionBar(toolbar);
 
@@ -130,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        toolbar.setTitle(Utils.getSpannableString(getString(R.string.app_name)));
 
     }
 

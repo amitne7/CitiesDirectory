@@ -59,7 +59,7 @@ public class InquiryActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.inquiry));
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +68,8 @@ public class InquiryActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle(Utils.getSpannableString(getString(R.string.inquiry)));
     }
 
     public void doInquiry(View view) {

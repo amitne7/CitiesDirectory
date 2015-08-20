@@ -51,7 +51,7 @@ public class ReviewListActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.review_list));
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,6 +60,8 @@ public class ReviewListActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle(Utils.getSpannableString(getString(R.string.review_list)));
     }
 
     private void setupFAB() {

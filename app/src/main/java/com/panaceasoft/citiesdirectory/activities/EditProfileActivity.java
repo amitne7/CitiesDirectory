@@ -96,7 +96,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.edit_profile));
+        toolbar.setTitle("");
+
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +106,8 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle(Utils.getSpannableString(getString(R.string.edit_profile)));
 
     }
 

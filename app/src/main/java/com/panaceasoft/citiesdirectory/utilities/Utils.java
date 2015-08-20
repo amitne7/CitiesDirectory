@@ -16,6 +16,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.style.TypefaceSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -46,8 +48,7 @@ public class Utils {
 
     public static MainActivity activity;
     private static Typeface fromAsset;
-    private static TypefaceSpan fromAssetSpan;
-
+    private static SpannableString spannableString;
     private static Fonts currentTypeface;
 
 
@@ -206,27 +207,31 @@ public class Utils {
         if(currentTypeface == fonts) {
             if (fromAsset == null) {
                 if(fonts == Fonts.NOTO_SANS) {
-                    fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/NotoSans-Regular.ttf");
+                    fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Light.ttf");
                 }else if(fonts == Fonts.ROBOTO){
                     fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Regular.ttf");
                 }
             }
         }else{
             if(fonts == Fonts.NOTO_SANS){
-                fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/NotoSans-Regular.ttf");
+                fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Light.ttf");
             }else if(fonts == Fonts.ROBOTO){
                 fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Regular.ttf");
             }else{
                 fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/NotoSans-Regular.ttf");
             }
+
+            fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Italic.ttf");
             currentTypeface = fonts;
         }
         return fromAsset;
     }
 
-
-    public static TypefaceSpan getTypeFaceSpan(Fonts fonts){
-        return fromAssetSpan;
+    public static SpannableString getSpannableString(String str) {
+        spannableString = new SpannableString(str);
+        spannableString.setSpan(new PSTypefaceSpan("", Utils.getTypeFace(Utils.Fonts.NOTO_SANS)), 0, spannableString.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableString;
     }
 
     public enum Fonts{

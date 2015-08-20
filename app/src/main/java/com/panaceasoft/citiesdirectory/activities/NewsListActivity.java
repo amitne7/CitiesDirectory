@@ -54,7 +54,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getString(R.string.news_list));
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +63,8 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle(Utils.getSpannableString(getString(R.string.news_list)));
     }
 
     private void initList() {
