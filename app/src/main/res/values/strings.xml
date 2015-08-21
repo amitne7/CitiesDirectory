@@ -128,4 +128,10 @@
     <string name="rating_fail">Your rating could not submit to system. Please try again.</string>
     <string name="login_required">You may need to login first.</string>
     <string name="first_rating">Welcome for first rating</string>
+    <string name="service_not_available">GCM Service is not available</string>
+    <string name="gcm_register_success">Push Notification registered successfully.</string>
+    <string name="gcm_register_not_success">Sorry, Push Notification could not submit.</string>
+    <string name="gcm_unregister_success">Push Notification unregistered successfully.</string>
+    <string name="photo_upload_success">Profile photo is uploaded successfully.</string>
+    <string name="photo_upload_not_success">Sorry, profile photo could not upload.</string>
 </resources>

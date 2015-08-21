@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -21,7 +20,8 @@ import com.loopj.android.http.RequestParams;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
+import android.app.ProgressDialog;
+import org.json.JSONObject;
 import java.io.IOException;
 
 /**
@@ -32,14 +32,16 @@ public class NotificationFragment extends Fragment {
     private View view;
     private ToggleButton tgNoti;
     private Button btnSubmit;
-    String regId = "";
+    private String regId = "";
     GoogleCloudMessaging gcmObj;
-    Context applicationContext;
     private SharedPreferences pref;
     private TextView txtMessage;
     RequestParams params = new RequestParams();
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     AsyncTask<Void, Void, String> createRegIdTask;
+    private String URL = "";
+    ProgressDialog prgDialog;
+
 
     public NotificationFragment() {
         // Required empty public constructor
@@ -75,13 +77,23 @@ public class NotificationFragment extends Fragment {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                registerInBackground();
+                if (tgNoti.isChecked()) {
+                    getTokenInBackground("reg");
+                } else {
+                    getTokenInBackground("unreg");
+                }
+
             }
         });
 
+        prgDialog = new ProgressDialog(getActivity());
+        prgDialog.setMessage("Please wait...");
+        prgDialog.setCancelable(false);
+
     }
 
-    private void registerInBackground() {
+    private void getTokenInBackground(final String status) {
+        prgDialog.show();
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
@@ -104,44 +116,103 @@ public class NotificationFragment extends Fragment {
             @Override
             protected void onPostExecute(String msg) {
                 Utils.psLog(" Msg Val " + msg);
-                storeRegIdinServer();
+                if(!regId.equals("")) {
+                    submitToServer(status, regId);
+                } else {
+                    Toast.makeText(
+                            getActivity().getApplicationContext(),
+                            getString(R.string.service_not_available),
+                            Toast.LENGTH_LONG).show();
+                }
             }
         }.execute(null, null, null);
     }
 
 
-    private void storeRegIdinServer() {
-        params.put("regId", regId);
-        final String URL = Config.APP_API_URL + Config.POST_GCM_REGISTER;
+    private void submitToServer(final String toggleStatus, String token) {
+
+
+        if(toggleStatus.toString().equals("reg")) {
+            URL = Config.APP_API_URL + Config.POST_GCM_REGISTER;
+        } else {
+            URL = Config.APP_API_URL + Config.POST_GCM_UNREGISTER;
+        }
+        params.put("reg_id", token);
+
         AsyncHttpClient client = new AsyncHttpClient();
         client.post(URL, params,
                 new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(String response) {
+
+                        hideProgress();
+
                         Utils.psLog("Server Resp : " + response);
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if (obj.getString("status").toString().equals("yes")) {
+                                if (toggleStatus.toString().equals("reg")) {
+                                    Toast.makeText(
+                                            getActivity().getApplicationContext(),
+                                            getString(R.string.gcm_register_success),
+                                            Toast.LENGTH_LONG).show();
+
+                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.putBoolean("_push_noti_setting", true);
+                                    editor.commit();
+
+                                } else {
+                                    Toast.makeText(
+                                            getActivity().getApplicationContext(),
+                                            getString(R.string.gcm_unregister_success),
+                                            Toast.LENGTH_LONG).show();
+
+                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.putBoolean("_push_noti_setting", true);
+                                    editor.commit();
+                                }
+                            } else {
+                                Toast.makeText(
+                                        getActivity().getApplicationContext(),
+                                        getString(R.string.gcm_register_not_success),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        } catch (Throwable t) {
+                            Utils.psLog("Catch : " + t.getMessage());
+                        }
                     }
 
                     @Override
                     public void onFailure(int statusCode, Throwable error,
                                           String content) {
+
+                        hideProgress();
+
                         if (statusCode == 404) {
-                            Toast.makeText(applicationContext,
+                            Toast.makeText(getActivity().getApplicationContext(),
                                     getString(R.string.request_not_found),
                                     Toast.LENGTH_LONG).show();
-                        }
-                        else if (statusCode == 500) {
-                            Toast.makeText(applicationContext,
+                        } else if (statusCode == 500) {
+                            Toast.makeText(getActivity().getApplicationContext(),
                                     getString(R.string.something_wrong),
                                     Toast.LENGTH_LONG).show();
-                        }
-                        else {
+                        } else {
                             Toast.makeText(
-                                    applicationContext,
+                                    getActivity().getApplicationContext(),
                                     getString(R.string.cannot_connect),
                                     Toast.LENGTH_LONG).show();
                         }
                     }
                 });
+    }
+
+    private void hideProgress() {
+        prgDialog.hide();
+        if (prgDialog != null) {
+            prgDialog.dismiss();
+        }
     }
 
 }

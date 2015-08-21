@@ -15,6 +15,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.media.ExifInterface;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -32,12 +33,14 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.MainActivity;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.graphics.Matrix;
 
 /**
  * Created by Panacea-Soft on 7/15/15.
@@ -221,7 +224,7 @@ public class Utils {
                 fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/NotoSans-Regular.ttf");
             }
 
-            fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Italic.ttf");
+            //fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Italic.ttf");
             currentTypeface = fonts;
         }
         return fromAsset;
@@ -237,6 +240,40 @@ public class Utils {
     public enum Fonts{
         ROBOTO,
         NOTO_SANS
+    }
+
+    public static Bitmap getUnRotatedImage(String imagePath, Bitmap rotatedBitmap)
+    {
+        int rotate = 0;
+        try
+        {
+            File imageFile = new File(imagePath);
+            ExifInterface exif = new ExifInterface(imageFile.getAbsolutePath());
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            switch (orientation)
+            {
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotate = 270;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotate = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotate = 90;
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotate);
+        return Bitmap.createBitmap(rotatedBitmap, 0, 0, rotatedBitmap.getWidth(), rotatedBitmap.getHeight(), matrix,
+                true);
     }
 
 }

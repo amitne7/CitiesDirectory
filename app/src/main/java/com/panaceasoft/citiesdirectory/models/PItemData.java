@@ -17,7 +17,7 @@ public class PItemData implements Parcelable {
 
     public int sub_cat_id;
 
-    public int shop_id;
+    public int city_id;
 
     public String name;
 
@@ -58,7 +58,7 @@ public class PItemData implements Parcelable {
         id = in.readInt();
         cat_id = in.readInt();
         sub_cat_id = in.readInt();
-        shop_id = in.readInt();
+        city_id = in.readInt();
         name = in.readString();
         description = in.readString();
         address = in.readString();
@@ -103,7 +103,7 @@ public class PItemData implements Parcelable {
         dest.writeInt(id);
         dest.writeInt(cat_id);
         dest.writeInt(sub_cat_id);
-        dest.writeInt(shop_id);
+        dest.writeInt(city_id);
         dest.writeString(name);
         dest.writeString(description);
         dest.writeString(address);

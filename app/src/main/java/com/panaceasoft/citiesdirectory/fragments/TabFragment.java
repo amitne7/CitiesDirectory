@@ -75,6 +75,7 @@ public class TabFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tab, container, false);
 
         // Inflate the layout for this fragment
+        Utils.psLog(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/form/0");
         requestData(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/form/0");
         setupProgressWheel(view);
         setupRecyclerView(view);
@@ -171,7 +172,7 @@ public class TabFragment extends Fragment {
     }
 
     public void onItemClicked(int position) {
-        ((SubCategoryActivity)getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).shop_id);
+        ((SubCategoryActivity)getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
     }
 
     public void refershLikeAndReview(int itemID, String likeCount, String reviewCount){

@@ -18,6 +18,7 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
+import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import android.widget.Button;
@@ -77,13 +78,14 @@ public class InquiryActivity extends AppCompatActivity {
             pb = (ProgressBar) findViewById(R.id.loading_spinner);
             pb.setVisibility(view.VISIBLE);
 
-            final String URL = Config.APP_API_URL + Config.POST_SHOP_INQUIRY + pref.getInt("_id", 0);
+            final String URL = Config.APP_API_URL + Config.POST_ITEM_INQUIRY + GlobalData.itemData.id;
             Utils.psLog(URL);
 
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("name", txtName.getText().toString());
             params.put("email", txtEmail.getText().toString());
             params.put("message", txtMessage.getText().toString());
+            params.put("city_id", String.valueOf(pref.getInt("_id",0)));
             doSubmit(URL, params, view);
         }
     }

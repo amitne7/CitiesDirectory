@@ -1,7 +1,9 @@
 package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,10 +23,12 @@ public class ReviewListActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private int selectedItemId;
     private int selectedCityId;
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         setContentView(R.layout.activity_review_list);
         setupToolbar();
         setupFAB();
@@ -69,17 +73,16 @@ public class ReviewListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatabaseHelper db = new DatabaseHelper(getApplication());
-                if(db.getUserCount() > 0) {
+                if (pref.getInt("_login_user_id", 0) != 0) {
                     Intent intent = new Intent(getApplicationContext(), ReviewEntry.class);
                     intent.putExtra("selected_item_id", selectedItemId);
                     intent.putExtra("selected_city_id", selectedCityId);
-
                     startActivityForResult(intent, 1);
                 } else {
                     Intent intent = new Intent(getApplicationContext(), UserLoginActivity.class);
                     startActivity(intent);
                 }
+
             }
         });
     }

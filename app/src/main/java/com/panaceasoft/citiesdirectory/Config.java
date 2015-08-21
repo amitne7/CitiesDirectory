@@ -30,8 +30,6 @@ public class Config extends Application{
 
     public static final String POST_ITEM_INQUIRY = "/rest/items/inquiry/id/";
 
-    public static final String POST_SHOP_INQUIRY = "/rest/cities/contactus/city_id/";
-
     public static final String POST_USER_LOGIN = "/rest/appusers/login";
 
     public static final String POST_REVIEW = "/rest/items/review/id/";
@@ -39,8 +37,6 @@ public class Config extends Application{
     public static final String POST_USER_REGISTER = "/rest/appusers/add/";
 
     public static final String POST_USER_UPDATE = "/rest/appusers/update/id/";
-
-    public static final String POST_IMAGE_PROFILE = "/rest/images/upload/userId/";
 
     public static final String POST_ITEM_LIKE = "/rest/items/like/id/";
 
@@ -63,6 +59,8 @@ public class Config extends Application{
     public static final String POST_PROFILE_IMAGE = "/rest/images/upload";
 
     public static final String POST_GCM_REGISTER = "/rest/gcm/register";
+
+    public static final String POST_GCM_UNREGISTER = "/rest/gcm/unregister";
 
     public static final String POST_ITEM_RATING = "/rest/items/rating/id/";
 

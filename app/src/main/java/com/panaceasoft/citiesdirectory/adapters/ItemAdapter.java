@@ -181,6 +181,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof MyViewHolder){
             ((MyViewHolder)holder).title.setText(mDataset.get(position).name);
+            Utils.psLog("title : " + mDataset.get(position).name);
             Picasso.with(((MyViewHolder)holder).icon.getContext()).load(Config.APP_IMAGES_URL + mDataset.get(position).images.get(0).path).into(((MyViewHolder) holder).icon);
             ((MyViewHolder)holder).likeCount.setText(mDataset.get(position).like_count);
             ((MyViewHolder)holder).reviewCount.setText(mDataset.get(position).review_count);

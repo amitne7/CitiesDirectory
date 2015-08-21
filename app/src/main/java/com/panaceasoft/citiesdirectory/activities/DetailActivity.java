@@ -338,12 +338,22 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void doReview(View view) {
-        Intent intent = new Intent(this, ReviewListActivity.class);
-        intent.putExtra("selected_item_id", selectedItemId);
-        intent.putExtra("selected_city_id", selectedCityId);
-
-        startActivityForResult(intent, 1);
-
+        if (itemReviewData.size() > 0) {
+            Intent intent = new Intent(this, ReviewListActivity.class);
+            intent.putExtra("selected_item_id", selectedItemId);
+            intent.putExtra("selected_city_id", selectedCityId);
+            startActivityForResult(intent, 1);
+        } else {
+            if (pref.getInt("_login_user_id", 0) != 0) {
+                Intent intent = new Intent(getApplicationContext(), ReviewEntry.class);
+                intent.putExtra("selected_item_id", selectedItemId);
+                intent.putExtra("selected_city_id", selectedCityId);
+                startActivityForResult(intent, 1);
+            } else {
+                Intent intent = new Intent(getApplicationContext(), UserLoginActivity.class);
+                startActivity(intent);
+            }
+        }
     }
 
     private void getFavourite(String postURL, HashMap<String, String> params, final View view) {
@@ -357,7 +367,7 @@ public class DetailActivity extends AppCompatActivity {
 
                             if(success_status.equals("yes")){
                                 isFavourite = true;
-                                fab.setImageResource(R.drawable.ic_star_white);
+                                fab.setImageResource(R.drawable.ic_favorite_white);
                             }
 
                         } catch (JSONException e) {
@@ -679,7 +689,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void doLike(View view) {
-
         if (pref.getInt("_login_user_id", 0) != 0) {
             final String URL = Config.APP_API_URL + Config.POST_ITEM_LIKE + GlobalData.itemData.id;
             Utils.psLog(URL);
@@ -690,7 +699,6 @@ public class DetailActivity extends AppCompatActivity {
         } else {
             showNeedLogin();
         }
-
     }
 
     public void doTouchCount(int selectedItemId) {
@@ -757,6 +765,13 @@ public class DetailActivity extends AppCompatActivity {
                 .title(R.string.sorry_title)
                 .content(R.string.login_required)
                 .positiveText(R.string.OK)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        Intent intent = new Intent(getApplicationContext(), UserLoginActivity.class);
+                        startActivity(intent);
+                    }
+                })
                 .show();
     }
 

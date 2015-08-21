@@ -150,13 +150,6 @@ public class UserLoginFragment extends Fragment {
                             String user_profile_photo = response.getString("profile_photo");
 
                             if(user_id != null){
-                                //Utils.psLog("Successful Login, Need to Store in SQLite DB.");
-
-                                //DatabaseHelper db = new DatabaseHelper(getActivity().getApplication());
-                                //Utils.psLog("..... Inserting into DB....");
-                                //db.addUser(new Users(Integer.parseInt(user_id), user_name, email, about_me, Integer.parseInt(is_banned), user_profile_photo));
-
-                                //Utils.psLog(" User Count : " + db.getUserCount());
 
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                                 SharedPreferences.Editor editor = prefs.edit();

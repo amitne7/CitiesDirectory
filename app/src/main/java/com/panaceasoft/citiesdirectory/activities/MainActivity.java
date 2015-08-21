@@ -95,16 +95,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeMenu() {
-        /*
-        DatabaseHelper db = new DatabaseHelper(getApplication());
-        if (db != null && db.getUserCount() > 0) {
-            navigationView.getMenu().setGroupVisible(R.id.group_after_login, true);
-            navigationView.getMenu().setGroupVisible(R.id.group_before_login, false);
-        } else {
-            navigationView.getMenu().setGroupVisible(R.id.group_before_login, true);
-            navigationView.getMenu().setGroupVisible(R.id.group_after_login, false);
-        }
-        */
         if (pref.getInt("_login_user_id", 0) != 0) {
             navigationView.getMenu().setGroupVisible(R.id.group_after_login, true);
             navigationView.getMenu().setGroupVisible(R.id.group_before_login, false);
@@ -251,18 +241,6 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.nav_profile:
             case R.id.nav_profile_login:
-                /*
-                DatabaseHelper db = new DatabaseHelper(getApplication());
-                if (db != null && db.getUserCount() > 0) {
-                    enableFAB();
-                    updateFABIcon(R.drawable.ic_edit_white);
-                    updateFABAction(FABActions.PROFILE);
-                    fragment = new ProfileFragment();
-                } else {
-                    fragment = new UserLoginFragment();
-                }
-                break;
-                */
                 if (pref.getInt("_login_user_id", 0) != 0) {
                     enableFAB();
                     updateFABIcon(R.drawable.ic_edit_white);
@@ -407,6 +385,8 @@ public class MainActivity extends AppCompatActivity {
 
         if(!path.toString().equals("")){
             final String fileName = name + ".jpg";
+            Utils.psLog("file name >> " + fileName);
+
             Target target = new Target() {
 
                 @Override
@@ -414,10 +394,10 @@ public class MainActivity extends AppCompatActivity {
                     Utils.psLog("Prepare Image to load.");
                     return;
                 }
-
+                /*
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom arg1) {
-
+                    Utils.psLog("inside onBitmapLoaded ");
                     try {
                         File file = null;
 
@@ -430,16 +410,45 @@ public class MainActivity extends AppCompatActivity {
                         Utils.psLog("Success Image Loaded.");
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
+                        Utils.psLog("Error >> " + e.getMessage());
                     }
+                }*/
+
+                @Override
+                public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Utils.psLog("inside onBitmapLoaded ");
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            try {
+                                File file = null;
+
+                                file = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
+
+                                file.createNewFile();
+                                FileOutputStream ostream = new FileOutputStream(file);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+                                ostream.close();
+                                Utils.psLog("Success Image Loaded.");
+
+                            } catch (Exception e) {
+                                //e.printStackTrace();
+                                Utils.psLog("Error >> " + e.getMessage());
+                            }
+                        }
+                    }).start();
                 }
 
                 @Override
                 public void onBitmapFailed(Drawable arg0) {
+                    Utils.psLog("Fail Fail Fail");
                     return;
                 }
             };
 
+            Utils.psLog("profile photo : " + Config.APP_IMAGES_URL + path);
             Picasso.with(this)
                     //.load("http://www.cindyomidi.net/wp-content/uploads/2015/03/Fine-art1.jpg")
                     .load(Config.APP_IMAGES_URL + path)

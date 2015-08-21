@@ -69,12 +69,11 @@ public class EditProfileActivity extends AppCompatActivity {
         etUserName.setText(pref.getString("_login_user_name", "").toString());
         etEmail.setText(pref.getString("_login_user_email", "").toString());
         etAboutMe.setText(pref.getString("_login_user_about_me", "").toString());
-        etDeliveryAddress.setText(pref.getString("_login_user_del_address", "").toString());
-        etBillingAddress.setText(pref.getString("_login_user_bill_address", "").toString());
 
         File file = null;
 
         file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_name", "")+".jpg");
+        //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", "")+".jpg");
 
         if(file.exists()){
 
@@ -201,8 +200,6 @@ public class EditProfileActivity extends AppCompatActivity {
                             editor.putString("_login_user_name", etUserName.getText().toString());
                             editor.putString("_login_user_email", etEmail.getText().toString());
                             editor.putString("_login_user_about_me", etAboutMe.getText().toString());
-                            editor.putString("_login_user_del_address", etAboutMe.getText().toString());
-                            editor.putString("_login_user_bill_address", etAboutMe.getText().toString());
 
                             editor.commit();
 
@@ -254,19 +251,17 @@ public class EditProfileActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            ivProfilePhoto.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+            ivProfilePhoto.setImageBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)));
 
             String fileNameSegments[] = picturePath.split("/");
             fileName = fileNameSegments[fileNameSegments.length - 1];
 
-            Bitmap myImg = BitmapFactory.decodeFile(picturePath);
+            Bitmap myImg = Bitmap.createBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)));
+
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            // Must compress the Image to reduce image size to make upload easy
             myImg.compress(Bitmap.CompressFormat.PNG, 50, stream);
             byte[] byte_arr = stream.toByteArray();
-            // Encode Image to String
             encodedString = Base64.encodeToString(byte_arr, 0);
-
             uploadImage();
 
         }
@@ -276,8 +271,6 @@ public class EditProfileActivity extends AppCompatActivity {
     public void uploadImage() {
 
         RequestQueue rq = Volley.newRequestQueue(this);
-        //String url = Config.APP_API_URL + Config.POST_IMAGE_PROFILE + userId + "/fileType/profile";
-        //String url = "http://192.168.1.2/test/php_upload.php";
         String url = Config.APP_API_URL + Config.POST_PROFILE_IMAGE;
         Utils.psLog("URL" + url);
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
@@ -286,17 +279,31 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try {
-                    Utils.psLog("RESPONSE"+ response);
+                    Utils.psLog("Server RESPONSE >> "+ response);
                     JSONObject json = new JSONObject(response);
 
-                    Toast.makeText(getBaseContext(),
-                            "The image is upload", Toast.LENGTH_SHORT)
-                            .show();
+                    if(json.getString("status").toString().equals("yes")) {
+                        Utils.psLog("success img upload to server");
+
+                        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                        //SharedPreferences.Editor editor = prefs.edit();
+                        //editor.putString("_login_user_photo", fileName);
+                        Utils.activity.loadProfileImage(pref.getString("_login_user_name",""), fileName);
+
+
+                        Toast.makeText(getBaseContext(),
+                                getString(R.string.photo_upload_success), Toast.LENGTH_SHORT)
+                                .show();
+                    } else {
+                        Toast.makeText(getBaseContext(),
+                                getString(R.string.photo_upload_not_success), Toast.LENGTH_SHORT)
+                                .show();
+                    }
 
                 } catch (JSONException e) {
                     Utils.psLog("JSON Exception"+ e.toString());
                     Toast.makeText(getBaseContext(),
-                            "Error while loadin data!",
+                            "Error while loading data!",
                             Toast.LENGTH_LONG).show();
                 }
 

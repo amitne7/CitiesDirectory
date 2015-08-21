@@ -8,12 +8,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -207,7 +205,7 @@ public class SearchFragment extends Fragment {
     }
 
     public void onItemClicked(int position) {
-        ((SubCategoryActivity)getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).shop_id);
+        ((SubCategoryActivity)getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
     }
 
 }

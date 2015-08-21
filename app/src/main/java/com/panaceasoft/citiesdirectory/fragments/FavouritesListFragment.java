@@ -1,5 +1,6 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,10 +21,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.activities.DetailActivity;
 import com.panaceasoft.citiesdirectory.activities.SubCategoryActivity;
 import com.panaceasoft.citiesdirectory.adapters.ItemAdapter;
 import com.panaceasoft.citiesdirectory.listeners.ClickListener;
 import com.panaceasoft.citiesdirectory.listeners.RecyclerTouchListener;
+import com.panaceasoft.citiesdirectory.models.PImageData;
 import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -41,13 +44,13 @@ import java.util.List;
  */
 public class FavouritesListFragment extends Fragment {
 
-    private List<PItemData> it;
+    private List<PItemData> items;
     private List<PItemData> myDataset;
     private ItemAdapter mAdapter;
     private ProgressWheel progressWheel;
     private RecyclerView mRecyclerView;
     private StaggeredGridLayoutManager mLayoutManager;
-    private TextView display_message;
+    private TextView displayMessage;
     private SharedPreferences pref;
 
     public FavouritesListFragment() {
@@ -66,8 +69,8 @@ public class FavouritesListFragment extends Fragment {
         setupProgressWheel(view);
         setupRecyclerView(view);
 
-        display_message = (TextView) view.findViewById(R.id.display_message);
-        display_message.setVisibility(view.GONE);
+        displayMessage = (TextView) view.findViewById(R.id.display_message);
+        displayMessage.setVisibility(view.GONE);
 
         return view;
     }
@@ -85,8 +88,8 @@ public class FavouritesListFragment extends Fragment {
                             Utils.psLog(json.getString("error"));
 
                             if(json.getString("error") != null) {
-                                display_message.setVisibility(View.VISIBLE);
-                                display_message.setText(getString(R.string.no_data_available));
+                                displayMessage.setVisibility(View.VISIBLE);
+                                displayMessage.setText(getString(R.string.no_data_available));
                             }
 
                         } catch (JSONException e) {
@@ -98,13 +101,13 @@ public class FavouritesListFragment extends Fragment {
                             Gson gson = new Gson();
                             Type listType = new TypeToken<List<PItemData>>() {
                             }.getType();
-                            it = (List< PItemData>) gson.fromJson(response, listType);
+                            items = (List< PItemData>) gson.fromJson(response, listType);
+
+                            Utils.psLog("Count : " + items.size());
 
                             progressWheel.setVisibility(View.GONE);
-                            for (PItemData pItem : it) {
-
+                            for (PItemData pItem : items) {
                                 myDataset.add(pItem);
-
                             }
                             mAdapter.notifyItemInserted(myDataset.size());
                             mAdapter.setLoaded();
@@ -155,7 +158,12 @@ public class FavouritesListFragment extends Fragment {
     }
 
     public void onItemClicked(int position) {
-        ((SubCategoryActivity)getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).shop_id);
+        //((SubCategoryActivity)getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
+        final Intent intent;
+        intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtra("selected_item_id", myDataset.get(position).id);
+        intent.putExtra("selected_city_id", myDataset.get(position).city_id);
+        startActivity(intent);
     }
 
 

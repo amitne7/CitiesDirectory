@@ -19,7 +19,7 @@ public class ReviewData implements Serializable {
     @SerializedName("appuser_id")
     private int appuser_id;
 
-    @SerializedName("shop_id")
+    @SerializedName("city_id")
     private int shop_id;
 
     @SerializedName("review")

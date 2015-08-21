@@ -73,7 +73,7 @@
             android:title="@string/profile" />
         <item
             android:id="@+id/nav_favourite_item_login"
-            android:icon="@drawable/ic_star_white"
+            android:icon="@drawable/ic_favorite_white"
             android:title="@string/favourite_item" />
         <item
             android:id="@+id/nav_logout"
