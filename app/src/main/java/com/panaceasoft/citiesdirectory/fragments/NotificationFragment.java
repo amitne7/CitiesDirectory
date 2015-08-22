@@ -71,7 +71,7 @@ public class NotificationFragment extends Fragment {
         if(!pref.getString("_push_noti_message","").toString().equals("")) {
             txtMessage.setText(pref.getString("_push_noti_message","").toString());
         } else {
-            txtMessage.setText("No Message");
+            txtMessage.setText(" N.A ");
         }
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +119,7 @@ public class NotificationFragment extends Fragment {
                 if(!regId.equals("")) {
                     submitToServer(status, regId);
                 } else {
+                    hideProgress();
                     Toast.makeText(
                             getActivity().getApplicationContext(),
                             getString(R.string.service_not_available),

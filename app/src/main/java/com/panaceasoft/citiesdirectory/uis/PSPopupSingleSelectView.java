@@ -13,7 +13,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.listeners.SelectListener;
 import com.panaceasoft.citiesdirectory.models.PCityData;
-import com.panaceasoft.citiesdirectory.models.PItemAttributeDetailData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 import java.util.ArrayList;
@@ -32,22 +31,12 @@ public class PSPopupSingleSelectView extends LinearLayout {
     private int selectedIndex = 0;
     private CharSequence[] items;
     private String title = "";
-    private ArrayList<PItemAttributeDetailData> itemAttributeDetailData;
     private ArrayList<PCityData> pCityDatas;
 
     public PSPopupSingleSelectView(Context context) {
         super(context);
         Utils.psLog("1***");
         initUI(context);
-    }
-
-    public PSPopupSingleSelectView(Context context, String title, ArrayList<PItemAttributeDetailData> itemAttributeDetailData) {
-        super(context, null);
-        Utils.psLog("2***");
-        this.title = title;
-        setItemsWithItemObject(itemAttributeDetailData);
-        initUI(context);
-
     }
 
     public PSPopupSingleSelectView(Context context, String title, ArrayList<PCityData> pCityDatas, String s) {
@@ -121,10 +110,6 @@ public class PSPopupSingleSelectView extends LinearLayout {
 
                                 onSelectListener.Select(view, which, text);
 
-                                if (itemAttributeDetailData != null && itemAttributeDetailData.size() > 0) {
-                                    onSelectListener.Select(view, which, text, itemAttributeDetailData.get(which).id, itemAttributeDetailData.get(which).additional_price);
-                                }
-
                                 if (pCityDatas != null && pCityDatas.size() > 0) {
                                     onSelectListener.Select(view, which, text, pCityDatas.get(which).id);
                                 }
@@ -171,25 +156,7 @@ public class PSPopupSingleSelectView extends LinearLayout {
         this.onSelectListener = onSelectListener;
     }
 
-    // Only For Item Object
-    public void setItemsWithItemObject(ArrayList<PItemAttributeDetailData> itemAttributeDetailData) {
-        int i = 0;
-        this.itemAttributeDetailData = itemAttributeDetailData;
-        try {
-            this.items = new CharSequence[itemAttributeDetailData.size()];
-            Utils.psLog("setup ***" + items.length);
-            if (itemAttributeDetailData!= null && itemAttributeDetailData.size() > 0) {
-                for (PItemAttributeDetailData attDetail : itemAttributeDetailData) {
-                    this.items[i++] = attDetail.name.toString();
-                }
-            }
 
-        } catch (Exception e) {
-            Utils.psLog("Error");
-        }
-
-
-    }
 
     public void setItemsWithPCityData(ArrayList<PCityData> pCityDatas) {
         int i = 0;

@@ -51,9 +51,6 @@ public class PItemData implements Parcelable {
 
     public ArrayList<PImageData> images;
 
-    public ArrayList<PItemAttributeData> attributes;
-
-
     protected PItemData(Parcel in) {
         id = in.readInt();
         cat_id = in.readInt();
@@ -85,12 +82,7 @@ public class PItemData implements Parcelable {
         } else {
             images = null;
         }
-        if (in.readByte() == 0x01) {
-            attributes = new ArrayList<PItemAttributeData>();
-            in.readList(attributes, PItemAttributeData.class.getClassLoader());
-        } else {
-            attributes = null;
-        }
+
     }
 
     @Override
@@ -130,12 +122,7 @@ public class PItemData implements Parcelable {
             dest.writeByte((byte) (0x01));
             dest.writeList(images);
         }
-        if (attributes == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeList(attributes);
-        }
+
     }
 
     @SuppressWarnings("unused")

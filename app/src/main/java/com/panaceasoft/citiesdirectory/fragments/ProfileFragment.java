@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 import java.io.File;
 
@@ -57,14 +58,11 @@ public class ProfileFragment extends Fragment {
     private void setupUI(View view){
         imgProfilePhoto = (ImageView) view.findViewById(R.id.iv_profile_photo) ;
         tvUserName = (TextView) view.findViewById(R.id.tv_name);
+        tvUserName.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         tvEmail = (TextView) view.findViewById(R.id.tv_email);
+        tvEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         tvAboutMe = (TextView) view.findViewById(R.id.tv_about_me);
-        tvDeliveryAddress = (TextView) view.findViewById(R.id.tv_delivery_address);
-        tvBillingAddress = (TextView) view.findViewById(R.id.tv_billing_address);
-        tvDeliveryAddressTitle = (TextView) view.findViewById(R.id.tv_delivery_address_title);
-        tvBillingAddressTitle = (TextView) view.findViewById(R.id.tv_billing_address_title);
-
-
+        tvAboutMe.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
     }
 
     public void setupData(){
@@ -80,19 +78,7 @@ public class ProfileFragment extends Fragment {
             tvAboutMe.setText(pref.getString("_login_user_about_me", "").toString());
         }
 
-        if(pref.getString("_login_user_del_address", "").toString() == ""){
-            tvDeliveryAddressTitle.setVisibility(View.GONE);
-        }else {
-            tvDeliveryAddressTitle.setVisibility(View.VISIBLE);
-            tvDeliveryAddress.setText(pref.getString("_login_user_del_address", "").toString());
-        }
 
-        if(pref.getString("_login_user_bill_address", "").toString() == ""){
-            tvBillingAddressTitle.setVisibility(View.GONE);
-        }else {
-            tvBillingAddressTitle.setVisibility(View.VISIBLE);
-            tvBillingAddress.setText(pref.getString("_login_user_bill_address", "").toString());
-        }
 
         File file = null;
 

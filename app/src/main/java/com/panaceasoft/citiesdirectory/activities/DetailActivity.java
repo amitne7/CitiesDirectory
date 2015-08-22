@@ -42,11 +42,8 @@ import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.models.PImageData;
-import com.panaceasoft.citiesdirectory.models.PItemAttributeData;
-import com.panaceasoft.citiesdirectory.models.PItemAttributeDetailData;
 import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.models.PReviewData;
-import com.panaceasoft.citiesdirectory.uis.PSPopupSingleSelectView;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 
@@ -54,10 +51,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Panacea-Soft on 7/15/15.
@@ -71,9 +66,6 @@ public class DetailActivity extends AppCompatActivity {
     private TextView txtTitle;
     private ArrayList<PImageData> itemImageData;
     private ArrayList<PReviewData> itemReviewData;
-    private ArrayList<PItemAttributeData> itemAttributeData;
-    private ArrayList<PItemAttributeDetailData> itemAttributeDetailData;
-    private List<PSPopupSingleSelectView> psPopupSingleSelectViews = new ArrayList<PSPopupSingleSelectView>();
     private MapView mMapView;
     private GoogleMap googleMap;
     private SharedPreferences pref;

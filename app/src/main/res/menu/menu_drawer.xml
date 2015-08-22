@@ -23,14 +23,6 @@
             android:checked="true"
             android:title="@string/home" />
         <item
-            android:id="@+id/nav_switch_city"
-            android:icon="@drawable/ic_swap"
-            android:title="@string/switch_city" />
-        <item
-            android:id="@+id/nav_map"
-            android:icon="@drawable/ic_pin"
-            android:title="@string/show_on_map" />
-        <item
             android:id="@+id/nav_search_keyword"
             android:icon="@drawable/ic_search"
             android:title="@string/search_keyword" />
@@ -38,7 +30,6 @@
             android:id="@+id/nav_push_noti"
             android:icon="@drawable/ic_notifications_white"
             android:title="@string/push_noti_setting" />
-
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_account"
@@ -51,14 +42,6 @@
             android:icon="@drawable/ic_home"
             android:checked="true"
             android:title="@string/home" />
-        <item
-            android:id="@+id/nav_switch_city_login"
-            android:icon="@drawable/ic_swap"
-            android:title="@string/switch_city" />
-        <item
-            android:id="@+id/nav_map_login"
-            android:icon="@drawable/ic_pin"
-            android:title="@string/show_on_map" />
         <item
             android:id="@+id/nav_search_keyword_login"
             android:icon="@drawable/ic_search"

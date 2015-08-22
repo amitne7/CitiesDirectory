@@ -231,12 +231,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_home_login:
                 disableFAB();
                 fragment = new CitiesListFragment();
-                break;
-
-            case R.id.nav_switch_city:
-            case R.id.nav_switch_city_login:
-                disableFAB();
-                fragment = new CitiesListFragment();
+                toolbar.setTitle(Utils.getSpannableString(getString(R.string.app_name)));
                 break;
 
             case R.id.nav_profile:
@@ -249,21 +244,17 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     fragment = new UserLoginFragment();
                 }
-                break;
-
-            case R.id.nav_map:
-            case R.id.nav_map_login:
-                disableFAB();
-                fragment = new MapFragment();
+                toolbar.setTitle(Utils.getSpannableString(getString(R.string.profile)));
                 break;
 
             case R.id.nav_register:
                 fragment = new UserRegisterFragment();
+                toolbar.setTitle(Utils.getSpannableString(getString(R.string.register)));
                 break;
 
             case R.id.nav_forgot:
                 fragment = new UserForgotPasswordFragment();
-                Utils.psLog("Forgot PW");
+                toolbar.setTitle(Utils.getSpannableString(getString(R.string.forgot_password)));
                 break;
 
             case R.id.nav_logout:
@@ -273,15 +264,18 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_search_keyword:
             case R.id.nav_search_keyword_login:
                 fragment = new SearchFragment();
+                toolbar.setTitle(Utils.getSpannableString(getString(R.string.search_keyword)));
                 break;
 
             case R.id.nav_push_noti:
             case R.id.nav_push_noti_login:
                 fragment = new NotificationFragment();
+                toolbar.setTitle(Utils.getSpannableString(getString(R.string.push_noti_setting)));
                 break;
 
             case R.id.nav_favourite_item_login:
                 fragment = new FavouritesListFragment();
+                toolbar.setTitle(Utils.getSpannableString(getString(R.string.favourite_item)));
                 break;
 
             default:
@@ -321,6 +315,9 @@ public class MainActivity extends AppCompatActivity {
         pref.edit().remove("_login_user_name").commit();
         pref.edit().remove("_login_user_email").commit();
         pref.edit().remove("_login_user_about_me").commit();
+
+        changeMenu();
+        openFragment(R.id.nav_home);
     }
 
 
