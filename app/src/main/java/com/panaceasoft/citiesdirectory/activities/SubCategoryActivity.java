@@ -1,7 +1,9 @@
 package com.panaceasoft.citiesdirectory.activities;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -13,10 +15,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
@@ -77,6 +81,21 @@ public class SubCategoryActivity extends AppCompatActivity {
             }
         });
 
+
+        updateTabFonts(tabLayout);
+
+
+
+    }
+
+    private void updateTabFonts(TabLayout tabLayout){
+        for(int i =0 ; i< tabLayout.getTabCount(); i++) {
+            TextView tt = new TextView(this);
+            tt.setTypeface(Utils.getTypeFace(Utils.Fonts.NOTO_SANS));
+            tt.setTextColor(Color.WHITE);
+            tt.setText(tabLayout.getTabAt(i).getText());
+            tabLayout.getTabAt(i).setCustomView(tt);
+        }
     }
 
     private void onFabClicked(View v) {
@@ -205,9 +224,11 @@ public class SubCategoryActivity extends AppCompatActivity {
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitles.get(position);
+        public SpannableString getPageTitle(int position) {
+            return Utils.getSpannableString(mFragmentTitles.get(position));
         }
+
+
 
 
     }

@@ -18,9 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.TypefaceSpan;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -28,7 +25,6 @@ import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.fragments.CitiesListFragment;
 import com.panaceasoft.citiesdirectory.fragments.FavouritesListFragment;
-import com.panaceasoft.citiesdirectory.fragments.MapFragment;
 
 
 import com.panaceasoft.citiesdirectory.fragments.NotificationFragment;
@@ -40,15 +36,12 @@ import com.panaceasoft.citiesdirectory.fragments.UserLoginFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserRegisterFragment;
 
 import com.panaceasoft.citiesdirectory.models.Users;
-import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
-import com.panaceasoft.citiesdirectory.utilities.PSTypefaceSpan;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 
 
 /**
@@ -69,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private Fragment fragment = null;
     private boolean notiFlag;
     private SharedPreferences pref;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -378,9 +372,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void refreshProfile(){
+        openFragment(R.id.nav_profile_login);
+    }
     public void loadProfileImage(String name, String path) {
 
         if(!path.toString().equals("")){
+
             final String fileName = name + ".jpg";
             Utils.psLog("file name >> " + fileName);
 
@@ -389,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onPrepareLoad(Drawable arg0) {
                     Utils.psLog("Prepare Image to load.");
-                    return;
+                    //return;
                 }
                 /*
                 @Override
@@ -415,10 +413,10 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
                     Utils.psLog("inside onBitmapLoaded ");
-                    new Thread(new Runnable() {
+                   /* new Thread(new Runnable() {
                         @Override
                         public void run() {
-
+*/
                             try {
                                 File file = null;
 
@@ -430,12 +428,15 @@ public class MainActivity extends AppCompatActivity {
                                 ostream.close();
                                 Utils.psLog("Success Image Loaded.");
 
+                                refreshProfile();
+
+
                             } catch (Exception e) {
                                 //e.printStackTrace();
                                 Utils.psLog("Error >> " + e.getMessage());
-                            }
+                            }/*
                         }
-                    }).start();
+                    }).start();*/
                 }
 
                 @Override
@@ -449,6 +450,7 @@ public class MainActivity extends AppCompatActivity {
             Picasso.with(this)
                     //.load("http://www.cindyomidi.net/wp-content/uploads/2015/03/Fine-art1.jpg")
                     .load(Config.APP_IMAGES_URL + path)
+                    .resize(150,150)
                     .into(target);
         }
 
