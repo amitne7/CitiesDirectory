@@ -81,8 +81,9 @@ public class ProfileFragment extends Fragment {
 
 
         File file = null;
+        file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_name", "")+".jpg");
 
-        file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", ""));
+        //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", ""));
         //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", "")+".jpg");
 
         if(file.exists()){

@@ -298,7 +298,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     Utils.psLog("Server RESPONSE >> "+ response);
                     JSONObject json = new JSONObject(response);
                     String file_name = json.getString("file_name");
-                   // if(json.getString("status").toString().equals("yes")) {
+                    if(json.getString("status").toString().equals("yes")) {
                         Utils.psLog("success img upload to server");
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -314,19 +314,19 @@ public class EditProfileActivity extends AppCompatActivity {
                         FileOutputStream ostream = new FileOutputStream(file);
                         myImg.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
                         ostream.close();
-                        //Utils.activity.loadProfileImage(pref.getString("_login_user_name",""), fileName);
-                        //Utils.activity.refreshProfile();
+                        Utils.activity.loadProfileImage(pref.getString("_login_user_name",""), fileName);
+                        Utils.activity.refreshProfile();
 
                         Toast.makeText(getBaseContext(),
                                 getString(R.string.photo_upload_success), Toast.LENGTH_SHORT)
                                 .show();
 
                         onBackPressed();
-                   /* } else {
+                    } else {
                         Toast.makeText(getBaseContext(),
                                 getString(R.string.photo_upload_not_success), Toast.LENGTH_SHORT)
                                 .show();
-                    }*/
+                    }
 
                 } catch (JSONException e) {
                     Utils.psLog("JSON Exception"+ e.toString());
