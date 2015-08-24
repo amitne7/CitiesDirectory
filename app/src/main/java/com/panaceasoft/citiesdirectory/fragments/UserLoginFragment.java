@@ -24,8 +24,6 @@ import com.panaceasoft.citiesdirectory.activities.MainActivity;
 import com.panaceasoft.citiesdirectory.activities.UserForgotPasswordActivity;
 import com.panaceasoft.citiesdirectory.activities.UserLoginActivity;
 import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
-import com.panaceasoft.citiesdirectory.models.Users;
-import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -160,15 +158,12 @@ public class UserLoginFragment extends Fragment {
                                 editor.putString("_login_user_photo", user_profile_photo);
                                 editor.commit();
 
-                                Utils.activity.loadProfileImage(user_name, user_profile_photo);
-
                                 // Update Menu
                                 Utils.activity.changeMenu();
 
-                                // Show profile Menu
-                                if(getActivity() instanceof MainActivity) {
-                                    ((MainActivity) getActivity()).openFragment(R.id.nav_profile_login);
-                                }
+                                Utils.activity.loadProfileImage(user_name, user_profile_photo);
+
+
 
                             } else {
                                 Utils.psLog("Login Fail");
@@ -192,6 +187,14 @@ public class UserLoginFragment extends Fragment {
         // add the request object to the queue to be executed
         mRequestQueue.add(req);
 
+    }
+
+    private void updateA() {
+
+        // Show profile Menu
+      //  if(getActivity() instanceof MainActivity) {
+      //      ((MainActivity) getActivity()).openFragment(R.id.nav_profile_login);
+      //  }
     }
 
     private boolean inputValidation() {

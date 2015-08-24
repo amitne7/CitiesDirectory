@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,6 +37,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,8 +48,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText etUserName;
     private EditText etEmail;
     private EditText etAboutMe;
-    private EditText etDeliveryAddress;
-    private EditText etBillingAddress;
     private ImageView ivProfilePhoto;
     private SharedPreferences pref;
     private ProgressBar pb;
@@ -53,6 +55,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMAGE = 1;
     private String encodedString;
     private String fileName;
+    private Bitmap myImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,8 +117,6 @@ public class EditProfileActivity extends AppCompatActivity {
         etUserName = (EditText) findViewById(R.id.input_name);
         etEmail = (EditText) findViewById(R.id.input_email);
         etAboutMe = (EditText) findViewById(R.id.input_about_me);
-        etDeliveryAddress = (EditText) findViewById(R.id.input_delivery_address);
-        etBillingAddress = (EditText) findViewById(R.id.input_billing_address);
         ivProfilePhoto = (ImageView) findViewById(R.id.iv_profile_photo);
         ivProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,16 +257,31 @@ public class EditProfileActivity extends AppCompatActivity {
             String fileNameSegments[] = picturePath.split("/");
             fileName = fileNameSegments[fileNameSegments.length - 1];
 
-            Bitmap myImg = Bitmap.createBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)));
-
+            myImg = Bitmap.createBitmap(getResizedBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)),400 ));
+            //Bitmap myImg = BitmapFactory.decodeFile(picturePath);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            myImg.compress(Bitmap.CompressFormat.PNG, 50, stream);
+            myImg.compress(Bitmap.CompressFormat.JPEG, 80, stream);
             byte[] byte_arr = stream.toByteArray();
             encodedString = Base64.encodeToString(byte_arr, 0);
             uploadImage();
 
         }
 
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 0) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     public void uploadImage() {
@@ -281,30 +297,46 @@ public class EditProfileActivity extends AppCompatActivity {
                 try {
                     Utils.psLog("Server RESPONSE >> "+ response);
                     JSONObject json = new JSONObject(response);
-
-                    if(json.getString("status").toString().equals("yes")) {
+                    String file_name = json.getString("file_name");
+                   // if(json.getString("status").toString().equals("yes")) {
                         Utils.psLog("success img upload to server");
 
-                        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                        //SharedPreferences.Editor editor = prefs.edit();
-                        //editor.putString("_login_user_photo", fileName);
-                        Utils.activity.loadProfileImage(pref.getString("_login_user_name",""), fileName);
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putString("_login_user_photo", file_name);
+                        editor.commit();
 
+                        File file = null;
+
+                        file = new File(Environment.getExternalStorageDirectory() + "/" + file_name);
+
+                        file.createNewFile();
+                        FileOutputStream ostream = new FileOutputStream(file);
+                        myImg.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+                        ostream.close();
+                        //Utils.activity.loadProfileImage(pref.getString("_login_user_name",""), fileName);
+                        //Utils.activity.refreshProfile();
 
                         Toast.makeText(getBaseContext(),
                                 getString(R.string.photo_upload_success), Toast.LENGTH_SHORT)
                                 .show();
-                    } else {
+
+                        onBackPressed();
+                   /* } else {
                         Toast.makeText(getBaseContext(),
                                 getString(R.string.photo_upload_not_success), Toast.LENGTH_SHORT)
                                 .show();
-                    }
+                    }*/
 
                 } catch (JSONException e) {
                     Utils.psLog("JSON Exception"+ e.toString());
                     Toast.makeText(getBaseContext(),
                             "Error while loading data!",
                             Toast.LENGTH_LONG).show();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -324,13 +356,18 @@ public class EditProfileActivity extends AppCompatActivity {
 
                 params.put("image", encodedString);
                 params.put("filename", fileName);
-                params.put("userId", String.valueOf(userId));
+                params.put("userId", userId+"");
 
                 return params;
 
             }
 
         };
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                15000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         rq.add(stringRequest);
     }
 }
