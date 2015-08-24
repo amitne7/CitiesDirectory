@@ -10,11 +10,12 @@
     </style>
 
     <style name="Base.PSTheme" parent="Theme.AppCompat.Light.NoActionBar">
-
+        <item name="colorButtonNormal">@color/colorPrimary</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/windowBackground</item>
+
     </style>
 
     <style name="Widget.CardContent" parent="android:Widget">

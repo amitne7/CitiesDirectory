@@ -78,13 +78,8 @@ public class ProfileFragment extends Fragment {
             tvAboutMe.setText(pref.getString("_login_user_about_me", "").toString());
         }
 
-
-
         File file = null;
-        file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_name", "")+".jpg");
-
-        //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", ""));
-        //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", "")+".jpg");
+        file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", ""));
 
         if(file.exists()){
 

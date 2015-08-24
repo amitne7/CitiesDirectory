@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
             final Intent intent;
             intent = new Intent(this, EditProfileActivity.class);
             startActivityForResult(intent, 1);
+            overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
         } else {
             Snackbar.make(view, "Why you click me! " + fabActions, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
@@ -379,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(!path.toString().equals("")){
 
-            final String fileName = name + ".jpg";
+            final String fileName = path;//name ;//+ ".jpg";
             Utils.psLog("file name >> " + fileName);
 
             Target target = new Target() {

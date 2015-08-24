@@ -1,5 +1,6 @@
 package com.panaceasoft.citiesdirectory.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -56,7 +57,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private String encodedString;
     private String fileName;
     private Bitmap myImg;
-
+    private ProgressDialog prgDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,9 +76,9 @@ public class EditProfileActivity extends AppCompatActivity {
 
         File file = null;
 
-        file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_name", "")+".jpg");
+        //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_name", "")+".jpg");
         //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", "")+".jpg");
-
+        file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", ""));
         if(file.exists()){
 
             Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -85,6 +86,10 @@ public class EditProfileActivity extends AppCompatActivity {
             ivProfilePhoto.setImageBitmap(myBitmap);
 
         }
+
+        prgDialog = new ProgressDialog(this);
+        prgDialog.setMessage("Please wait...");
+        prgDialog.setCancelable(false);
     }
 
 
@@ -144,9 +149,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent in = new Intent();
-        setResult(RESULT_OK, in);
-        finish();
+        //Intent in = new Intent();
+        super.onBackPressed();
+        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+
         return;
     }
 
@@ -252,13 +258,10 @@ public class EditProfileActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
 
-            ivProfilePhoto.setImageBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)));
-
             String fileNameSegments[] = picturePath.split("/");
             fileName = fileNameSegments[fileNameSegments.length - 1];
 
             myImg = Bitmap.createBitmap(getResizedBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)),400 ));
-            //Bitmap myImg = BitmapFactory.decodeFile(picturePath);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             myImg.compress(Bitmap.CompressFormat.JPEG, 80, stream);
             byte[] byte_arr = stream.toByteArray();
@@ -286,6 +289,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
     public void uploadImage() {
 
+
+        prgDialog.show();
         RequestQueue rq = Volley.newRequestQueue(this);
         String url = Config.APP_API_URL + Config.POST_PROFILE_IMAGE;
         Utils.psLog("URL" + url);
@@ -314,18 +319,19 @@ public class EditProfileActivity extends AppCompatActivity {
                         FileOutputStream ostream = new FileOutputStream(file);
                         myImg.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
                         ostream.close();
-                        Utils.activity.loadProfileImage(pref.getString("_login_user_name",""), fileName);
-                        Utils.activity.refreshProfile();
 
+                        ivProfilePhoto.setImageBitmap(myImg);
+                        prgDialog.cancel();
                         Toast.makeText(getBaseContext(),
                                 getString(R.string.photo_upload_success), Toast.LENGTH_SHORT)
                                 .show();
 
-                        onBackPressed();
+
                     } else {
                         Toast.makeText(getBaseContext(),
                                 getString(R.string.photo_upload_not_success), Toast.LENGTH_SHORT)
                                 .show();
+                        prgDialog.cancel();
                     }
 
                 } catch (JSONException e) {
@@ -333,10 +339,13 @@ public class EditProfileActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(),
                             "Error while loading data!",
                             Toast.LENGTH_LONG).show();
+                    prgDialog.cancel();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                    prgDialog.cancel();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    prgDialog.cancel();
                 }
 
             }
@@ -348,6 +357,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),
                         "Cannot connect to server", Toast.LENGTH_LONG)
                         .show();
+                prgDialog.hide();
             }
         }) {
             @Override
