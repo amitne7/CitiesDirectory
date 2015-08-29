@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -34,8 +35,10 @@ import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,6 +61,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private String fileName;
     private Bitmap myImg;
     private ProgressDialog prgDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +73,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void setupData() {
         pref = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        userId = pref.getInt("_login_user_id",0);
+        userId = pref.getInt("_login_user_id", 0);
         etUserName.setText(pref.getString("_login_user_name", "").toString());
         etEmail.setText(pref.getString("_login_user_email", "").toString());
         etAboutMe.setText(pref.getString("_login_user_about_me", "").toString());
@@ -78,8 +82,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
         //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_name", "")+".jpg");
         //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", "")+".jpg");
-        file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", ""));
-        if(file.exists()){
+        file = new File(Environment.getExternalStorageDirectory() + "/" + pref.getString("_login_user_photo", ""));
+        if (file.exists()) {
 
             Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
@@ -151,14 +155,14 @@ public class EditProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         //Intent in = new Intent();
         super.onBackPressed();
-        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+        //overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
 
         return;
     }
 
-    public void doUpdate(View view){
+    public void doUpdate(View view) {
 
-        if(inputValidation()) {
+        if (inputValidation()) {
             pb = (ProgressBar) findViewById(R.id.loading_spinner);
             pb.setVisibility(view.VISIBLE);
 
@@ -178,13 +182,13 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private boolean inputValidation() {
 
-        if(etUserName.getText().toString().trim() == ""){
+        if (etUserName.getText().toString().trim() == "") {
             Toast.makeText(getApplicationContext(), R.string.name_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(etEmail.getText().toString().trim() == ""){
+        if (etEmail.getText().toString().trim() == "") {
             Toast.makeText(getApplicationContext(), R.string.email_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
@@ -193,28 +197,36 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void doSubmit(String postURL, HashMap<String, String> params) {
+        prgDialog.show();
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.PUT, postURL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String success_status = response.getString("success");
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
 
-                            // after server success
-                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                            SharedPreferences.Editor editor = prefs.edit();
-                            editor.putString("_login_user_name", etUserName.getText().toString());
-                            editor.putString("_login_user_email", etEmail.getText().toString());
-                            editor.putString("_login_user_about_me", etAboutMe.getText().toString());
+                                // after server success
+                                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString("_login_user_name", etUserName.getText().toString());
+                                editor.putString("_login_user_email", etEmail.getText().toString());
+                                editor.putString("_login_user_about_me", etAboutMe.getText().toString());
 
-                            editor.commit();
+                                editor.commit();
 
-                            showSuccessMessage(success_status);
+                                prgDialog.cancel();
+                                showSuccessMessage(response.getString("data"));
 
-                            onBackPressed();
+                                onBackPressed();
+                            } else {
+                                prgDialog.cancel();
+                                Utils.psLog("Error in loading.");
+                            }
 
                         } catch (JSONException e) {
+                            prgDialog.cancel();
                             showFailPopup();
                             e.printStackTrace();
                         }
@@ -222,6 +234,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                prgDialog.cancel();
                 VolleyLog.e("Error: ", error.getMessage());
             }
         });
@@ -248,7 +261,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
             Cursor cursor = getContentResolver().query(selectedImage,
                     filePathColumn, null, null, null);
@@ -261,7 +274,7 @@ public class EditProfileActivity extends AppCompatActivity {
             String fileNameSegments[] = picturePath.split("/");
             fileName = fileNameSegments[fileNameSegments.length - 1];
 
-            myImg = Bitmap.createBitmap(getResizedBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)),400 ));
+            myImg = Bitmap.createBitmap(getResizedBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)), 400));
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             myImg.compress(Bitmap.CompressFormat.JPEG, 80, stream);
             byte[] byte_arr = stream.toByteArray();
@@ -276,7 +289,7 @@ public class EditProfileActivity extends AppCompatActivity {
         int width = image.getWidth();
         int height = image.getHeight();
 
-        float bitmapRatio = (float)width / (float) height;
+        float bitmapRatio = (float) width / (float) height;
         if (bitmapRatio > 0) {
             width = maxSize;
             height = (int) (width / bitmapRatio);
@@ -294,16 +307,17 @@ public class EditProfileActivity extends AppCompatActivity {
         RequestQueue rq = Volley.newRequestQueue(this);
         String url = Config.APP_API_URL + Config.POST_PROFILE_IMAGE;
         Utils.psLog("URL" + url);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                url, new Response.Listener<String>() {
+        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
+                url, new Response.Listener<JSONObject>() {
 
             @Override
-            public void onResponse(String response) {
+            public void onResponse(JSONObject response) {
                 try {
-                    Utils.psLog("Server RESPONSE >> "+ response);
-                    JSONObject json = new JSONObject(response);
-                    String file_name = json.getString("file_name");
-                    if(json.getString("status").toString().equals("yes")) {
+                    Utils.psLog("Server RESPONSE >> " + response);
+                    String status = response.getString("status");
+                    if (status.equals(getString(R.string.json_status_success))) {
+                        String file_name = response.getString("data");
+
                         Utils.psLog("success img upload to server");
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -335,7 +349,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
 
                 } catch (JSONException e) {
-                    Utils.psLog("JSON Exception"+ e.toString());
+                    Utils.psLog("JSON Exception" + e.toString());
                     Toast.makeText(getBaseContext(),
                             "Error while loading data!",
                             Toast.LENGTH_LONG).show();
@@ -353,7 +367,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Utils.psLog("ERROR"+ "Error [" + error + "]");
+                Utils.psLog("ERROR" + "Error [" + error + "]");
                 Toast.makeText(getBaseContext(),
                         "Cannot connect to server", Toast.LENGTH_LONG)
                         .show();
@@ -366,7 +380,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                 params.put("image", encodedString);
                 params.put("filename", fileName);
-                params.put("userId", userId+"");
+                params.put("userId", userId + "");
 
                 return params;
 

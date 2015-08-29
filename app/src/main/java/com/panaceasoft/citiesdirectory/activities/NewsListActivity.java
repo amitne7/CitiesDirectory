@@ -14,6 +14,7 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
@@ -23,8 +24,12 @@ import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.adapters.NewsAdapter;
 import com.panaceasoft.citiesdirectory.models.PNewsData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
+
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -73,13 +78,13 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
     }
 
-    public class ListClickHandler implements OnItemClickListener{
+    public class ListClickHandler implements OnItemClickListener {
 
         @Override
         public void onItemClick(AdapterView<?> adapter, View view, int position, long arg3) {
             // TODO Auto-generated method stub
             newsData = (PNewsData) adapter.getItemAtPosition(position);
-            Utils.psLog(" Title " + newsData.title );
+            Utils.psLog(" Title " + newsData.title);
             bundle = new Bundle();
             bundle.putParcelable("news", newsData);
 
@@ -94,7 +99,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     private void prepareData() {
         selectedCityId = Integer.parseInt(getIntent().getStringExtra("selected_city_id"));
         newsDataSet = new ArrayList<>();
-        adapter = new NewsAdapter(this,newsDataSet);
+        adapter = new NewsAdapter(this, newsDataSet);
         listView.setAdapter(adapter);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.post(new Runnable() {
@@ -118,29 +123,41 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         final String uri = Config.APP_API_URL + Config.GET_CITY_NEWS + selectedCityId;
         Utils.psLog(uri);
         swipeRefreshLayout.setRefreshing(true);
-        StringRequest request = new StringRequest(uri,
+        JsonObjectRequest request = new JsonObjectRequest(uri,
 
-                new Response.Listener<String>() {
+                new Response.Listener<JSONObject>() {
 
 
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
 
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<List<PNewsData>>() {}.getType();
-                        news = gson.fromJson(response,listType);
+                                Gson gson = new Gson();
+                                Type listType = new TypeToken<List<PNewsData>>() {
+                                }.getType();
+                                news = gson.fromJson(response.getString("data"), listType);
 
-                        Utils.psLog("Total News : " + news.size());
-                        newsDataSet.clear();
-                        adapter.notifyDataSetChanged();
-                        for (PNewsData nd : news) {
-                            newsDataSet.add(nd);
+                                Utils.psLog("Total News : " + news.size());
+                                newsDataSet.clear();
+                                adapter.notifyDataSetChanged();
+                                for (PNewsData nd : news) {
+                                    newsDataSet.add(nd);
+                                }
+
+                                swipeRefreshLayout.setRefreshing(false);
+
+                            } else {
+
+                                Utils.psLog("Error in loading.");
+                            }
+                        } catch (JSONException e) {
+
+                            e.printStackTrace();
                         }
-
-                        swipeRefreshLayout.setRefreshing(false);
                     }
                 },
-
 
 
                 new Response.ErrorListener() {
@@ -158,7 +175,6 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
                 5000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
 
 
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());

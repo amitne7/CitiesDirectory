@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             final Intent intent;
             intent = new Intent(this, EditProfileActivity.class);
             startActivityForResult(intent, 1);
-            overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+            //overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
         } else {
             Snackbar.make(view, "Why you click me! " + fabActions, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
@@ -258,17 +258,20 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.nav_search_keyword:
             case R.id.nav_search_keyword_login:
+                disableFAB();
                 fragment = new SearchFragment();
                 toolbar.setTitle(Utils.getSpannableString(getString(R.string.search_keyword)));
                 break;
 
             case R.id.nav_push_noti:
             case R.id.nav_push_noti_login:
+                disableFAB();
                 fragment = new NotificationFragment();
                 toolbar.setTitle(Utils.getSpannableString(getString(R.string.push_noti_setting)));
                 break;
 
             case R.id.nav_favourite_item_login:
+                disableFAB();
                 fragment = new FavouritesListFragment();
                 toolbar.setTitle(Utils.getSpannableString(getString(R.string.favourite_item)));
                 break;

@@ -169,7 +169,7 @@ public class SubCategoryActivity extends AppCompatActivity {
         intent = new Intent(this, DetailActivity.class);
         Utils.psLog("Selected City ID : " + selectedCityId);
         intent.putExtra("selected_item_id", selected_item_id);
-        intent.putExtra("selected_city_id", selectedCityId + "");
+        intent.putExtra("selected_city_id", selectedCityId);
         startActivityForResult(intent, 1);
     }
 

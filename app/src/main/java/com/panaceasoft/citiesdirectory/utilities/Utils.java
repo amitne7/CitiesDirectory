@@ -140,13 +140,13 @@ public class Utils {
         return false;
     }
 
-    public static int getScreenHeight(Activity activity) {
+    public static int getScreenHeight() {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         return displaymetrics.heightPixels;
     }
 
-    public static int getScreenWidth(Activity activity) {
+    public static int getScreenWidth() {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         return displaymetrics.widthPixels;

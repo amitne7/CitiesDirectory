@@ -45,7 +45,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public ItemAdapter(List<PItemData> myDataSet, RecyclerView recyclerView) {
+    public ItemAdapter(final List<PItemData> myDataSet, RecyclerView recyclerView) {
         mDataset = myDataSet;
 
         if(recyclerView.getLayoutManager()instanceof LinearLayoutManager) {
@@ -97,28 +97,29 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
 
+                    if(myDataSet.size() >0 ) {
+                        if (newState == 1) {
+                            totalItemCount = staggeredGridLayoutManager.getItemCount();
 
-                    if(newState == 1){
-                        totalItemCount = staggeredGridLayoutManager.getItemCount();
-
-                        // for staggeredGridLayoutManager
-                        int[] arr = new int[totalItemCount];
-                        int[] lastVisibleItem2 = staggeredGridLayoutManager.findLastVisibleItemPositions(arr);
-                        String string= "";
-                        int greatestItem = 0;
-                        for(int i = 0; i<lastVisibleItem2.length; i++){
-                            if(lastVisibleItem2[i]> greatestItem) {
-                                greatestItem = lastVisibleItem2[i];
+                            // for staggeredGridLayoutManager
+                            int[] arr = new int[totalItemCount];
+                            int[] lastVisibleItem2 = staggeredGridLayoutManager.findLastVisibleItemPositions(arr);
+                            String string = "";
+                            int greatestItem = 0;
+                            for (int i = 0; i < lastVisibleItem2.length; i++) {
+                                if (lastVisibleItem2[i] > greatestItem) {
+                                    greatestItem = lastVisibleItem2[i];
+                                }
+                                string += " = " + lastVisibleItem2[i];
                             }
-                            string += " = " + lastVisibleItem2[i];
-                        }
-                        if (!loading && totalItemCount <= (greatestItem + visibleThreshold)) {
-                            // End has been reached
-                            // Do something
-                            if (onLoadMoreListener != null) {
-                                onLoadMoreListener.onLoadMore();
+                            if (!loading && totalItemCount <= (greatestItem + visibleThreshold)) {
+                                // End has been reached
+                                // Do something
+                                if (onLoadMoreListener != null) {
+                                    onLoadMoreListener.onLoadMore();
+                                }
+                                loading = true;
                             }
-                            loading = true;
                         }
                     }
 

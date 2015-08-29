@@ -58,6 +58,7 @@ public class ReviewEntry extends AppCompatActivity {
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
         selectedCityId = getIntent().getIntExtra("selected_city_id", 0);
+
     }
 
     private void setupUserInfo() {
@@ -84,7 +85,7 @@ public class ReviewEntry extends AppCompatActivity {
     }
 
     public void doReview(View view) {
-        if(inputValidation()) {
+        if (inputValidation()) {
             pb = (ProgressBar) findViewById(R.id.loading_spinner);
             pb.setVisibility(view.VISIBLE);
 
@@ -108,9 +109,33 @@ public class ReviewEntry extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String success_status = response.getString("success");
+                            String success_status = response.getString("status");
 
-                            requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selectedItemId + "/city_id/" + selectedCityId, success_status);
+                            if (success_status.equals(getString(R.string.json_status_success))) {
+                                Gson gson = new Gson();
+                                Type listType = new TypeToken<PItemData>() {
+                                }.getType();
+                                GlobalData.itemData = (PItemData) gson.fromJson(response.getString("data"), listType);
+
+                                pb = (ProgressBar) findViewById(R.id.loading_spinner);
+                                pb.setVisibility(View.GONE);
+
+                                Utils.psLog(success_status);
+                                if (success_status != null) {
+                                    Utils.psLog(" --- Need to refresh review list and count --- ");
+                                    //showSuccessPopup();
+                                    Intent in = new Intent();
+                                    setResult(RESULT_OK, in);
+                                    finish();
+                                } else {
+                                    showFailPopup();
+                                }
+                            } else {
+
+                                Utils.psLog("Error in loading.");
+                            }
+
+                            // requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selectedItemId + "/city_id/" + selectedCityId, success_status);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -134,27 +159,33 @@ public class ReviewEntry extends AppCompatActivity {
 
                     @Override
                     public void onResponse(String response) {
+                        try {
 
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<PItemData>() {}.getType();
-                        GlobalData.itemData = (PItemData) gson.fromJson(response, listType);
+                            // String success_status = response.getString("success");
+                            //{"error":{"message":"require_city_id"}}
+                            Gson gson = new Gson();
+                            Type listType = new TypeToken<PItemData>() {
+                            }.getType();
+                            GlobalData.itemData = (PItemData) gson.fromJson(response, listType);
 
-                        pb = (ProgressBar) findViewById(R.id.loading_spinner);
-                        pb.setVisibility(View.GONE);
+                            pb = (ProgressBar) findViewById(R.id.loading_spinner);
+                            pb.setVisibility(View.GONE);
 
-                        Utils.psLog(success_status);
-                        if(success_status != null){
-                            Utils.psLog(" --- Need to refresh review list and count --- ");
-                            showSuccessPopup();
-                        } else {
+                            Utils.psLog(success_status);
+                            if (success_status != null) {
+                                Utils.psLog(" --- Need to refresh review list and count --- ");
+                                //showSuccessPopup();
+                                Intent in = new Intent();
+                                setResult(RESULT_OK, in);
+                                finish();
+                            } else {
+                                showFailPopup();
+                            }
+
+
+                        } catch (Exception e) {
                             showFailPopup();
                         }
-
-
-                        Intent in = new Intent();
-                        setResult(RESULT_OK,in);
-                        finish();
-
                     }
                 },
 
@@ -194,7 +225,7 @@ public class ReviewEntry extends AppCompatActivity {
     private boolean inputValidation() {
         txtReviewMessage = (EditText) findViewById(R.id.input_review_message);
 
-        if(txtReviewMessage.getText().toString().equals("")) {
+        if (txtReviewMessage.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), R.string.review_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;

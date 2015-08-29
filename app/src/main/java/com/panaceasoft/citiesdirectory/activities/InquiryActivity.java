@@ -1,5 +1,6 @@
 package com.panaceasoft.citiesdirectory.activities;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -21,7 +22,9 @@ import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
+
 import android.widget.Button;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,8 +37,9 @@ public class InquiryActivity extends AppCompatActivity {
     private EditText txtEmail;
     private EditText txtMessage;
     private SharedPreferences pref;
-    private ProgressBar pb;
+   // private ProgressBar pb;
     private Button btnSubmit;
+    private ProgressDialog prgDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +59,7 @@ public class InquiryActivity extends AppCompatActivity {
         txtMessage.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
         btnSubmit = (Button) findViewById(R.id.button_submit);
         btnSubmit.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
-        pb = (ProgressBar) findViewById(R.id.loading_spinner);
+       // pb = (ProgressBar) findViewById(R.id.loading_spinner);
     }
 
     private void setupToolbar() {
@@ -71,12 +75,16 @@ public class InquiryActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         toolbar.setTitle(Utils.getSpannableString(getString(R.string.inquiry)));
+
+        prgDialog = new ProgressDialog(this);
+        prgDialog.setMessage("Please wait...");
+        prgDialog.setCancelable(false);
     }
 
     public void doInquiry(View view) {
         if (inputValidation()) {
-            pb = (ProgressBar) findViewById(R.id.loading_spinner);
-            pb.setVisibility(view.VISIBLE);
+           // pb = (ProgressBar) findViewById(R.id.loading_spinner);
+           // pb.setVisibility(view.VISIBLE);
 
             final String URL = Config.APP_API_URL + Config.POST_ITEM_INQUIRY + GlobalData.itemData.id;
             Utils.psLog(URL);
@@ -85,28 +93,33 @@ public class InquiryActivity extends AppCompatActivity {
             params.put("name", txtName.getText().toString());
             params.put("email", txtEmail.getText().toString());
             params.put("message", txtMessage.getText().toString());
-            params.put("city_id", String.valueOf(pref.getInt("_id",0)));
+            params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
             doSubmit(URL, params, view);
         }
     }
 
-    public void doSubmit(String URL, final HashMap<String,String> params, final View view) {
+    public void doSubmit(String URL, final HashMap<String, String> params, final View view) {
+        prgDialog.show();
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest req = new JsonObjectRequest(URL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            pb.setVisibility(view.GONE);
+                          //  pb.setVisibility(view.GONE);
 
-                            String success_status = response.getString("success");
-                            Utils.psLog(success_status);
-                            if(success_status != null){
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
+                                Utils.psLog(status);
+
                                 showSuccessPopup();
+
                             } else {
                                 showFailPopup();
+                                Utils.psLog("Error in loading.");
                             }
 
+                            prgDialog.cancel();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -145,25 +158,25 @@ public class InquiryActivity extends AppCompatActivity {
 
     public boolean inputValidation() {
 
-        if(txtName.getText().toString().equals("")){
+        if (txtName.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), R.string.name_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(txtEmail.getText().toString().equals("")) {
+        if (txtEmail.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), R.string.email_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         } else {
-            if(!Utils.isEmailFormatValid(txtEmail.getText().toString())) {
+            if (!Utils.isEmailFormatValid(txtEmail.getText().toString())) {
                 Toast.makeText(getApplicationContext(), R.string.email_format_validation_message,
                         Toast.LENGTH_LONG).show();
                 return false;
             }
         }
 
-        if(txtMessage.getText().toString().equals("")){
+        if (txtMessage.getText().toString().equals("")) {
             Toast.makeText(getApplicationContext(), R.string.inquiry_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;

@@ -1,5 +1,6 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,8 +42,9 @@ public class UserLoginFragment extends Fragment {
     private Button btnLogin;
     private Button btnForgot;
     private Button btnRegister;
-    private ProgressBar pb;
+    //private ProgressBar pb;
     private MaterialDialog dialog;
+    private ProgressDialog prgDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,7 +55,7 @@ public class UserLoginFragment extends Fragment {
     }
 
     private void initUI() {
-        pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
+        //pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
 
         txtEmail = (EditText) this.view.findViewById(R.id.input_email);
         txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
@@ -91,13 +93,17 @@ public class UserLoginFragment extends Fragment {
                 doRegister();
             }
         });
+
+        prgDialog = new ProgressDialog(getActivity());
+        prgDialog.setMessage("Please wait...");
+        prgDialog.setCancelable(false);
     }
 
     private void doLogin() {
 
         if(inputValidation()) {
 
-            pb.setVisibility(view.VISIBLE);
+            //pb.setVisibility(view.VISIBLE);
 
             final String URL = Config.APP_API_URL + Config.POST_USER_LOGIN;
             Utils.psLog(URL);
@@ -129,7 +135,7 @@ public class UserLoginFragment extends Fragment {
     }
 
     private void doSubmit(String postURL, HashMap<String, String> params, final View view) {
-
+        prgDialog.show();
         RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
@@ -137,17 +143,19 @@ public class UserLoginFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
 
-                            pb.setVisibility(view.GONE);
+                            //pb.setVisibility(view.GONE);
                             Utils.psLog(" .... Starting User Login Callback .... ");
 
-                            String user_id = response.getString("id");
-                            String user_name = response.getString("username");
-                            String email = response.getString("email");
-                            String about_me = response.getString("about_me");
-                            String is_banned = response.getString("is_banned");
-                            String user_profile_photo = response.getString("profile_photo");
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
 
-                            if(user_id != null){
+                                JSONObject dat = response.getJSONObject("data");
+                                String user_id = dat.getString("id");
+                                String user_name = dat.getString("username");
+                                String email = dat.getString("email");
+                                String about_me = dat.getString("about_me");
+                                String is_banned = dat.getString("is_banned");
+                                String user_profile_photo = dat.getString("profile_photo");
 
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                                 SharedPreferences.Editor editor = prefs.edit();
@@ -161,17 +169,31 @@ public class UserLoginFragment extends Fragment {
                                 // Update Menu
                                 Utils.activity.changeMenu();
 
-                                Utils.activity.loadProfileImage(user_name, user_profile_photo);
+                                if(! user_profile_photo.equals("")){
+                                    Utils.activity.loadProfileImage(user_name, user_profile_photo);
+                                    prgDialog.cancel();
+                                }else {
+                                    prgDialog.cancel();
+                                    if(getActivity() instanceof MainActivity){
+                                        ((MainActivity)getActivity()).refreshProfile();
+                                    }
 
+                                }
 
+                                if(getActivity() instanceof UserLoginActivity){
+                                    getActivity().finish();
+                                }
 
                             } else {
                                 Utils.psLog("Login Fail");
+                                prgDialog.cancel();
                                 showFailPopup();
+
 
                             }
 
                         } catch (JSONException e) {
+                            prgDialog.cancel();
                             Utils.psLog("Login Fail : " + e.getMessage());
                             e.printStackTrace();
                             showFailPopup();
@@ -180,6 +202,7 @@ public class UserLoginFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                prgDialog.cancel();
                 Utils.psLog("Error: "+ error.getMessage());
             }
         });
@@ -189,13 +212,7 @@ public class UserLoginFragment extends Fragment {
 
     }
 
-    private void updateA() {
 
-        // Show profile Menu
-      //  if(getActivity() instanceof MainActivity) {
-      //      ((MainActivity) getActivity()).openFragment(R.id.nav_profile_login);
-      //  }
-    }
 
     private boolean inputValidation() {
 

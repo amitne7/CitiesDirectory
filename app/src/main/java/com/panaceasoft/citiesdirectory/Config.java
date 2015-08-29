@@ -21,49 +21,49 @@ public class Config extends Application{
     public static final String APP_IMAGES_URL = "http://www.panacea-soft.com/citiesdirectory/uploads/";
     //public static final String APP_IMAGES_URL = "http://192.168.43.52:7777/citiesdirectory/uploads/";
 
-    public static final String GET_ALL = "/rest/cities/get";
+    public static final String GET_ALL = "/rest/cities/get"; // f
 
-    public static final String ITEMS_BY_SUB_CATEGORY = "/rest/items/get/city_id/";
+    public static final String ITEMS_BY_SUB_CATEGORY = "/rest/items/get/city_id/"; // f
 
-    public static final String ITEMS_BY_ID = "/rest/items/get/id/";
+    public static final String ITEMS_BY_ID = "/rest/items/get/id/"; // f
 
-    public static final String SEARCH_BY_GEO = "/rest/items/search_by_geo/miles/";
+    public static final String SEARCH_BY_GEO = "/rest/items/search_by_geo/miles/"; //f
 
-    public static final String POST_ITEM_INQUIRY = "/rest/items/inquiry/id/";
+    public static final String POST_ITEM_INQUIRY = "/rest/items/inquiry/id/"; // f
 
-    public static final String POST_USER_LOGIN = "/rest/appusers/login";
+    public static final String POST_USER_LOGIN = "/rest/appusers/login"; //f
 
-    public static final String POST_REVIEW = "/rest/items/review/id/";
+    public static final String POST_REVIEW = "/rest/items/review/id/"; //f
 
-    public static final String POST_USER_REGISTER = "/rest/appusers/add/";
+    public static final String POST_USER_REGISTER = "/rest/appusers/add/"; //f
 
-    public static final String POST_USER_UPDATE = "/rest/appusers/update/id/";
+    public static final String POST_USER_UPDATE = "/rest/appusers/update/id/"; // f
 
-    public static final String POST_ITEM_LIKE = "/rest/items/like/id/";
+    public static final String POST_ITEM_LIKE = "/rest/items/like/id/"; //f
 
-    public static final String POST_ITEM_FAVOURITE = "/rest/items/favourite/id/";
+    public static final String POST_ITEM_FAVOURITE = "/rest/items/favourite/id/"; //f
 
-    public static final String POST_ITEM_SEARCH = "/rest/items/search/city_id/";
+    public static final String POST_ITEM_SEARCH = "/rest/items/search/city_id/"; //f
 
-    public static final String GET_FAVOURITE = "/rest/items/is_favourite/id/";
+    public static final String GET_FAVOURITE = "/rest/items/is_favourite/id/"; //f
 
-    public static final String GET_LIKE = "/rest/items/is_like/id/";
+    public static final String GET_LIKE = "/rest/items/is_like/id/"; //f
 
-    public static final String GET_FORGOT_PASSWORD = "/rest/appusers/reset/email/";
+    public static final String GET_FORGOT_PASSWORD = "/rest/appusers/reset/email/"; //f
 
-    public static final String GET_FAVOURITE_ITEMS = "/rest/items/user_favourites/user_id/";
+    public static final String GET_FAVOURITE_ITEMS = "/rest/items/user_favourites/user_id/"; //f
 
-    public static final String GET_CITY_NEWS = "/rest/cities/feeds/city_id/";
+    public static final String GET_CITY_NEWS = "/rest/cities/feeds/city_id/"; //f
 
-    public static final String POST_TOUCH_COUNT = "/rest/items/touch/id/";
+    public static final String POST_TOUCH_COUNT = "/rest/items/touch/id/"; //f
 
-    public static final String POST_PROFILE_IMAGE = "/rest/images/upload";
+    public static final String POST_PROFILE_IMAGE = "/rest/images/upload"; //f
 
     public static final String POST_GCM_REGISTER = "/rest/gcm/register";
 
     public static final String POST_GCM_UNREGISTER = "/rest/gcm/unregister";
 
-    public static final String POST_ITEM_RATING = "/rest/items/rating/id/";
+    public static final String POST_ITEM_RATING = "/rest/items/rating/id/"; //f
 
     public static final String POST_ITEM_IS_RATE = "/rest/items/is_rate/id/";
 

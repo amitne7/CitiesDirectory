@@ -1,5 +1,6 @@
 package com.panaceasoft.citiesdirectory.activities;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -33,9 +34,10 @@ public class PasswordUpdateActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private EditText etNewPassword;
     private EditText etConfirmNewPassword;
-    private ProgressBar pb;
+    //private ProgressBar pb;
     private int userId;
     private SharedPreferences pref;
+    private ProgressDialog prgDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,6 @@ public class PasswordUpdateActivity extends AppCompatActivity {
         setupUI();
         setupData();
     }
-
 
 
     @Override
@@ -83,19 +84,23 @@ public class PasswordUpdateActivity extends AppCompatActivity {
     private void setupUI() {
         etNewPassword = (EditText) findViewById(R.id.input_password);
         etConfirmNewPassword = (EditText) findViewById(R.id.input_password_confirm);
+
+        prgDialog = new ProgressDialog(this);
+        prgDialog.setMessage("Please wait...");
+        prgDialog.setCancelable(false);
     }
 
     private void setupData() {
         pref = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        userId = pref.getInt("_login_user_id",0);
+        userId = pref.getInt("_login_user_id", 0);
 
 
     }
 
-    public void doUpdate(View view){
-        if(inputValidation()) {
-            pb = (ProgressBar) findViewById(R.id.loading_spinner);
-            pb.setVisibility(view.VISIBLE);
+    public void doUpdate(View view) {
+        if (inputValidation()) {
+            // pb = (ProgressBar) findViewById(R.id.loading_spinner);
+            //pb.setVisibility(view.VISIBLE);
 
             final String URL = Config.APP_API_URL + Config.POST_USER_UPDATE + userId;
             Utils.psLog(URL);
@@ -109,19 +114,28 @@ public class PasswordUpdateActivity extends AppCompatActivity {
     }
 
     private void doSubmit(String postURL, HashMap<String, String> params) {
+        prgDialog.show();
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.PUT, postURL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String success_status = response.getString("success");
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
 
-                            showSuccessMessage(success_status);
+                                showSuccessMessage(response.getString("data"));
 
-                            onBackPressed();
+                                prgDialog.cancel();
+
+                                onBackPressed();
+                            } else {
+                                prgDialog.cancel();
+                                Utils.psLog("Error in loading.");
+                            }
 
                         } catch (JSONException e) {
+                            prgDialog.cancel();
                             showFailPopup();
                             e.printStackTrace();
                         }
@@ -129,6 +143,7 @@ public class PasswordUpdateActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                prgDialog.cancel();
                 VolleyLog.e("Error: ", error.getMessage());
             }
         });
@@ -139,19 +154,19 @@ public class PasswordUpdateActivity extends AppCompatActivity {
 
     private boolean inputValidation() {
 
-        if(etNewPassword.getText().toString().trim() == ""){
+        if (etNewPassword.getText().toString().trim() == "") {
             Toast.makeText(getApplicationContext(), R.string.password_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(etConfirmNewPassword.getText().toString().trim() == ""){
+        if (etConfirmNewPassword.getText().toString().trim() == "") {
             Toast.makeText(getApplicationContext(), R.string.password_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(! etNewPassword.getText().toString().trim().equals(etConfirmNewPassword.getText().toString().trim())){
+        if (!etNewPassword.getText().toString().trim().equals(etConfirmNewPassword.getText().toString().trim())) {
             Toast.makeText(getApplicationContext(), R.string.password_not_equal,
                     Toast.LENGTH_LONG).show();
             return false;

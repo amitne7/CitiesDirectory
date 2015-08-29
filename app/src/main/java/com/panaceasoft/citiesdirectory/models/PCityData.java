@@ -31,6 +31,8 @@ public class PCityData implements Parcelable {
 
     public int category_count;
 
+    public int sub_category_count;
+
     public int follow_count;
 
     public String cover_image_file;
@@ -54,6 +56,7 @@ public class PCityData implements Parcelable {
         status = in.readInt();
         item_count = in.readInt();
         category_count = in.readInt();
+        sub_category_count = in.readInt();
         follow_count = in.readInt();
         cover_image_file = in.readString();
         cover_image_width = in.readInt();
@@ -84,6 +87,7 @@ public class PCityData implements Parcelable {
         dest.writeInt(status);
         dest.writeInt(item_count);
         dest.writeInt(category_count);
+        dest.writeInt(sub_category_count);
         dest.writeInt(follow_count);
         dest.writeString(cover_image_file);
         dest.writeInt(cover_image_width);
