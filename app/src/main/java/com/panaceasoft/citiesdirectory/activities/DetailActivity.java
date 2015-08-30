@@ -187,10 +187,10 @@ public class DetailActivity extends AppCompatActivity {
                     public void onAnimationEnd(Animation animation) {
                         if(isFavourite){
                             isFavourite = false;
-                            fab.setImageResource(R.drawable.ic_star_border_white);
+                            fab.setImageResource(R.drawable.ic_favorite_border);
                         }else {
                             isFavourite = true;
-                            fab.setImageResource(R.drawable.ic_star_white);
+                            fab.setImageResource(R.drawable.ic_favorite_white);
                         }
 
                     }
@@ -348,7 +348,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void getFavourite(String postURL, HashMap<String, String> params, final View view) {
+    private void getFavourite(String postURL, HashMap<String, String> params, final FloatingActionButton fab) {
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
@@ -615,14 +615,14 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    public void isFavourite(View view) {
+    public void isFavourite(FloatingActionButton fab) {
         if (pref.getInt("_login_user_id", 0) != 0) {
             final String URL = Config.APP_API_URL + Config.GET_FAVOURITE + GlobalData.itemData.id;
             Utils.psLog(URL);
             HashMap<String, String> params = new HashMap<>();
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
-            getFavourite(URL, params, view);
+            getFavourite(URL, params, fab);
         }
     }
 
