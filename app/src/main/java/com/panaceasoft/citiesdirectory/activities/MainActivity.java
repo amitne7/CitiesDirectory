@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void refreshProfileData() {
+    public void refreshProfileData() {
 
         if (fragment instanceof ProfileFragment) {
             ((ProfileFragment) fragment).setupData();
@@ -393,34 +393,11 @@ public class MainActivity extends AppCompatActivity {
                     Utils.psLog("Prepare Image to load.");
                     //return;
                 }
-                /*
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom arg1) {
-                    Utils.psLog("inside onBitmapLoaded ");
-                    try {
-                        File file = null;
-
-                        file = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
-
-                        file.createNewFile();
-                        FileOutputStream ostream = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
-                        ostream.close();
-                        Utils.psLog("Success Image Loaded.");
-
-                    } catch (Exception e) {
-                        //e.printStackTrace();
-                        Utils.psLog("Error >> " + e.getMessage());
-                    }
-                }*/
 
                 @Override
                 public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
                     Utils.psLog("inside onBitmapLoaded ");
-                   /* new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-*/
+
                             try {
                                 File file = null;
 
@@ -438,9 +415,8 @@ public class MainActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 //e.printStackTrace();
                                 Utils.psLog("Error >> " + e.getMessage());
-                            }/*
-                        }
-                    }).start();*/
+                            }
+
                 }
 
                 @Override

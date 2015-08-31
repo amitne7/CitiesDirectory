@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileLockInterruptionException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -219,6 +220,8 @@ public class EditProfileActivity extends AppCompatActivity {
                                 prgDialog.cancel();
                                 showSuccessMessage(response.getString("data"));
 
+                                Utils.activity.refreshProfileData();
+
                                 onBackPressed();
                             } else {
                                 prgDialog.cancel();
@@ -307,16 +310,17 @@ public class EditProfileActivity extends AppCompatActivity {
         RequestQueue rq = Volley.newRequestQueue(this);
         String url = Config.APP_API_URL + Config.POST_PROFILE_IMAGE;
         Utils.psLog("URL" + url);
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.POST,
-                url, new Response.Listener<JSONObject>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                url, new Response.Listener<String>() {
 
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(String response) {
                 try {
                     Utils.psLog("Server RESPONSE >> " + response);
-                    String status = response.getString("status");
+                    JSONObject obj = new JSONObject(response);
+                    String status = obj.getString("status");
                     if (status.equals(getString(R.string.json_status_success))) {
-                        String file_name = response.getString("data");
+                        String file_name = obj.getString("data");
 
                         Utils.psLog("success img upload to server");
 
@@ -339,6 +343,8 @@ public class EditProfileActivity extends AppCompatActivity {
                         Toast.makeText(getBaseContext(),
                                 getString(R.string.photo_upload_success), Toast.LENGTH_SHORT)
                                 .show();
+
+                        Utils.activity.refreshProfileData();
 
 
                     } else {

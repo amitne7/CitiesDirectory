@@ -14,6 +14,7 @@ import android.text.TextPaint;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -103,6 +104,8 @@ public class SelectedCityActivity extends AppCompatActivity {
 
             }
         }));
+
+        mRecyclerView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
     }
 
     public void onItemClicked( int position){
@@ -189,7 +192,7 @@ public class SelectedCityActivity extends AppCompatActivity {
         toolbar.setTitle("");
 
 
-
+        toolbar.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
 
     }
 

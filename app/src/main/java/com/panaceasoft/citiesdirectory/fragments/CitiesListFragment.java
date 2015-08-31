@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -215,7 +217,6 @@ public class CitiesListFragment extends Fragment {
                                 if(pCityDataList.size() < 1) {
                                     singleLayout.setVisibility(View.GONE);
                                     mRecyclerView.setVisibility(View.VISIBLE);
-                                    updateGlobalCityList();
                                     updateDisplay();
                                 }else{
                                     mRecyclerView.setVisibility(View.GONE);
@@ -223,6 +224,8 @@ public class CitiesListFragment extends Fragment {
                                     stopLoading();
                                     updateSingleDisplay();
                                 }
+
+                                updateGlobalCityList();
                             } else {
                                 stopLoading();
                                 Utils.psLog("Error in loading CityList.");
@@ -265,6 +268,10 @@ public class CitiesListFragment extends Fragment {
 
     private void updateSingleDisplay() {
         if(pCityDataList.size() > 0){
+
+            singleLayout.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in));
+
+
             scCityName.setText(pCityDataList.get(0).name);
             scCityLocation.setText(pCityDataList.get(0).address);
             scCityAbout.setText(pCityDataList.get(0).description);

@@ -84,36 +84,39 @@ public class FavouritesListFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
 
-                        /*try {
-                            JSONObject json = new JSONObject(response);
-                            Utils.psLog(json.getString("error"));
+                        try {
 
-                            if(json.getString("error") != null) {
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
+
+                                if (myDataset.size() > 0) {
+                                    myDataset.remove(myDataset.size() - 1);
+                                    mAdapter.notifyItemRemoved(myDataset.size());
+                                }
+
+                                Gson gson = new Gson();
+                                Type listType = new TypeToken<List<PItemData>>() {
+                                }.getType();
+                                items = (List<PItemData>) gson.fromJson(response.getString("data"), listType);
+
+                                Utils.psLog("Count : " + items.size());
+
+                                progressWheel.setVisibility(View.GONE);
+                                for (PItemData pItem : items) {
+                                    myDataset.add(pItem);
+                                }
+                                mAdapter.notifyItemInserted(myDataset.size());
+                                mAdapter.setLoaded();
+                            }else{
                                 displayMessage.setVisibility(View.VISIBLE);
                                 displayMessage.setText(getString(R.string.no_data_available));
                             }
 
                         } catch (JSONException e) {
-                            if(myDataset.size() > 0) {
-                                myDataset.remove(myDataset.size() - 1);
-                                mAdapter.notifyItemRemoved(myDataset.size());
-                            }
+                            displayMessage.setVisibility(View.VISIBLE);
+                            displayMessage.setText(getString(R.string.no_data_available));
 
-                            Gson gson = new Gson();
-                            Type listType = new TypeToken<List<PItemData>>() {
-                            }.getType();
-                            items = (List< PItemData>) gson.fromJson(response, listType);
-
-                            Utils.psLog("Count : " + items.size());
-
-                            progressWheel.setVisibility(View.GONE);
-                            for (PItemData pItem : items) {
-                                myDataset.add(pItem);
-                            }
-                            mAdapter.notifyItemInserted(myDataset.size());
-                            mAdapter.setLoaded();
-
-                        }*/
+                        }
 
 
                     }

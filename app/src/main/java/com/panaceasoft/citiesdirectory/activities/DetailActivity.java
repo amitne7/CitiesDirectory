@@ -223,7 +223,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 doLike(v);
 
-                Animation rotate = AnimationUtils.loadAnimation(getBaseContext(), R.anim.pop_out);
+                Animation rotate = AnimationUtils.loadAnimation(getBaseContext(), R.anim.fab_in);
                 btnLike.startAnimation(rotate);
                 rotate.setAnimationListener(new Animation.AnimationListener() {
                     @Override
@@ -702,6 +702,13 @@ public class DetailActivity extends AppCompatActivity {
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
             doSubmit(URL, params, "favourite");
         } else {
+            if (isFavourite) {
+                isFavourite = false;
+                fab.setImageResource(R.drawable.ic_favorite_border);
+            } else {
+                isFavourite = true;
+                fab.setImageResource(R.drawable.ic_favorite_white);
+            }
             showNeedLogin();
         }
     }
@@ -738,7 +745,7 @@ public class DetailActivity extends AppCompatActivity {
                             String status = response.getString("status");
                             if (status.equals(getString(R.string.json_status_success))) {
 
-                                if (!fromWhere.toString().equals("touch")) {
+                                if (fromWhere.toString().equals("like")) {
                                     Utils.psLog("Count From Server : " + response.getString("data"));
                                     GlobalData.itemData.like_count = response.getString("data");
                                     txtLikeCount.setText(" " + GlobalData.itemData.like_count + " ");
