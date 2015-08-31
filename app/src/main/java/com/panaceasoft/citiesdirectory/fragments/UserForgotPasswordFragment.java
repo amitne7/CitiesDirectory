@@ -1,5 +1,6 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -22,6 +23,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
+import com.panaceasoft.citiesdirectory.activities.MainActivity;
+import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 import org.json.JSONException;
@@ -34,7 +37,9 @@ public class UserForgotPasswordFragment extends Fragment {
     private View view;
     private EditText txtEmail;
     private Button btnRequest;
-    private ProgressBar pb;
+    private Button btnCancel;
+    //private ProgressBar pb;
+    private ProgressDialog prgDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,12 +61,31 @@ public class UserForgotPasswordFragment extends Fragment {
                 doRequest();
             }
         });
-        pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
+       // pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
+        btnCancel = (Button) this.view.findViewById(R.id.button_cancel);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doCancel();
+            }
+        });
+        prgDialog = new ProgressDialog(getActivity());
+        prgDialog.setMessage("Please wait...");
+        prgDialog.setCancelable(false);
+    }
+
+    private void doCancel() {
+        if(getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).openFragment(R.id.nav_profile);
+        }else if(getActivity() instanceof UserRegisterActivity) {
+            getActivity().finish();
+        }
     }
 
     private void doRequest() {
         if(inputValidation()) {
-            pb.setVisibility(view.VISIBLE);
+            //pb.setVisibility(view.VISIBLE);
             final String URL = Config.APP_API_URL + Config.GET_FORGOT_PASSWORD;
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("email", txtEmail.getText().toString());
@@ -86,30 +110,36 @@ public class UserForgotPasswordFragment extends Fragment {
     }
 
     public void doSubmit(String URL, final HashMap<String,String> params, final View view) {
+        prgDialog.show();
         RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest req = new JsonObjectRequest(URL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            pb.setVisibility(view.GONE);
+                           // pb.setVisibility(view.GONE);
 
-                            String success_status = response.getString("success");
+                            String success_status = response.getString("status");
                             Utils.psLog(success_status);
-                            if(success_status != null){
+
+                            prgDialog.cancel();
+                            if (success_status.equals(getString(R.string.json_status_success))) {
                                 showSuccessPopup();
                             } else {
                                 showFailPopup(response.getString("error"));
                             }
 
 
+
                         } catch (JSONException e) {
+                            prgDialog.cancel();
                             e.printStackTrace();
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                prgDialog.cancel();
                 VolleyLog.e("Error: ", error.getMessage());
             }
         });

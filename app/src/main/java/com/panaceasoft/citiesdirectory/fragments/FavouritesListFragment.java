@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
@@ -76,14 +77,14 @@ public class FavouritesListFragment extends Fragment {
     }
 
     private void requestData(String uri) {
-        StringRequest request = new StringRequest(uri,
+        JsonObjectRequest request = new JsonObjectRequest(uri,
 
-                new Response.Listener<String>() {
+                new Response.Listener<JSONObject>() {
 
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
 
-                        try {
+                        /*try {
                             JSONObject json = new JSONObject(response);
                             Utils.psLog(json.getString("error"));
 
@@ -112,7 +113,7 @@ public class FavouritesListFragment extends Fragment {
                             mAdapter.notifyItemInserted(myDataset.size());
                             mAdapter.setLoaded();
 
-                        }
+                        }*/
 
 
                     }

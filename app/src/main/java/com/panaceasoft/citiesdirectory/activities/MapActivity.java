@@ -10,8 +10,8 @@ import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 public class MapActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private String selected_city_id;
-    private String selected_sub_cat_id;
+    private int selected_city_id;
+    private int selected_sub_cat_id;
 
 
     @Override
@@ -40,8 +40,8 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void prepareData() {
-        selected_city_id = getIntent().getStringExtra("selected_city_id");
-        selected_sub_cat_id = getIntent().getStringExtra("selected_sub_cat_id");
+        selected_city_id = getIntent().getIntExtra("selected_city_id", 0);
+        selected_sub_cat_id = getIntent().getIntExtra("selected_sub_cat_id",0);
     }
 
 

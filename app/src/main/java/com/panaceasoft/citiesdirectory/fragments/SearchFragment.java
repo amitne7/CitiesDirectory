@@ -18,6 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
@@ -34,6 +35,9 @@ import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.uis.PSPopupSingleSelectView;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -117,51 +121,63 @@ public class SearchFragment extends Fragment {
         doSearch(getActivity().getApplicationContext(), URL, txt_search.getText().toString().trim(), v);
     }
 
-    public void doSearch(Context context,final String URL,final String keyword,final View v){
+    public void doSearch(Context context, final String URL, final String keyword, final View v) {
 
         RequestQueue queue = Volley.newRequestQueue(context);
-        StringRequest sr = new StringRequest(Request.Method.POST,URL, new Response.Listener<String>() {
+        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.POST, URL, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                Utils.psLog(response);
-                    progressWheel.setVisibility(v.GONE);
+            public void onResponse(JSONObject response) {
 
-                    if (myDataset.size() > 0) {
-                        myDataset.remove(myDataset.size() - 1);
-                        mAdapter.notifyItemRemoved(myDataset.size());
+
+                try {
+                    String status = response.getString("status");
+                    if (status.equals(getString(R.string.json_status_success))) {
+                        progressWheel.setVisibility(v.GONE);
+
+                        if (myDataset.size() > 0) {
+                            myDataset.remove(myDataset.size() - 1);
+                            mAdapter.notifyItemRemoved(myDataset.size());
+                        }
+
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<List<PItemData>>() {
+                        }.getType();
+                        it = (List<PItemData>) gson.fromJson(response.getString("data"), listType);
+
+                        for (PItemData pItem : it) {
+
+                            myDataset.add(pItem);
+
+                        }
+                        mAdapter.notifyItemInserted(myDataset.size());
+                        mAdapter.setLoaded();
+
+                    } else {
+
+                        Utils.psLog("Error in loading.");
                     }
+                } catch (JSONException e) {
 
-                    Gson gson = new Gson();
-                    Type listType = new TypeToken<List<PItemData>>() {}.getType();
-                    it = (List<PItemData>) gson.fromJson(response, listType);
-
-                    for (PItemData pItem : it) {
-
-                        myDataset.add(pItem);
-
-                    }
-                    mAdapter.notifyItemInserted(myDataset.size());
-                    mAdapter.setLoaded();
-
-
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
 
             }
-        }){
+        }) {
             @Override
-            protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
                 params.put("keyword", keyword);
                 return params;
             }
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("Content-Type","application/x-www-form-urlencoded");
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/x-www-form-urlencoded");
                 return params;
             }
         };
@@ -170,7 +186,9 @@ public class SearchFragment extends Fragment {
 
     public interface PostCommentResponseListener {
         public void requestStarted();
+
         public void requestCompleted();
+
         public void requestEndedWithError(VolleyError error);
     }
 
@@ -205,7 +223,7 @@ public class SearchFragment extends Fragment {
     }
 
     public void onItemClicked(int position) {
-        ((SubCategoryActivity)getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
+        ((SubCategoryActivity) getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
     }
 
 }

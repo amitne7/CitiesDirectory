@@ -87,13 +87,14 @@ public class DetailActivity extends AppCompatActivity {
     private Button btnInquiry;
     private FloatingActionButton fab;
     private int selectedItemId;
-    private String selectedCityId;
+    private int selectedCityId;
     private Bundle bundle;
     private Intent intent;
-    private Boolean isFavourite =  false;
+    private Boolean isFavourite = false;
     private RatingBar getRatingBar;
     private RatingBar setRatingBar;
     private TextView ratingCount;
+    private Animation animation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +166,7 @@ public class DetailActivity extends AppCompatActivity {
         getRatingBar = (RatingBar) findViewById(R.id.get_rating);
         setRatingBar = (RatingBar) findViewById(R.id.set_rating);
         ratingCount = (TextView) findViewById(R.id.rating_count);
-
+        animation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.pop_out);
 
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -175,35 +176,48 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 doFavourite(v);
 
-                Animation rotate = AnimationUtils.loadAnimation(getBaseContext(), R.anim.pop_out);
-                fab.startAnimation(rotate);
-                rotate.setAnimationListener(new Animation.AnimationListener() {
+                Utils.psLog("Start Animation.");
+
+
+                animation.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        if(isFavourite){
+                        Utils.psLog("Started Animation.");
+                        if (isFavourite) {
                             isFavourite = false;
                             fab.setImageResource(R.drawable.ic_favorite_border);
                         }else {
                             isFavourite = true;
                             fab.setImageResource(R.drawable.ic_favorite_white);
                         }
-
                     }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+//                        fab.clearAnimation();
+//                        Utils.psLog("Ended Animation");
+//                        Utils.psLog(isFavourite + " is Fav.");
+//                        if (isFavourite) {
+//                            isFavourite = false;
+//                            fab.setImageResource(R.drawable.ic_star_border_white);
+//                        } else {
+//                            isFavourite = true;
+//                            fab.setImageResource(R.drawable.ic_star_white);
+//                        }
+                    }
+
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
 
                     }
                 });
+                fab.clearAnimation();
+                fab.startAnimation(animation);
             }
         });
 
-        btnLike.setOnClickListener(new View.OnClickListener(){
+        btnLike.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -234,7 +248,7 @@ public class DetailActivity extends AppCompatActivity {
         getRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                if(pref.getInt("_login_user_id",0) != 0) {
+                if (pref.getInt("_login_user_id", 0) != 0) {
                     ratingChanged(ratingBar, rating, fromUser);
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.login_required,
@@ -245,10 +259,9 @@ public class DetailActivity extends AppCompatActivity {
         });
 
 
-
     }
 
-    public void ratingChanged(RatingBar ratingBar, float rating, boolean fromUser){
+    public void ratingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
 
         Utils.psLog(String.valueOf(rating));
 
@@ -265,9 +278,9 @@ public class DetailActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String success_status = response.getString("success");
+                            String success_status = response.getString("status");
 
-                            if (success_status != null) {
+                            if (success_status.equals(getString(R.string.json_status_success))) {
                                 setRatingBar.setRating(Float.parseFloat(response.getString("rating")));
                                 ratingCount.setText("Total Rating : " + response.getString("rating"));
                             } else {
@@ -292,7 +305,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void loadData() {
         selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
-        selectedCityId = getIntent().getStringExtra("selected_city_id");
+        selectedCityId = getIntent().getIntExtra("selected_city_id", 0);
         requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selectedItemId + "/city_id/" + selectedCityId);
     }
 
@@ -337,12 +350,12 @@ public class DetailActivity extends AppCompatActivity {
             startActivityForResult(intent, 1);
         } else {
             if (pref.getInt("_login_user_id", 0) != 0) {
-                Intent intent = new Intent(getApplicationContext(), ReviewEntry.class);
+                Intent intent = new Intent(this, ReviewEntry.class);
                 intent.putExtra("selected_item_id", selectedItemId);
                 intent.putExtra("selected_city_id", selectedCityId);
                 startActivityForResult(intent, 1);
             } else {
-                Intent intent = new Intent(getApplicationContext(), UserLoginActivity.class);
+                Intent intent = new Intent(this, UserLoginActivity.class);
                 startActivity(intent);
             }
         }
@@ -357,7 +370,7 @@ public class DetailActivity extends AppCompatActivity {
                         try {
                             String success_status = response.getString("status");
 
-                            if(success_status.equals("yes")){
+                            if (success_status.equals(getString(R.string.json_status_success))) {
                                 isFavourite = true;
                                 fab.setImageResource(R.drawable.ic_favorite_white);
                             }
@@ -386,7 +399,7 @@ public class DetailActivity extends AppCompatActivity {
                         try {
                             String success_status = response.getString("status");
 
-                            if(success_status.equals("yes")){
+                            if (success_status.equals(getString(R.string.json_status_success))) {
                                 txtLikeCount.setText(response.getString("total"));
                                 btnLike.setBackgroundResource(R.drawable.ic_done);
                             }
@@ -439,20 +452,32 @@ public class DetailActivity extends AppCompatActivity {
 
     private void requestData(String uri) {
         Utils.psLog("Item Detail " + uri);
-        StringRequest request = new StringRequest(uri,
+        JsonObjectRequest request = new JsonObjectRequest(uri,
 
-                new Response.Listener<String>() {
+                new Response.Listener<JSONObject>() {
 
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
 
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<PItemData>() {
-                        }.getType();
-                        GlobalData.itemData = (PItemData) gson.fromJson(response, listType);
+                                Gson gson = new Gson();
+                                Type listType = new TypeToken<PItemData>() {
+                                }.getType();
+                                GlobalData.itemData = (PItemData) gson.fromJson(response.getString("data"), listType);
 
-                        if (GlobalData.itemData != null) {
-                            refreshData();
+                                if (GlobalData.itemData != null) {
+                                    refreshData();
+                                }
+
+                            } else {
+
+                                Utils.psLog("Error in loading.");
+                            }
+                        } catch (JSONException e) {
+
+                            e.printStackTrace();
                         }
                     }
                 },
@@ -566,13 +591,14 @@ public class DetailActivity extends AppCompatActivity {
                     txtNameTime.setText(reviewData.appuser_name + " " + "(" + reviewData.added + ")");
                     txtReviewMessage.setText(reviewData.review);
                     if (!reviewData.profile_photo.equals("")) {
-                        Picasso.with(this).load(Config.APP_IMAGES_URL + reviewData.profile_photo).into(userPhoto);
+                        Utils.psLog(" Loading User photo : " + Config.APP_IMAGES_URL + reviewData.profile_photo);
+                        Picasso.with(this).load(Config.APP_IMAGES_URL + reviewData.profile_photo).resize(150, 150).into(userPhoto);
                     } else {
                         userPhoto.setColorFilter(Color.argb(114, 114, 114, 114));
                     }
                     i++;
                 }
-                break;
+                // break;
             }
 
 
@@ -584,7 +610,7 @@ public class DetailActivity extends AppCompatActivity {
 
             Drawable myDrawable = getResources().getDrawable(R.drawable.ic_rate_review_black);
             userPhoto.setImageDrawable(myDrawable);
-            userPhoto.setColorFilter(Color.argb(-1, 114, 114, 114));
+            //userPhoto.setColorFilter(Color.argb(-1, 114, 114, 114));
 
 
         }
@@ -643,9 +669,9 @@ public class DetailActivity extends AppCompatActivity {
                         try {
                             String success_status = response.getString("status");
 
-                            if(success_status.equals("yes")){
+                            if (success_status.equals(getString(R.string.json_status_success))) {
                                 setRatingBar.setRating(Float.parseFloat(response.getString("total")));
-                                if(Float.parseFloat(response.getString("total")) != 0.0) {
+                                if (Float.parseFloat(response.getString("total")) != 0.0) {
                                     ratingCount.setText("Total Rating : " + response.getString("total"));
                                 }
                             } else {
@@ -709,12 +735,12 @@ public class DetailActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String success_status = response.getString("success");
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
 
-                            if (success_status != null) {
-                                if(!fromWhere.toString().equals("touch")) {
-                                    Utils.psLog("Count From Server : " + response.getString("total"));
-                                    GlobalData.itemData.like_count = response.getString("total");
+                                if (!fromWhere.toString().equals("touch")) {
+                                    Utils.psLog("Count From Server : " + response.getString("data"));
+                                    GlobalData.itemData.like_count = response.getString("data");
                                     txtLikeCount.setText(" " + GlobalData.itemData.like_count + " ");
                                 }
                             } else {

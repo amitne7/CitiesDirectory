@@ -1,5 +1,6 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -42,9 +43,10 @@ public class UserRegisterFragment extends Fragment {
     private EditText txtPassword;
     private String userName;
     private String email;
-    private ProgressBar pb;
+    //private ProgressBar pb;
     private Button btnRegister;
     private Button btnCancel;
+    private ProgressDialog prgDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,7 +64,7 @@ public class UserRegisterFragment extends Fragment {
         txtName = (EditText) this.view.findViewById(R.id.input_name);
         txtEmail = (EditText) this.view.findViewById(R.id.input_email);
         txtPassword = (EditText) this.view.findViewById(R.id.input_password);
-        pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
+        //pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
         btnRegister = (Button) this.view.findViewById(R.id.button_register);
         btnCancel = (Button) this.view.findViewById(R.id.button_cancel);
 
@@ -79,6 +81,10 @@ public class UserRegisterFragment extends Fragment {
                 doCancel();
             }
         });
+
+        prgDialog = new ProgressDialog(getActivity());
+        prgDialog.setMessage("Please wait...");
+        prgDialog.setCancelable(false);
     }
 
     private void doCancel() {
@@ -115,7 +121,7 @@ public class UserRegisterFragment extends Fragment {
 
         if(inputValidation()) {
 
-            pb.setVisibility(view.VISIBLE);
+            //pb.setVisibility(view.VISIBLE);
 
             final String URL = Config.APP_API_URL + Config.POST_USER_REGISTER;
             Utils.psLog(URL);
@@ -135,7 +141,7 @@ public class UserRegisterFragment extends Fragment {
     }
 
     private void doSubmit(String postURL, HashMap<String, String> params, final View view) {
-
+        prgDialog.show();
         RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
@@ -143,12 +149,12 @@ public class UserRegisterFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
 
-                            pb.setVisibility(view.GONE);
+                            //pb.setVisibility(view.GONE);
 
-                            String user_id = response.getString("user_id");
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
 
-                            Utils.psLog(user_id);
-                            if(user_id != null){
+                                String user_id = response.getString("data");
 
                                 //Save Login User Info
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
@@ -167,9 +173,11 @@ public class UserRegisterFragment extends Fragment {
                                     ((MainActivity) getActivity()).openFragment(R.id.nav_profile_login);
                                 }
 
+                                prgDialog.cancel();
                                 showSuccessPopup();
 
                             } else {
+                                prgDialog.cancel();
                                 Utils.psLog("Register Fail");
                                 showFailPopup();
 
@@ -177,6 +185,7 @@ public class UserRegisterFragment extends Fragment {
 
 
                         } catch (JSONException e) {
+                            prgDialog.cancel();
                             Utils.psLog("Register Fail");
                             showFailPopup();
                         }
@@ -184,6 +193,7 @@ public class UserRegisterFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                prgDialog.cancel();
                 Utils.psLog("Error: "+ error.getMessage());
             }
         });

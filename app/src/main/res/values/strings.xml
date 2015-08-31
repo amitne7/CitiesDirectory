@@ -134,4 +134,9 @@
     <string name="gcm_unregister_success">Push Notification unregistered successfully.</string>
     <string name="photo_upload_success">Profile photo is uploaded successfully.</string>
     <string name="photo_upload_not_success">Sorry, profile photo could not upload.</string>
+
+    <string name="json_status_success">success</string>
+    <string name="json_status_error">error</string>
+    <string name="location">Location</string>
+    <string name="about_city">About City</string>
 </resources>

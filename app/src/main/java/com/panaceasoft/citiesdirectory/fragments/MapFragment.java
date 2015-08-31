@@ -28,6 +28,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,6 +51,9 @@ import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rey.material.widget.Slider;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -102,12 +106,12 @@ public class MapFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
-        if(Utils.isGooglePlayServicesOK(getActivity())) {
+        if (Utils.isGooglePlayServicesOK(getActivity())) {
             Utils.psLog("Google Play Service is ready for Google Map");
             setUpFAB(v);
             setUpUI(v);
             loadPreferenceData();
-            loadMap(v, savedInstanceState,inflater,container);
+            loadMap(v, savedInstanceState, inflater, container);
             queue = Volley.newRequestQueue(getActivity().getApplicationContext());
         } else {
             showNoServicePopup();
@@ -172,11 +176,11 @@ public class MapFragment extends Fragment {
         progressWheel.setVisibility(v.VISIBLE);
     }
 
-    private void loadMap(View v,Bundle savedInstanceState,LayoutInflater inflater, ViewGroup container) {
+    private void loadMap(View v, Bundle savedInstanceState, LayoutInflater inflater, ViewGroup container) {
         mMapView = (MapView) v.findViewById(R.id.mapView);
 
         ViewGroup.LayoutParams params = mMapView.getLayoutParams();
-        params.height = Utils.getScreenHeight(getActivity()) - 100;
+        params.height = Utils.getScreenHeight() - 100;
         mMapView.setLayoutParams(params);
 
         mMapView.onCreate(savedInstanceState);
@@ -197,7 +201,7 @@ public class MapFragment extends Fragment {
     private void loadPreferenceData() {
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
         selectedCityId = pref.getInt("_selected_city_id", 0);
-        selectedSubCatId = pref.getInt("_selected_sub_cat_id",0);
+        selectedSubCatId = pref.getInt("_selected_sub_cat_id", 0);
         selectedRegionLat = Double.parseDouble(pref.getString("_city_region_lat", ""));
         selectedRegionLng = Double.parseDouble(pref.getString("_city_region_lng", ""));
     }
@@ -248,10 +252,10 @@ public class MapFragment extends Fragment {
     public boolean readyLatLng() {
         GPSTracker gps = new GPSTracker(getActivity());
 
-        if(gps.canGetLocation()) {
+        if (gps.canGetLocation()) {
             currentLatitude = gps.getLatitude();
             currentLongitude = gps.getLongitude();
-            if(currentLatitude != 0.0 && currentLongitude != 0.0 ){
+            if (currentLatitude != 0.0 && currentLongitude != 0.0) {
                 return true;
             } else {
                 return false;
@@ -267,7 +271,7 @@ public class MapFragment extends Fragment {
 
         GPSTracker gps = new GPSTracker(getActivity());
 
-        if(gps.canGetLocation()) {
+        if (gps.canGetLocation()) {
             currentLatitude = gps.getLatitude();
             currentLongitude = gps.getLongitude();
 
@@ -292,7 +296,7 @@ public class MapFragment extends Fragment {
                 StringBuilder strReturnedAddress = new StringBuilder("Current Address ( ");
                 Utils.psLog("Getting Address.");
                 for (int i = 0; i < returnedAddress.getMaxAddressLineIndex(); i++) {
-                    if(i != returnedAddress.getMaxAddressLineIndex()-1){
+                    if (i != returnedAddress.getMaxAddressLineIndex() - 1) {
                         strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
                     } else {
                         strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("");
@@ -300,9 +304,9 @@ public class MapFragment extends Fragment {
                 }
                 strReturnedAddress.append(" )");
                 strAdd = strReturnedAddress.toString();
-                Utils.psLog("My loction address --- "+ "" + strReturnedAddress.toString());
+                Utils.psLog("My loction address --- " + "" + strReturnedAddress.toString());
             } else {
-                Utils.psLog("My Current loction address"+ "No Address returned!");
+                Utils.psLog("My Current loction address" + "No Address returned!");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -328,81 +332,93 @@ public class MapFragment extends Fragment {
 
 
     private void requestData(String uri, final View marker) {
-        StringRequest request = new StringRequest(uri,
+        JsonObjectRequest request = new JsonObjectRequest(uri,
 
-                new Response.Listener<String>() {
+                new Response.Listener<JSONObject>() {
 
 
                     @Override
-                    public void onResponse(String response) {
-                        progressWheel.setVisibility(View.GONE);
-                        Gson gson = new Gson();
-                        Type listType = new TypeToken<List<PItemData>>() {}.getType();
-                        items = gson.fromJson(response,listType);
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
 
-                        Utils.psLog("Total : " + items.size());
+                                progressWheel.setVisibility(View.GONE);
+                                Gson gson = new Gson();
+                                Type listType = new TypeToken<List<PItemData>>() {
+                                }.getType();
+                                items = gson.fromJson(response.getString("data"), listType);
 
-                        googleMap = mMapView.getMap();
+                                Utils.psLog("Total : " + items.size());
 
-                        for(final PItemData itd: items) {
-                            double latitude = Double.parseDouble(itd.lat);
-                            double longitude = Double.parseDouble(itd.lng);
+                                googleMap = mMapView.getMap();
 
-                            markerLatLng = new LatLng(latitude,longitude);
+                                for (final PItemData itd : items) {
+                                    double latitude = Double.parseDouble(itd.lat);
+                                    double longitude = Double.parseDouble(itd.lng);
 
-                            customMarker = googleMap.addMarker(new MarkerOptions()
-                                    .position(markerLatLng)
-                                    .title(itd.name)
-                                    .snippet(itd.description.substring(0, Math.min(itd.description.length(), 80)) + "...")
-                                    .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker)))
-                                    .anchor(0.5f, 1));
-                            CameraPosition cameraPosition = new CameraPosition.Builder()
-                                    .target(new LatLng(selectedRegionLat, selectedRegionLng)).zoom(10).build();
-                            googleMap.animateCamera(CameraUpdateFactory
-                                    .newCameraPosition(cameraPosition));
+                                    markerLatLng = new LatLng(latitude, longitude);
+
+                                    customMarker = googleMap.addMarker(new MarkerOptions()
+                                            .position(markerLatLng)
+                                            .title(itd.name)
+                                            .snippet(itd.description.substring(0, Math.min(itd.description.length(), 80)) + "...")
+                                            .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getActivity(), marker)))
+                                            .anchor(0.5f, 1));
+                                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                                            .target(new LatLng(selectedRegionLat, selectedRegionLng)).zoom(10).build();
+                                    googleMap.animateCamera(CameraUpdateFactory
+                                            .newCameraPosition(cameraPosition));
 
 
-                            if(markerImages != null){
-                                markerImages.put(customMarker.getId(),Uri.parse(Config.APP_IMAGES_URL + itd.images.get(0).path));
-                            }
+                                    if (markerImages != null) {
+                                        markerImages.put(customMarker.getId(), Uri.parse(Config.APP_IMAGES_URL + itd.images.get(0).path));
+                                    }
 
-                            if(markerInfo != null) {
-                                markerInfo.put(customMarker, itd);
-                            }
+                                    if (markerInfo != null) {
+                                        markerInfo.put(customMarker, itd);
+                                    }
 
-                            if(markerAddress != null) {
-                                markerAddress.put(customMarker.getId(),itd.address);
-                            }
+                                    if (markerAddress != null) {
+                                        markerAddress.put(customMarker.getId(), itd.address);
+                                    }
 
-                            googleMap.setInfoWindowAdapter(new MapPopupAdapter(getActivity(),getActivity().getLayoutInflater(), markerImages, markerAddress));
-                            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                @Override
-                                public boolean onMarkerClick(Marker marker) {
-                                    marker.showInfoWindow();
-                                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-                                    return true;
+                                    googleMap.setInfoWindowAdapter(new MapPopupAdapter(getActivity(), getActivity().getLayoutInflater(), markerImages, markerAddress));
+                                    googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                        @Override
+                                        public boolean onMarkerClick(Marker marker) {
+                                            marker.showInfoWindow();
+                                            googleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+                                            return true;
+                                        }
+                                    });
+
+                                    googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                                        @Override
+                                        public void onInfoWindowClick(Marker marker) {
+
+                                            PItemData ct = markerInfo.get(marker);
+                                            Utils.psLog("Selected Item Name : " + ct.name);
+                                            final Intent intent;
+                                            intent = new Intent(getActivity(), DetailActivity.class);
+                                            intent.putExtra("selected_item_id", ct.id);
+                                            intent.putExtra("selected_city_id", selectedCityId + "");
+                                            startActivity(intent);
+
+                                        }
+                                    });
                                 }
-                            });
+                            } else {
 
-                            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                                @Override
-                                public void onInfoWindowClick(Marker marker) {
+                                Utils.psLog("Error in loading.");
+                            }
+                        } catch (JSONException e) {
 
-                                    PItemData ct = markerInfo.get(marker);
-                                    Utils.psLog("Selected Item Name : " + ct.name);
-                                    final Intent intent;
-                                    intent = new Intent(getActivity(), DetailActivity.class);
-                                    intent.putExtra("selected_item_id", ct.id);
-                                    intent.putExtra("selected_city_id", selectedCityId + "");
-                                    startActivity(intent);
-
-                                }
-                            });
+                            e.printStackTrace();
                         }
 
                     }
                 },
-
 
 
                 new Response.ErrorListener() {
@@ -414,7 +430,7 @@ public class MapFragment extends Fragment {
 
 
                         NetworkResponse response = ex.networkResponse;
-                        if(response != null && response.data != null){
+                        if (response != null && response.data != null) {
 
 
                         } else {
@@ -431,7 +447,6 @@ public class MapFragment extends Fragment {
                 5000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
 
 
         RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
