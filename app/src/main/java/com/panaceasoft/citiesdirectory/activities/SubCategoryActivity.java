@@ -84,8 +84,6 @@ public class SubCategoryActivity extends AppCompatActivity {
 
         updateTabFonts(tabLayout);
 
-
-
     }
 
     private void updateTabFonts(TabLayout tabLayout){

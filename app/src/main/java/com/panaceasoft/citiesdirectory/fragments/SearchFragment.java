@@ -8,6 +8,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -74,6 +75,7 @@ public class SearchFragment extends Fragment {
         initUI(view);
         setupProgressWheel(view);
         setupRecyclerView(view);
+
         return view;
     }
 
@@ -111,6 +113,8 @@ public class SearchFragment extends Fragment {
         });
 
         txt_search = (TextView) view.findViewById(R.id.input_search);
+
+
 
     }
 
