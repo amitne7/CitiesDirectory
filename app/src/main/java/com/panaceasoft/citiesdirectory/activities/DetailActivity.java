@@ -186,7 +186,7 @@ public class DetailActivity extends AppCompatActivity {
                         if (isFavourite) {
                             isFavourite = false;
                             fab.setImageResource(R.drawable.ic_favorite_border);
-                        } else {
+                        }else {
                             isFavourite = true;
                             fab.setImageResource(R.drawable.ic_favorite_white);
                         }
@@ -361,7 +361,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void getFavourite(String postURL, HashMap<String, String> params, final View view) {
+    private void getFavourite(String postURL, HashMap<String, String> params, final FloatingActionButton fab) {
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
         JsonObjectRequest req = new JsonObjectRequest(postURL, new JSONObject(params),
                 new Response.Listener<JSONObject>() {
@@ -369,10 +369,12 @@ public class DetailActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             String success_status = response.getString("status");
-
+                            String data_status = response.getString("data");
                             if (success_status.equals(getString(R.string.json_status_success))) {
-                                isFavourite = true;
-                                fab.setImageResource(R.drawable.ic_favorite_white);
+                                if(data_status.toString().equals("yes")) {
+                                    isFavourite = true;
+                                    fab.setImageResource(R.drawable.ic_favorite_white);
+                                }
                             }
 
                         } catch (JSONException e) {
@@ -641,14 +643,14 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    public void isFavourite(View view) {
+    public void isFavourite(FloatingActionButton fab) {
         if (pref.getInt("_login_user_id", 0) != 0) {
             final String URL = Config.APP_API_URL + Config.GET_FAVOURITE + GlobalData.itemData.id;
             Utils.psLog(URL);
             HashMap<String, String> params = new HashMap<>();
             params.put("appuser_id", String.valueOf(pref.getInt("_login_user_id", 0)));
             params.put("city_id", String.valueOf(pref.getInt("_id", 0)));
-            getFavourite(URL, params, view);
+            getFavourite(URL, params, fab);
         }
     }
 

@@ -221,8 +221,8 @@
                     android:layout_marginTop="@dimen/space_1">
 
                     <ImageView
-                        android:layout_width="@dimen/icon_small"
-                        android:layout_height="@dimen/icon_small"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
                         android:tint="@color/textColorSecondary"
                         android:src="@drawable/ic_place_black"
                         />
@@ -245,8 +245,8 @@
                     android:layout_marginLeft="@dimen/space_2">
 
                     <ImageView
-                        android:layout_width="@dimen/icon_small"
-                        android:layout_height="@dimen/icon_small"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
                         android:tint="@color/textColorSecondary"
                         android:src="@drawable/ic_local_phone_black"
                         />
@@ -270,8 +270,8 @@
                     android:layout_marginLeft="@dimen/space_2">
 
                     <ImageView
-                        android:layout_width="@dimen/icon_small"
-                        android:layout_height="@dimen/icon_small"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
                         android:tint="@color/textColorSecondary"
                         android:src="@drawable/ic_mail_black"
                         />

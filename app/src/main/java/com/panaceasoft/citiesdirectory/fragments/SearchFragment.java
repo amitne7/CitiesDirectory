@@ -63,6 +63,7 @@ public class SearchFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ProgressWheel progressWheel;
     private StaggeredGridLayoutManager mLayoutManager;
+    private int selectedCityId;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -92,7 +93,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void Select(View view, int position, CharSequence text, int id) {
-                int i = id;
+                selectedCityId = id;
             }
 
             @Override
@@ -120,7 +121,7 @@ public class SearchFragment extends Fragment {
 
     private void prepareForSearch(View v) {
         progressWheel.setVisibility(v.VISIBLE);
-        final String URL = Config.APP_API_URL + Config.POST_ITEM_SEARCH + 0; //Need to change selected city id from Popup
+        final String URL = Config.APP_API_URL + Config.POST_ITEM_SEARCH + selectedCityId; //Need to change selected city id from Popup
         Utils.psLog(URL);
         doSearch(getActivity().getApplicationContext(), URL, txt_search.getText().toString().trim(), v);
     }

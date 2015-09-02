@@ -104,7 +104,7 @@ public class PSPopupSingleSelectView extends LinearLayout {
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
-                                Utils.psLog(text + " - " + which);
+
                                 mTextView.setText(text);
                                 selectedIndex = which;
 
