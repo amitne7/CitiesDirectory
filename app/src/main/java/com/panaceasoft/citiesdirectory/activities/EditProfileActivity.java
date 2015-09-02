@@ -127,7 +127,7 @@ public class EditProfileActivity extends AppCompatActivity {
         etUserName = (EditText) findViewById(R.id.input_name);
         etEmail = (EditText) findViewById(R.id.input_email);
         etAboutMe = (EditText) findViewById(R.id.input_about_me);
-        ivProfilePhoto = (ImageView) findViewById(R.id.iv_profile_photo);
+        ivProfilePhoto = (ImageView) findViewById(R.id.fab);
         ivProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,6 +156,7 @@ public class EditProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         //Intent in = new Intent();
         super.onBackPressed();
+        overridePendingTransition(R.anim.blank_anim,R.anim.left_to_right);
         //overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
 
         return;

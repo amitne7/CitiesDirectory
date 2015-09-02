@@ -1,14 +1,17 @@
 package com.panaceasoft.citiesdirectory.activities;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -154,11 +157,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void fabClicked(View view) {
         if (fabActions == FABActions.PROFILE) {
             final Intent intent;
             intent = new Intent(this, EditProfileActivity.class);
-            startActivityForResult(intent, 1);
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation(this, (View)view, "profile");
+            //startActivity(intent, options.toBundle());
+            startActivityForResult(intent, 1, options.toBundle());
+            //overridePendingTransition(R.anim.right_to_left,R.anim.blank_anim);
             //overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
         } else {
             Snackbar.make(view, "Why you click me! " + fabActions, Snackbar.LENGTH_SHORT)

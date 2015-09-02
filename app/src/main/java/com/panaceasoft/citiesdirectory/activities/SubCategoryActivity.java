@@ -169,7 +169,7 @@ public class SubCategoryActivity extends AppCompatActivity {
         intent.putExtra("selected_item_id", selected_item_id);
         intent.putExtra("selected_city_id", selectedCityId);
         startActivityForResult(intent, 1);
-        overridePendingTransition(R.anim.fade_in,R.anim.right_to_left);
+        overridePendingTransition(R.anim.right_to_left,R.anim.blank_anim);
     }
 
     private void loadCategoryUI(int id){

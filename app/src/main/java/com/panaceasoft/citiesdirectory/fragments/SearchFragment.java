@@ -40,6 +40,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,7 +149,7 @@ public class SearchFragment extends Fragment {
                         Type listType = new TypeToken<List<PItemData>>() {
                         }.getType();
                         it = (List<PItemData>) gson.fromJson(response.getString("data"), listType);
-
+                        setA(it);
                         for (PItemData pItem : it) {
 
                             myDataset.add(pItem);
@@ -187,6 +188,12 @@ public class SearchFragment extends Fragment {
             }
         };
         queue.add(sr);
+    }
+
+    public void setA(List<PItemData> pit){
+
+        List<PItemData> a = pit;
+        int b = 0;
     }
 
     public interface PostCommentResponseListener {
