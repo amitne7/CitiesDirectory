@@ -248,9 +248,13 @@ public class CitiesListFragment extends Fragment {
                         if (response != null && response.data != null) {
 
                         } else {
-                            display_message.setVisibility(View.VISIBLE);
-                            String message = getResources().getString(R.string.wrong_url);
-                            display_message.setText(message);
+                            try {
+                                display_message.setVisibility(View.VISIBLE);
+                                String message = getResources().getString(R.string.wrong_url);
+                                display_message.setText(message);
+                            }catch (Exception e){
+                                Utils.psLog("Error in wrongl url.");
+                            }
                         }
 
                     }
@@ -268,7 +272,7 @@ public class CitiesListFragment extends Fragment {
 
     private void updateSingleDisplay() {
         if(pCityDataList.size() > 0){
-
+            display_message.setVisibility(View.GONE);
             singleLayout.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in));
 
 

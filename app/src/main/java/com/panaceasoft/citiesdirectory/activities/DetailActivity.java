@@ -801,11 +801,49 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void doShare(View view) {
-        String message = String.valueOf(R.string.share_message);
+
+        shareTextUrl();
+        /*String message = String.valueOf(R.string.share_message);
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("text/plain");
         share.putExtra(Intent.EXTRA_TEXT, message);
-        startActivity(Intent.createChooser(share, "Please choose"));
+        startActivity(Intent.createChooser(share, "Please choose"));*/
+    }
+
+    // Method to share either text or URL.
+    private void shareTextUrl() {
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("text/plain");
+
+        // Add data to the intent, the receiving app will decide
+        // what to do with it.
+        share.putExtra(Intent.EXTRA_SUBJECT, "Title Of The Post");
+
+        share.putExtra(Intent.EXTRA_TEXT, "helo : http://www.codeofaninja.com");
+
+        startActivity(Intent.createChooser(share, "Share link!"));
+    }
+
+
+    // Method to share any image.
+    private void shareImage() {
+        Intent share = new Intent(Intent.ACTION_SEND);
+
+        // If you want to share a png image only, you can do:
+        // setType("image/png"); OR for jpeg: setType("image/jpeg");
+        share.setType("image/*");
+
+        // Make sure you put example png image named myImage.png in your
+        // directory
+        //String imagePath = Environment.getExternalStorageDirectory()
+        //        + "/myImage.png";
+
+        //File imageFileToShare = new File(imagePath);
+
+        //Uri uri = Uri.fromFile(imageFileToShare);
+        //share.putExtra(Intent.EXTRA_STREAM, uri);
+
+        startActivity(Intent.createChooser(share, "Share Image!"));
     }
 
 }
