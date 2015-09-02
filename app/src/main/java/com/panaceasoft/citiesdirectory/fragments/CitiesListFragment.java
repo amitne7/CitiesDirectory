@@ -213,8 +213,8 @@ public class CitiesListFragment extends Fragment {
 
                                 pCityDataList = gson.fromJson(response.getString("data"), listType); //fromJson(response.getString("data")+"",listType);
 
-
-                                if(pCityDataList.size() < 1) {
+                                Utils.psLog("City Count : "  + pCityDataList.size());
+                                if(pCityDataList.size() > 1) {
                                     singleLayout.setVisibility(View.GONE);
                                     mRecyclerView.setVisibility(View.VISIBLE);
                                     updateDisplay();

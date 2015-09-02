@@ -369,10 +369,12 @@ public class DetailActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             String success_status = response.getString("status");
-
+                            String data_status = response.getString("data");
                             if (success_status.equals(getString(R.string.json_status_success))) {
-                                isFavourite = true;
-                                fab.setImageResource(R.drawable.ic_favorite_white);
+                                if(data_status.toString().equals("yes")) {
+                                    isFavourite = true;
+                                    fab.setImageResource(R.drawable.ic_favorite_white);
+                                }
                             }
 
                         } catch (JSONException e) {
