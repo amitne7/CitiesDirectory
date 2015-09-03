@@ -151,23 +151,10 @@ public class SearchFragment extends Fragment {
                         }
 
                         Gson gson = new Gson();
-<<<<<<< HEAD
-                        Type listType = new TypeToken<List<PItemData>>() {
-                        }.getType();
-                        it = (List<PItemData>) gson.fromJson(response.getString("data"), listType);
-                        setA(it);
-=======
                         Type listType = new TypeToken<List<PItemData>>() {}.getType();
-                        Utils.psLog(response.getString("data"));
-                        chkReturn(response.getString("data"));
-
                         it = (List<PItemData>) gson.fromJson(response.getString("data"), listType);
-                        Utils.psLog("Search Count : " + it.size());
->>>>>>> f3ae1c6f94765bc8ea01283104343117d2d9eca5
                         for (PItemData pItem : it) {
-
                             myDataset.add(pItem);
-
                         }
                         mAdapter.notifyItemInserted(myDataset.size());
                         mAdapter.setLoaded();
@@ -177,7 +164,7 @@ public class SearchFragment extends Fragment {
                         Utils.psLog("Error in loading.");
                     }
                 } catch (JSONException e) {
-                    Utils.psLog("******** " + e.getMessage());
+
                     e.printStackTrace();
                 }
             }
@@ -239,8 +226,5 @@ public class SearchFragment extends Fragment {
         ((SubCategoryActivity) getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
     }
 
-    public void chkReturn(String rep) {
-        Utils.psLog(rep);
-    }
 
 }
