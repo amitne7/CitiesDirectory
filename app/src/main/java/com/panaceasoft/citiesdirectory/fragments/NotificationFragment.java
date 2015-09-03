@@ -16,11 +16,14 @@ import android.widget.ToggleButton;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import android.app.ProgressDialog;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 
@@ -142,13 +145,53 @@ public class NotificationFragment extends Fragment {
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.post(URL, params,
-                new AsyncHttpResponseHandler() {
+                new JsonHttpResponseHandler() {
                     @Override
-                    public void onSuccess(String response) {
+                    public void onSuccess(JSONObject response) {
 
                         hideProgress();
 
                         Utils.psLog("Server Resp : " + response);
+
+                        try {
+                            String status = response.getString("status");
+                            if (status.equals(getString(R.string.json_status_success))) {
+                                if (toggleStatus.toString().equals("reg")) {
+                                    Toast.makeText(
+                                            getActivity().getApplicationContext(),
+                                            getString(R.string.gcm_register_success),
+                                            Toast.LENGTH_LONG).show();
+
+                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.putBoolean("_push_noti_setting", true);
+                                    editor.commit();
+
+                                } else {
+                                    Toast.makeText(
+                                            getActivity().getApplicationContext(),
+                                            getString(R.string.gcm_unregister_success),
+                                            Toast.LENGTH_LONG).show();
+
+                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.putBoolean("_push_noti_setting", true);
+                                    editor.commit();
+                                }
+                            } else {
+                                Toast.makeText(
+                                        getActivity().getApplicationContext(),
+                                        getString(R.string.gcm_register_not_success),
+                                        Toast.LENGTH_LONG).show();
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        /*
                         try {
                             JSONObject obj = new JSONObject(response);
                             if (obj.getString("status").toString().equals("yes")) {
@@ -183,6 +226,7 @@ public class NotificationFragment extends Fragment {
                         } catch (Throwable t) {
                             Utils.psLog("Catch : " + t.getMessage());
                         }
+                        */
                     }
 
                     @Override

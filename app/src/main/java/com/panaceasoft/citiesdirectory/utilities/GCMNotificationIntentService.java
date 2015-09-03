@@ -45,8 +45,9 @@ public class GCMNotificationIntentService extends IntentService {
                         + extras.toString());
             } else if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE
                     .equals(messageType)) {
-                sendNotification("Message Received from Google GCM Server:\n\n"
-                        + extras.get(Config.MSG_KEY));
+                //sendNotification("Message Received from Google GCM Server:\n\n"
+                //        + extras.get(Config.MSG_KEY));
+                sendNotification(""+extras.get(Config.MSG_KEY));
             }
         }
         GcmBroadcastReceiver.completeWakefulIntent(intent);
@@ -56,7 +57,15 @@ public class GCMNotificationIntentService extends IntentService {
         Intent resultIntent = new Intent(this, MainActivity.class);
         Utils.psLog("Push Msg : " + msg);
         resultIntent.putExtra("msg", msg);
-        resultIntent.putExtra("show_noti",true);
+        String displayMessage = "";
+        Utils.psLog("M >>> " + msg);
+        if(!msg.toString().equals("null")) {
+            resultIntent.putExtra("show_noti", true);
+            displayMessage = "You've received new message.";
+        } else {
+            resultIntent.putExtra("show_noti", false);
+            displayMessage = "Welcome from CitiesDirectory";
+        }
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
                 resultIntent, PendingIntent.FLAG_ONE_SHOT);
@@ -68,7 +77,7 @@ public class GCMNotificationIntentService extends IntentService {
 
         mNotifyBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Alert")
-                .setContentText("You've received new message.")
+                .setContentText(displayMessage)
                 .setSmallIcon(R.drawable.ic_notifications_white);
         // Set pending intent
         mNotifyBuilder.setContentIntent(resultPendingIntent);
@@ -81,7 +90,7 @@ public class GCMNotificationIntentService extends IntentService {
 
         mNotifyBuilder.setDefaults(defaults);
         // Set the content for Notification
-        mNotifyBuilder.setContentText("New message from Server");
+        mNotifyBuilder.setContentText(displayMessage);
         // Set autocancel
         mNotifyBuilder.setAutoCancel(true);
         // Post a notification

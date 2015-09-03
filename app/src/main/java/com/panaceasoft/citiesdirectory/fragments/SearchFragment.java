@@ -127,9 +127,14 @@ public class SearchFragment extends Fragment {
     }
 
     public void doSearch(Context context, final String URL, final String keyword, final View v) {
-
+        Utils.psLog("<<< Inside doSearch >>>" + keyword);
         RequestQueue queue = Volley.newRequestQueue(context);
-        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.POST, URL, new Response.Listener<JSONObject>() {
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("keyword", keyword);
+
+        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.POST, URL, new JSONObject(params),
+                new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
@@ -145,10 +150,12 @@ public class SearchFragment extends Fragment {
                         }
 
                         Gson gson = new Gson();
-                        Type listType = new TypeToken<List<PItemData>>() {
-                        }.getType();
-                        it = (List<PItemData>) gson.fromJson(response.getString("data"), listType);
+                        Type listType = new TypeToken<List<PItemData>>() {}.getType();
+                        Utils.psLog(response.getString("data"));
+                        chkReturn(response.getString("data"));
 
+                        it = (List<PItemData>) gson.fromJson(response.getString("data"), listType);
+                        Utils.psLog("Search Count : " + it.size());
                         for (PItemData pItem : it) {
 
                             myDataset.add(pItem);
@@ -162,7 +169,7 @@ public class SearchFragment extends Fragment {
                         Utils.psLog("Error in loading.");
                     }
                 } catch (JSONException e) {
-
+                    Utils.psLog("******** " + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -171,21 +178,8 @@ public class SearchFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
 
             }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("keyword", keyword);
-                return params;
-            }
+        });
 
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Content-Type", "application/x-www-form-urlencoded");
-                return params;
-            }
-        };
         queue.add(sr);
     }
 
@@ -229,6 +223,10 @@ public class SearchFragment extends Fragment {
 
     public void onItemClicked(int position) {
         ((SubCategoryActivity) getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
+    }
+
+    public void chkReturn(String rep) {
+        Utils.psLog(rep);
     }
 
 }
