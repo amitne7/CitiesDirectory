@@ -83,7 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
         loadLoginUserInfo();
         changeMenu();
-
+        Utils.psLog("Noti Flag : " + notiFlag);
+        if (notiFlag) {
+            savePushMessage(getIntent().getStringExtra("msg"));
+            openFragment(R.id.nav_push_noti);
+        } else {
+            openFragment(R.id.nav_home);
+        }
 
     }
 
@@ -210,12 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     });
         }
 
-        if (notiFlag) {
-            savePushMessage(getIntent().getStringExtra("msg"));
-            openFragment(R.id.nav_push_noti);
-        } else {
-            openFragment(R.id.nav_home);
-        }
+
 
 
     }
