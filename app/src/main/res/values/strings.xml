@@ -139,4 +139,8 @@
     <string name="json_status_error">error</string>
     <string name="location">Location</string>
     <string name="about_city">About City</string>
+    <string name="title_activity_search_result">SearchResultActivity</string>
+    <string name="search_result">Search Results</string>
+    <string name="search_city_label">Selected City :</string>
+    <string name="search_keyword_label">Keyword :</string>
 </resources>
