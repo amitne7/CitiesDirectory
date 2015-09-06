@@ -40,13 +40,26 @@ public class UserForgotPasswordFragment extends Fragment {
     private Button btnCancel;
     //private ProgressBar pb;
     private ProgressDialog prgDialog;
+    private String jsonStatusSuccessString;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_forgot_password, container, false);
+
+        initData();
+
         initUI();
         return view;
+    }
+
+    private void initData() {
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
     }
 
     private void initUI() {
@@ -123,7 +136,7 @@ public class UserForgotPasswordFragment extends Fragment {
                             Utils.psLog(success_status);
 
                             prgDialog.cancel();
-                            if (success_status.equals(getString(R.string.json_status_success))) {
+                            if (success_status.equals(jsonStatusSuccessString)) {
                                 showSuccessPopup();
                             } else {
                                 showFailPopup(response.getString("error"));

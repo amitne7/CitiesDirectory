@@ -66,6 +66,7 @@ public class ProfileFragment extends Fragment {
     }
 
     public void setupData(){
+
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
 
         tvUserName.setText(pref.getString("_login_user_name", "").toString());

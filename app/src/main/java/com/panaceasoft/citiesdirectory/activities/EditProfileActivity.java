@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -13,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,6 +51,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EditProfileActivity extends AppCompatActivity {
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
     private Toolbar toolbar;
     private EditText etUserName;
     private EditText etEmail;
@@ -62,41 +69,30 @@ public class EditProfileActivity extends AppCompatActivity {
     private String fileName;
     private Bitmap myImg;
     private ProgressDialog prgDialog;
+    private SpannableString editProfileString;
+    private String jsonStatusSuccessString ;
+    private String photoUploadSuccess;
+    private String photoUploadNotSuccess;
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        setupToolbar();
-        setupUI();
-        setupData();
+
+        initData();
+
+        initUI();
+
+        bindData();
+
     }
-
-    private void setupData() {
-        pref = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        userId = pref.getInt("_login_user_id", 0);
-        etUserName.setText(pref.getString("_login_user_name", "").toString());
-        etEmail.setText(pref.getString("_login_user_email", "").toString());
-        etAboutMe.setText(pref.getString("_login_user_about_me", "").toString());
-
-        File file = null;
-
-        //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_name", "")+".jpg");
-        //file = new File(Environment.getExternalStorageDirectory()+"/"+ pref.getString("_login_user_photo", "")+".jpg");
-        file = new File(Environment.getExternalStorageDirectory() + "/" + pref.getString("_login_user_photo", ""));
-        if (file.exists()) {
-
-            Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-
-            ivProfilePhoto.setImageBitmap(myBitmap);
-
-        }
-
-        prgDialog = new ProgressDialog(this);
-        prgDialog.setMessage("Please wait...");
-        prgDialog.setCancelable(false);
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -104,43 +100,6 @@ public class EditProfileActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_edit_profile, menu);
 
         return true;
-    }
-
-    private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        toolbar.setTitle(Utils.getSpannableString(getString(R.string.edit_profile)));
-
-    }
-
-    private void setupUI() {
-        etUserName = (EditText) findViewById(R.id.input_name);
-        etEmail = (EditText) findViewById(R.id.input_email);
-        etAboutMe = (EditText) findViewById(R.id.input_about_me);
-        ivProfilePhoto = (ImageView) findViewById(R.id.fab);
-        ivProfilePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent i = new Intent(
-                            Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                    startActivityForResult(i, RESULT_LOAD_IMAGE);
-                }catch (Exception e){
-                    Utils.psErrorLogE("Error in Image Gallery.", e);
-                }
-            }
-        });
     }
 
     @Override
@@ -161,31 +120,149 @@ public class EditProfileActivity extends AppCompatActivity {
         //Intent in = new Intent();
         super.onBackPressed();
         overridePendingTransition(R.anim.blank_anim,R.anim.left_to_right);
-        //overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
 
         return;
     }
 
-    public void doUpdate(View view) {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-        if (inputValidation()) {
-            pb = (ProgressBar) findViewById(R.id.loading_spinner);
-            pb.setVisibility(view.VISIBLE);
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst();
 
-            final String URL = Config.APP_API_URL + Config.POST_USER_UPDATE + userId;
-            Utils.psLog(URL);
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
 
-            HashMap<String, String> params = new HashMap<>();
-            params.put("username", etUserName.getText().toString().trim());
-            params.put("email", etEmail.getText().toString().trim());
-            params.put("about_me", etAboutMe.getText().toString().trim());
+                String fileNameSegments[] = picturePath.split("/");
+                fileName = fileNameSegments[fileNameSegments.length - 1];
 
-            doSubmit(URL, params);
+                myImg = Bitmap.createBitmap(getResizedBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)), 400));
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                myImg.compress(Bitmap.CompressFormat.JPEG, 80, stream);
+                byte[] byte_arr = stream.toByteArray();
+                encodedString = Base64.encodeToString(byte_arr, 0);
+                uploadImage();
 
+            }
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in load image.", e);
         }
 
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    private void initData(){
+        pref = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
+        userId = pref.getInt("_login_user_id", 0);
+
+        editProfileString = Utils.getSpannableString(getString(R.string.edit_profile));
+
+        jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+        photoUploadSuccess = getResources().getString(R.string.photo_upload_success);
+        photoUploadNotSuccess = getResources().getString(R.string.photo_upload_not_success);
+
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    private void initUI(){
+        initToolbar();
+
+        etUserName = (EditText) findViewById(R.id.input_name);
+        etEmail = (EditText) findViewById(R.id.input_email);
+        etAboutMe = (EditText) findViewById(R.id.input_about_me);
+        ivProfilePhoto = (ImageView) findViewById(R.id.fab);
+        ivProfilePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent i = new Intent(
+                            Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                    startActivityForResult(i, RESULT_LOAD_IMAGE);
+                }catch (Exception e){
+                    Utils.psErrorLogE("Error in Image Gallery.", e);
+                }
+            }
+        });
+
+        prgDialog = new ProgressDialog(this);
+        prgDialog.setMessage("Please wait...");
+        prgDialog.setCancelable(false);
+    }
+
+    private void initToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    private void bindData() {
+        try {
+            etUserName.setText(pref.getString("_login_user_name", "").toString());
+            etEmail.setText(pref.getString("_login_user_email", "").toString());
+            etAboutMe.setText(pref.getString("_login_user_about_me", "").toString());
+
+            File file;
+
+            file = new File(Environment.getExternalStorageDirectory() + "/" + pref.getString("_login_user_photo", ""));
+            if (file.exists()) {
+
+                Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+                ivProfilePhoto.setImageBitmap(myBitmap);
+
+            } else {
+                Drawable myDrawable = getResources().getDrawable(R.drawable.ic_account);
+                ivProfilePhoto.setImageDrawable(myDrawable);
+            }
+
+            toolbar.setTitle(editProfileString);
+
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in Bind Data.", e);
+        }
+    }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
     private boolean inputValidation() {
 
         if (etUserName.getText().toString().trim() == "") {
@@ -211,7 +288,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
 
                                 // after server success
                                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -255,7 +332,7 @@ public class EditProfileActivity extends AppCompatActivity {
         Toast.makeText(this, success_status, Toast.LENGTH_SHORT).show();
     }
 
-    public void showFailPopup() {
+    private void showFailPopup() {
         new MaterialDialog.Builder(this)
                 .title(R.string.register)
                 .content(R.string.profile_edit_fail)
@@ -263,37 +340,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 .show();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
-
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-
-            String fileNameSegments[] = picturePath.split("/");
-            fileName = fileNameSegments[fileNameSegments.length - 1];
-
-            myImg = Bitmap.createBitmap(getResizedBitmap(Utils.getUnRotatedImage(picturePath, BitmapFactory.decodeFile(picturePath)), 400));
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            myImg.compress(Bitmap.CompressFormat.JPEG, 80, stream);
-            byte[] byte_arr = stream.toByteArray();
-            encodedString = Base64.encodeToString(byte_arr, 0);
-            uploadImage();
-
-        }
-
-    }
-
-    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+    private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -308,8 +355,7 @@ public class EditProfileActivity extends AppCompatActivity {
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
-    public void uploadImage() {
-
+    private void uploadImage() {
 
         prgDialog.show();
         RequestQueue rq = Volley.newRequestQueue(this);
@@ -324,7 +370,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     Utils.psLog("Server RESPONSE >> " + response);
                     JSONObject obj = new JSONObject(response);
                     String status = obj.getString("status");
-                    if (status.equals(getString(R.string.json_status_success))) {
+                    if (status.equals(jsonStatusSuccessString)) {
                         String file_name = obj.getString("data");
 
                         Utils.psLog("success img upload to server");
@@ -345,8 +391,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
                         ivProfilePhoto.setImageBitmap(myImg);
                         prgDialog.cancel();
-                        Toast.makeText(getBaseContext(),
-                                getString(R.string.photo_upload_success), Toast.LENGTH_SHORT)
+                        Toast.makeText(getBaseContext(),photoUploadSuccess
+                                , Toast.LENGTH_SHORT)
                                 .show();
 
                         Utils.activity.refreshProfileData();
@@ -354,7 +400,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     } else {
                         Toast.makeText(getBaseContext(),
-                                getString(R.string.photo_upload_not_success), Toast.LENGTH_SHORT)
+                                photoUploadNotSuccess, Toast.LENGTH_SHORT)
                                 .show();
                         prgDialog.cancel();
                     }
@@ -405,4 +451,36 @@ public class EditProfileActivity extends AppCompatActivity {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         rq.add(stringRequest);
     }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    public void doUpdate(View view) {
+
+        if (inputValidation()) {
+            pb = (ProgressBar) findViewById(R.id.loading_spinner);
+            pb.setVisibility(view.VISIBLE);
+
+            final String URL = Config.APP_API_URL + Config.POST_USER_UPDATE + userId;
+            Utils.psLog(URL);
+
+            HashMap<String, String> params = new HashMap<>();
+            params.put("username", etUserName.getText().toString().trim());
+            params.put("email", etEmail.getText().toString().trim());
+            params.put("about_me", etAboutMe.getText().toString().trim());
+
+            doSubmit(URL, params);
+
+        }
+
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
 }

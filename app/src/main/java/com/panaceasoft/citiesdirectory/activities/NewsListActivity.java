@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -46,15 +47,24 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     private PNewsData newsData;
     private Bundle bundle;
     private Intent intent;
-    private Context context;
+    private String jsonStatusSuccessString;
+    private SpannableString newsListString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_list);
+
+        initData();
+
         setupToolbar();
         initList();
         prepareData();
+    }
+
+    private void initData(){
+        jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+        newsListString = Utils.getSpannableString(getString(R.string.news_list));
     }
 
     private void setupToolbar() {
@@ -69,7 +79,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setTitle(Utils.getSpannableString(getString(R.string.news_list)));
+        toolbar.setTitle(newsListString);
     }
 
     private void initList() {
@@ -132,7 +142,7 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
                     public void onResponse(JSONObject response) {
                         try {
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
 
                                 Gson gson = new Gson();
                                 Type listType = new TypeToken<List<PNewsData>>() {

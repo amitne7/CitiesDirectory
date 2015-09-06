@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.view.View;
 import android.widget.ListView;
 
@@ -24,17 +25,28 @@ public class ReviewListActivity extends AppCompatActivity {
     private int selectedItemId;
     private int selectedCityId;
     private SharedPreferences pref;
+    private SpannableString reviewListString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        initData();
         setContentView(R.layout.activity_review_list);
         setupToolbar();
         setupFAB();
         prepareData();
         initList();
         refreshData();
+    }
+
+    private void initData() {
+        try {
+
+            reviewListString = Utils.getSpannableString(getString(R.string.review_list));
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
     }
 
     private void initList() {
@@ -65,7 +77,7 @@ public class ReviewListActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setTitle(Utils.getSpannableString(getString(R.string.review_list)));
+        toolbar.setTitle(reviewListString);
     }
 
     private void setupFAB() {

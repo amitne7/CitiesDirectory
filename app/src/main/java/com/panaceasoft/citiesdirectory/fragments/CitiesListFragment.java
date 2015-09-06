@@ -67,7 +67,7 @@ public class CitiesListFragment extends Fragment {
     private TextView scCityItemCount;
     private ImageView scCityPhoto;
     private Button scCityExplore;
-    private String jsonStatusSuccess;
+    private String jsonStatusSuccessString;
     private String connectionError;
 
     //-------------------------------------------------------------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ public class CitiesListFragment extends Fragment {
     private void initData(){
         requestData(Config.APP_API_URL + Config.GET_ALL);
 
-        jsonStatusSuccess = getResources().getString(R.string.json_status_success);
+        jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
         connectionError = getResources().getString(R.string.connection_error);
 
     }
@@ -241,7 +241,7 @@ public class CitiesListFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             String status = response.getString("status");
-                            if (status.equals(jsonStatusSuccess)) {
+                            if (status.equals(jsonStatusSuccessString)) {
                                 progressWheel.setVisibility(View.GONE);
                                 Gson gson = new Gson();
                                 Type listType = new TypeToken<List<PCityData>>() {

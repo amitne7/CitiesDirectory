@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
     <uses-permission android:name="com.panaceasoft.citiesdirectory.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
@@ -64,7 +63,6 @@
             android:name=".activities.InquiryActivity"
             android:label="@string/title_activity_inquiry" />
 
-
         <service
             android:name="com.paypal.android.sdk.payments.PayPalService"
             android:exported="false" />
@@ -77,7 +75,6 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyD58wrJjZ9h_z6saXdcDaJyiOCySJONdcU" />
-
 
         <activity
             android:name=".activities.ReviewListActivity"
@@ -132,6 +129,10 @@
         <activity
             android:name=".activities.NewsDetailActivity"
             android:label="@string/title_activity_news_detail" >
+        </activity>
+        <activity
+            android:name=".activities.SearchResultActivity"
+            android:label="@string/title_activity_search_result" >
         </activity>
     </application>
 

@@ -9,8 +9,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -56,8 +54,13 @@ public class MainActivity extends AppCompatActivity {
     private FABActions fabActions;
     private boolean notiFlag;
     private SharedPreferences pref;
-    private SpannableString toolbarTitle;
     private FloatingActionButton fab;
+    private SpannableString appNameString;
+    private SpannableString profileString;
+    private SpannableString registerString;
+    private SpannableString forgotPasswordString;
+    private SpannableString searchKeywordString;
+    private SpannableString favouriteItemString;
 
     //-------------------------------------------------------------------------------------------------------------------------------------
     //endregion Private Variables
@@ -214,10 +217,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         try {
-            toolbarTitle = Utils.getSpannableString(getString(R.string.app_name));
-        }catch (Exception e){
-            Utils.psErrorLogE("Error in getting toolbar title.", e);
+            appNameString = Utils.getSpannableString(getString(R.string.app_name));
+            profileString = Utils.getSpannableString(getString(R.string.profile));
+            registerString = Utils.getSpannableString(getString(R.string.register));
+            forgotPasswordString = Utils.getSpannableString(getString(R.string.forgot_password));
+            searchKeywordString = Utils.getSpannableString(getString(R.string.search_keyword));
+            favouriteItemString = Utils.getSpannableString(getString(R.string.favourite_item));
+
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init Data.", e);
         }
+
     }
     //-------------------------------------------------------------------------------------------------------------------------------------
     //endregion init Data
@@ -229,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindData() {
 
-        toolbar.setTitle(toolbarTitle);
+        toolbar.setTitle(appNameString);
 
         bindMenu();
 
@@ -253,20 +263,6 @@ public class MainActivity extends AppCompatActivity {
     //-------------------------------------------------------------------------------------------------------------------------------------
     //region // Private Functions
     //-------------------------------------------------------------------------------------------------------------------------------------
-
-    private void fabClicked(View view) {
-        if (fabActions == FABActions.PROFILE) {
-            final Intent intent;
-            intent = new Intent(this, EditProfileActivity.class);
-            startActivityForResult(intent, 1);
-
-            // Sample Animatin Code
-            //ActivityOptionsCompat options = ActivityOptionsCompat.
-            //        makeSceneTransitionAnimation(this, (View)view, "profile");
-            //startActivity(intent, options.toBundle());
-            //overridePendingTransition(R.anim.right_to_left,R.anim.blank_anim);
-        }
-    }
 
     private void disableFAB() {
         fab.setVisibility(View.GONE);
@@ -318,6 +314,20 @@ public class MainActivity extends AppCompatActivity {
     //region // Public Functions
     //-------------------------------------------------------------------------------------------------------------------------------------
 
+    public void fabClicked(View view) {
+        if (fabActions == FABActions.PROFILE) {
+            final Intent intent;
+            intent = new Intent(this, EditProfileActivity.class);
+            startActivityForResult(intent, 1);
+
+            // Sample Animatin Code
+            //ActivityOptionsCompat options = ActivityOptionsCompat.
+            //        makeSceneTransitionAnimation(this, (View)view, "profile");
+            //startActivity(intent, options.toBundle());
+            //overridePendingTransition(R.anim.right_to_left,R.anim.blank_anim);
+        }
+    }
+
     public void openFragment(int menuId) {
 
         switch (menuId) {
@@ -325,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_home_login:
                 disableFAB();
                 fragment = new CitiesListFragment();
-                toolbar.setTitle(Utils.getSpannableString(getString(R.string.app_name)));
+                toolbar.setTitle(appNameString);
                 break;
 
             case R.id.nav_profile:
@@ -338,17 +348,17 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     fragment = new UserLoginFragment();
                 }
-                toolbar.setTitle(Utils.getSpannableString(getString(R.string.profile)));
+                toolbar.setTitle(profileString);
                 break;
 
             case R.id.nav_register:
                 fragment = new UserRegisterFragment();
-                toolbar.setTitle(Utils.getSpannableString(getString(R.string.register)));
+                toolbar.setTitle(registerString);
                 break;
 
             case R.id.nav_forgot:
                 fragment = new UserForgotPasswordFragment();
-                toolbar.setTitle(Utils.getSpannableString(getString(R.string.forgot_password)));
+                toolbar.setTitle(forgotPasswordString);
                 break;
 
             case R.id.nav_logout:
@@ -359,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_search_keyword_login:
                 disableFAB();
                 fragment = new SearchFragment();
-                toolbar.setTitle(Utils.getSpannableString(getString(R.string.search_keyword)));
+                toolbar.setTitle(searchKeywordString);
                 break;
 
             case R.id.nav_push_noti:
@@ -372,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_favourite_item_login:
                 disableFAB();
                 fragment = new FavouritesListFragment();
-                toolbar.setTitle(Utils.getSpannableString(getString(R.string.favourite_item)));
+                toolbar.setTitle(favouriteItemString);
                 break;
 
             default:
@@ -500,12 +510,5 @@ public class MainActivity extends AppCompatActivity {
     //-------------------------------------------------------------------------------------------------------------------------------------
     //endregion Enum
     //-------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
 
 }

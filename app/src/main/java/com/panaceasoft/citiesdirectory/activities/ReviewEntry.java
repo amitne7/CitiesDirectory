@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -44,16 +45,30 @@ public class ReviewEntry extends AppCompatActivity {
     private int selectedItemId;
     private int selectedCityId;
     private ProgressBar pb;
+    private String jsonStatusSuccessString;
+    private SpannableString reviewString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review_entry);
+
+        initData();
+
         prepareData();
         setupToolbar();
         setupUserInfo();
     }
 
+    private void initData() {
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            reviewString = Utils.getSpannableString(getString(R.string.review));
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
+
+    }
     private void prepareData() {
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
@@ -81,7 +96,7 @@ public class ReviewEntry extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setTitle(Utils.getSpannableString(getString(R.string.review)));
+        toolbar.setTitle(reviewString);
     }
 
     public void doReview(View view) {
@@ -111,7 +126,7 @@ public class ReviewEntry extends AppCompatActivity {
                         try {
                             String success_status = response.getString("status");
 
-                            if (success_status.equals(getString(R.string.json_status_success))) {
+                            if (success_status.equals(jsonStatusSuccessString)) {
                                 Gson gson = new Gson();
                                 Type listType = new TypeToken<PItemData>() {
                                 }.getType();

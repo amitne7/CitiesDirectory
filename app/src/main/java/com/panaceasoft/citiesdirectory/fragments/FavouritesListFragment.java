@@ -53,6 +53,8 @@ public class FavouritesListFragment extends Fragment {
     private StaggeredGridLayoutManager mLayoutManager;
     private TextView displayMessage;
     private SharedPreferences pref;
+    private String noDataAvaiString;
+    private String jsonStatusSuccessString;
 
     public FavouritesListFragment() {
         // Required empty public constructor
@@ -61,11 +63,11 @@ public class FavouritesListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
+
         View view = inflater.inflate(R.layout.fragment_favourites_list, container, false);
 
-        Utils.psLog(Config.APP_API_URL + Config.GET_FAVOURITE_ITEMS + pref.getInt("_login_user_id", 0) + "/count/" + Config.PAGINATION + "/form/0");
-        requestData(Config.APP_API_URL + Config.GET_FAVOURITE_ITEMS + pref.getInt("_login_user_id", 0) + "/count/" + Config.PAGINATION + "/form/0");
+        initData();
+
 
         setupProgressWheel(view);
         setupRecyclerView(view);
@@ -74,6 +76,20 @@ public class FavouritesListFragment extends Fragment {
         displayMessage.setVisibility(view.GONE);
 
         return view;
+    }
+
+    private void initData() {
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
+        Utils.psLog(Config.APP_API_URL + Config.GET_FAVOURITE_ITEMS + pref.getInt("_login_user_id", 0) + "/count/" + Config.PAGINATION + "/form/0");
+        requestData(Config.APP_API_URL + Config.GET_FAVOURITE_ITEMS + pref.getInt("_login_user_id", 0) + "/count/" + Config.PAGINATION + "/form/0");
+
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            noDataAvaiString = getResources().getString(R.string.no_data_available);
+
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
     }
 
     private void requestData(String uri) {
@@ -87,7 +103,7 @@ public class FavouritesListFragment extends Fragment {
                         try {
 
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
 
                                 if (myDataset.size() > 0) {
                                     myDataset.remove(myDataset.size() - 1);
@@ -109,12 +125,12 @@ public class FavouritesListFragment extends Fragment {
                                 mAdapter.setLoaded();
                             }else{
                                 displayMessage.setVisibility(View.VISIBLE);
-                                displayMessage.setText(getString(R.string.no_data_available));
+                                displayMessage.setText(noDataAvaiString);
                             }
 
                         } catch (JSONException e) {
                             displayMessage.setVisibility(View.VISIBLE);
-                            displayMessage.setText(getString(R.string.no_data_available));
+                            displayMessage.setText(noDataAvaiString);
 
                         }
 

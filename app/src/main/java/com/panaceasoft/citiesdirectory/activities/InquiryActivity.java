@@ -40,6 +40,7 @@ public class InquiryActivity extends AppCompatActivity {
    // private ProgressBar pb;
     private Button btnSubmit;
     private ProgressDialog prgDialog;
+    private String jsonStatusSuccessString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,11 @@ public class InquiryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_inquiry);
         setupToolbar();
         initUI();
+        initData();
+    }
+
+    private void initData() {
+        jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
     }
 
     private void initUI() {
@@ -109,7 +115,7 @@ public class InquiryActivity extends AppCompatActivity {
                           //  pb.setVisibility(view.GONE);
 
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
                                 Utils.psLog(status);
 
                                 showSuccessPopup();

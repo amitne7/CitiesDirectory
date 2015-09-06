@@ -44,6 +44,14 @@ public class NotificationFragment extends Fragment {
     AsyncTask<Void, Void, String> createRegIdTask;
     private String URL = "";
     ProgressDialog prgDialog;
+    private String serviceNotAvaiString;
+    private String jsonStatusSuccessString;
+    private String gcmRegisterSuccessString;
+    private String gcmUnregisterSuccessString;
+    private String gcmCannotConnectString;
+    private String gcmSomethingWrongString;
+    private String gcmRegisterNotSuccessString;
+    private String gcmRequestNotFoundString;
 
 
     public NotificationFragment() {
@@ -56,8 +64,29 @@ public class NotificationFragment extends Fragment {
         // Inflate the layout for this fragment
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
         view = inflater.inflate(R.layout.fragment_notification, container, false);
+
+        initData();
+
         initUI();
         return view;
+    }
+
+    private void initData() {
+        try {
+
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            serviceNotAvaiString = getResources().getString(R.string.service_not_available);
+            gcmRegisterSuccessString = getResources().getString(R.string.gcm_register_success);
+            gcmUnregisterSuccessString = getResources().getString(R.string.gcm_unregister_success);
+            gcmRegisterNotSuccessString = getResources().getString(R.string.gcm_register_not_success);
+            gcmRequestNotFoundString = getResources().getString(R.string.request_not_found);
+            gcmSomethingWrongString = getResources().getString(R.string.something_wrong);
+            gcmCannotConnectString = getResources().getString(R.string.cannot_connect);
+
+
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
     }
 
     private void initUI() {
@@ -125,7 +154,7 @@ public class NotificationFragment extends Fragment {
                     hideProgress();
                     Toast.makeText(
                             getActivity().getApplicationContext(),
-                            getString(R.string.service_not_available),
+                            serviceNotAvaiString,
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -155,11 +184,11 @@ public class NotificationFragment extends Fragment {
 
                         try {
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
                                 if (toggleStatus.toString().equals("reg")) {
                                     Toast.makeText(
                                             getActivity().getApplicationContext(),
-                                            getString(R.string.gcm_register_success),
+                                            gcmRegisterSuccessString,
                                             Toast.LENGTH_LONG).show();
 
                                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
@@ -170,7 +199,7 @@ public class NotificationFragment extends Fragment {
                                 } else {
                                     Toast.makeText(
                                             getActivity().getApplicationContext(),
-                                            getString(R.string.gcm_unregister_success),
+                                            gcmUnregisterSuccessString,
                                             Toast.LENGTH_LONG).show();
 
                                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
@@ -181,7 +210,7 @@ public class NotificationFragment extends Fragment {
                             } else {
                                 Toast.makeText(
                                         getActivity().getApplicationContext(),
-                                        getString(R.string.gcm_register_not_success),
+                                        gcmRegisterNotSuccessString,
                                         Toast.LENGTH_LONG).show();
                             }
 
@@ -237,16 +266,16 @@ public class NotificationFragment extends Fragment {
 
                         if (statusCode == 404) {
                             Toast.makeText(getActivity().getApplicationContext(),
-                                    getString(R.string.request_not_found),
+                                    gcmRequestNotFoundString,
                                     Toast.LENGTH_LONG).show();
                         } else if (statusCode == 500) {
                             Toast.makeText(getActivity().getApplicationContext(),
-                                    getString(R.string.something_wrong),
+                                    gcmSomethingWrongString,
                                     Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(
                                     getActivity().getApplicationContext(),
-                                    getString(R.string.cannot_connect),
+                                    gcmCannotConnectString,
                                     Toast.LENGTH_LONG).show();
                         }
                     }

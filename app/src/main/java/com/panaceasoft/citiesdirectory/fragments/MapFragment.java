@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.text.SpannableString;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -96,6 +97,8 @@ public class MapFragment extends Fragment {
     View marker;
     MaterialDialog dialog;
     MapView mMapView;
+    private String jsonStatusSuccessString;
+    private SpannableString connectionErrorString;
 
     public MapFragment() {
         // Required empty public constructor
@@ -106,6 +109,9 @@ public class MapFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_map, container, false);
+
+        initData();
+
         if (Utils.isGooglePlayServicesOK(getActivity())) {
             Utils.psLog("Google Play Service is ready for Google Map");
             setUpFAB(v);
@@ -118,6 +124,17 @@ public class MapFragment extends Fragment {
         }
 
         return v;
+
+    }
+
+    private void initData() {
+
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            connectionErrorString = Utils.getSpannableString(getString(R.string.connection_error));
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
 
     }
 
@@ -341,7 +358,7 @@ public class MapFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
 
                                 progressWheel.setVisibility(View.GONE);
                                 Gson gson = new Gson();
@@ -402,7 +419,7 @@ public class MapFragment extends Fragment {
                                             final Intent intent;
                                             intent = new Intent(getActivity(), DetailActivity.class);
                                             intent.putExtra("selected_item_id", ct.id);
-                                            intent.putExtra("selected_city_id", selectedCityId + "");
+                                            intent.putExtra("selected_city_id", selectedCityId);
                                             startActivity(intent);
 
                                         }
@@ -435,8 +452,7 @@ public class MapFragment extends Fragment {
 
                         } else {
                             display_message.setVisibility(View.VISIBLE);
-                            String message = getResources().getString(R.string.connection_error);
-                            display_message.setText(message);
+                            display_message.setText(connectionErrorString);
 
                         }
 

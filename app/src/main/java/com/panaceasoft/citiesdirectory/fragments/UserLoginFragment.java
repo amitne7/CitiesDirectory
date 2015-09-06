@@ -45,13 +45,26 @@ public class UserLoginFragment extends Fragment {
     //private ProgressBar pb;
     private MaterialDialog dialog;
     private ProgressDialog prgDialog;
+    private String jsonStatusSuccessString;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_login, container, false);
+
+        initData();
+
         initUI();
         return view;
+    }
+
+    private void initData() {
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
     }
 
     private void initUI() {
@@ -147,7 +160,7 @@ public class UserLoginFragment extends Fragment {
                             Utils.psLog(" .... Starting User Login Callback .... ");
 
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
 
                                 JSONObject dat = response.getJSONObject("data");
                                 String user_id = dat.getString("id");

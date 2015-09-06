@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.panaceasoft.citiesdirectory.R;
@@ -59,7 +60,6 @@ public class PSPopupSingleSelectView extends LinearLayout {
                 0, 0);
 
         try {
-
             items = a.getTextArray(R.styleable.UIPopup_items);
             title = a.getString(R.styleable.UIPopup_pTitle);
 
@@ -94,32 +94,40 @@ public class PSPopupSingleSelectView extends LinearLayout {
         mLayout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MaterialDialog dialog = new MaterialDialog.Builder(getContext())
-                        .title(title)
-                        .items(items)
-                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
-                            @Override
-                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                /**
-                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
-                                 * returning false here won't allow the newly selected radio button to actually be selected.
-                                 **/
+                try {
+                    if(pCityDatas != null && pCityDatas.size() > 0) {
+                        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+                                .title(title)
+                                .items(items)
+                                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+                                    @Override
+                                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                        /**
+                                         * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                                         * returning false here won't allow the newly selected radio button to actually be selected.
+                                         **/
 
-                                mTextView.setText(text);
-                                selectedIndex = which;
+                                        mTextView.setText(text);
+                                        selectedIndex = which;
 
-                                onSelectListener.Select(view, which, text);
+                                        onSelectListener.Select(view, which, text);
 
-                                if (pCityDatas != null && pCityDatas.size() > 0) {
-                                    onSelectListener.Select(view, which, text, pCityDatas.get(which).id);
-                                }
-                                return true;
-                            }
-                        })
-                        .positiveText("Choose")
-                        .show();
+                                        if (pCityDatas != null && pCityDatas.size() > 0) {
+                                            onSelectListener.Select(view, which, text, pCityDatas.get(which).id);
+                                        }
+                                        return true;
+                                    }
+                                })
+                                .positiveText("Choose")
+                                .show();
 
-                dialog.setSelectedIndex(selectedIndex);
+                        dialog.setSelectedIndex(selectedIndex);
+                    }else{
+                        Toast.makeText(getContext(), "There is no city to select.", Toast.LENGTH_SHORT).show();
+                    }
+                }catch (Exception e){
+                    Utils.psErrorLogE("Error in Popup Dialog." , e);
+                }
             }
         });
     }

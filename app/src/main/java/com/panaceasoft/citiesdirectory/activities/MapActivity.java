@@ -3,6 +3,7 @@ package com.panaceasoft.citiesdirectory.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.view.View;
 
 import com.panaceasoft.citiesdirectory.R;
@@ -10,19 +11,34 @@ import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 public class MapActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private int selected_city_id;
-    private int selected_sub_cat_id;
-
+    private SpannableString exploreOnMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        setupToolbar();
-        prepareData();
+
+        initData();
+
+        initUI();
+
+        bindData();
+
     }
 
-    private void setupToolbar() {
+    private void initData() {
+        try {
+            exploreOnMap = Utils.getSpannableString(getString(R.string.explore_on_map));
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
+    }
+
+    private void initUI() {
+        initToolbar();
+    }
+
+    private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
 
@@ -34,16 +50,10 @@ public class MapActivity extends AppCompatActivity {
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        toolbar.setTitle(Utils.getSpannableString(getString(R.string.explore_on_map)));
-
     }
 
-    private void prepareData() {
-        selected_city_id = getIntent().getIntExtra("selected_city_id", 0);
-        selected_sub_cat_id = getIntent().getIntExtra("selected_sub_cat_id",0);
+    private void bindData(){
+        toolbar.setTitle(exploreOnMap);
     }
-
-
 
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,11 +39,16 @@ public class PasswordUpdateActivity extends AppCompatActivity {
     private int userId;
     private SharedPreferences pref;
     private ProgressDialog prgDialog;
+    private String jsonStatusSuccessString;
+    private SpannableString passwordChangeString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_update);
+
+        initData();
+
         setupToolbar();
         setupUI();
         setupData();
@@ -66,6 +72,14 @@ public class PasswordUpdateActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void initData(){
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            passwordChangeString = Utils.getSpannableString(getString(R.string.password_change));
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
+    }
     private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -78,7 +92,7 @@ public class PasswordUpdateActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setTitle(Utils.getSpannableString(getString(R.string.password_change)));
+        toolbar.setTitle(passwordChangeString);
     }
 
     private void setupUI() {
@@ -122,7 +136,7 @@ public class PasswordUpdateActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
 
                                 showSuccessMessage(response.getString("data"));
 

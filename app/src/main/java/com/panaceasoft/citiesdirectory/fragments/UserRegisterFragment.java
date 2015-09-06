@@ -47,6 +47,7 @@ public class UserRegisterFragment extends Fragment {
     private Button btnRegister;
     private Button btnCancel;
     private ProgressDialog prgDialog;
+    private String jsonStatusSuccessString;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,10 +55,21 @@ public class UserRegisterFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_user_register, container, false);
 
+        initData();
+
         // Init the all UI
         initUI();
 
         return view;
+    }
+
+    private void initData() {
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
     }
 
     private void initUI() {
@@ -152,7 +164,7 @@ public class UserRegisterFragment extends Fragment {
                             //pb.setVisibility(view.GONE);
 
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccessString)) {
 
                                 String user_id = response.getString("data");
 

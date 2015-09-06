@@ -212,11 +212,17 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void updateItemLikeAndReviewCount(int itemID, String likeCount, String reviewCount){
-        for(int i = 0; i<mDataset.size(); i++){
-            if(mDataset.get(i).id  == itemID){
-                mDataset.get(i).like_count = likeCount;
-                mDataset.get(i).review_count = reviewCount;
+        try {
+            if (mDataset != null) {
+                for (int i = 0; i < mDataset.size(); i++) {
+                    if (mDataset.get(i).id == itemID) {
+                        mDataset.get(i).like_count = likeCount;
+                        mDataset.get(i).review_count = reviewCount;
+                    }
+                }
             }
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in Update Like and Review.", e);
         }
     }
 
