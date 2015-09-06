@@ -649,6 +649,7 @@ public class DetailActivity extends AppCompatActivity {
         intent = new Intent(getApplicationContext(), GalleryActivity.class);
         intent.putExtra("images_bundle", bundle);
         startActivity(intent);
+        overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
     }
 
     private void getRate(String postURL, HashMap<String, String> params) {
@@ -850,6 +851,7 @@ public class DetailActivity extends AppCompatActivity {
         final Intent intent;
         intent = new Intent(this, InquiryActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
     }
 
     public void doReview(View view) {
@@ -917,15 +919,6 @@ public class DetailActivity extends AppCompatActivity {
     //-------------------------------------------------------------------------------------------------------------------------------------
     //endregion Public Functions
     //-------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
 
 
 }

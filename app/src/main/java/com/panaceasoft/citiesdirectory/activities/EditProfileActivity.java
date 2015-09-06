@@ -3,6 +3,7 @@ package com.panaceasoft.citiesdirectory.activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -109,6 +110,7 @@ public class EditProfileActivity extends AppCompatActivity {
             final Intent intent;
             intent = new Intent(this, PasswordUpdateActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
             return true;
         }
 
@@ -117,10 +119,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //Intent in = new Intent();
         super.onBackPressed();
         overridePendingTransition(R.anim.blank_anim,R.anim.left_to_right);
-
         return;
     }
 
@@ -164,14 +164,18 @@ public class EditProfileActivity extends AppCompatActivity {
     //region // Init Data Functions
     //-------------------------------------------------------------------------------------------------------------------------------------
     private void initData(){
-        pref = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        userId = pref.getInt("_login_user_id", 0);
+        try {
+            pref = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
+            userId = pref.getInt("_login_user_id", 0);
 
-        editProfileString = Utils.getSpannableString(getString(R.string.edit_profile));
+            editProfileString = Utils.getSpannableString(getString(R.string.edit_profile));
 
-        jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
-        photoUploadSuccess = getResources().getString(R.string.photo_upload_success);
-        photoUploadNotSuccess = getResources().getString(R.string.photo_upload_not_success);
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            photoUploadSuccess = getResources().getString(R.string.photo_upload_success);
+            photoUploadNotSuccess = getResources().getString(R.string.photo_upload_not_success);
+        } catch (Resources.NotFoundException e) {
+            Utils.psErrorLogE("Error in initData.", e);
+        }
 
     }
 
@@ -183,43 +187,51 @@ public class EditProfileActivity extends AppCompatActivity {
     //region // Init UI Functions
     //-------------------------------------------------------------------------------------------------------------------------------------
     private void initUI(){
-        initToolbar();
+        try {
+            initToolbar();
 
-        etUserName = (EditText) findViewById(R.id.input_name);
-        etEmail = (EditText) findViewById(R.id.input_email);
-        etAboutMe = (EditText) findViewById(R.id.input_about_me);
-        ivProfilePhoto = (ImageView) findViewById(R.id.fab);
-        ivProfilePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent i = new Intent(
-                            Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            etUserName = (EditText) findViewById(R.id.input_name);
+            etEmail = (EditText) findViewById(R.id.input_email);
+            etAboutMe = (EditText) findViewById(R.id.input_about_me);
+            ivProfilePhoto = (ImageView) findViewById(R.id.fab);
+            ivProfilePhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        Intent i = new Intent(
+                                Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                    startActivityForResult(i, RESULT_LOAD_IMAGE);
-                }catch (Exception e){
-                    Utils.psErrorLogE("Error in Image Gallery.", e);
+                        startActivityForResult(i, RESULT_LOAD_IMAGE);
+                    }catch (Exception e){
+                        Utils.psErrorLogE("Error in Image Gallery.", e);
+                    }
                 }
-            }
-        });
+            });
 
-        prgDialog = new ProgressDialog(this);
-        prgDialog.setMessage("Please wait...");
-        prgDialog.setCancelable(false);
+            prgDialog = new ProgressDialog(this);
+            prgDialog.setMessage("Please wait...");
+            prgDialog.setCancelable(false);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initUI.", e);
+        }
     }
 
     private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
+        try {
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
 
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initToolbar.", e);
+        }
 
     }
 

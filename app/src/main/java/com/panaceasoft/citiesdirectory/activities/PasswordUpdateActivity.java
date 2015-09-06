@@ -11,9 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,22 +23,33 @@ import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.HashMap;
 
 public class PasswordUpdateActivity extends AppCompatActivity {
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
     private Toolbar toolbar;
     private EditText etNewPassword;
     private EditText etConfirmNewPassword;
-    //private ProgressBar pb;
     private int userId;
     private SharedPreferences pref;
     private ProgressDialog prgDialog;
     private String jsonStatusSuccessString;
     private SpannableString passwordChangeString;
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +58,11 @@ public class PasswordUpdateActivity extends AppCompatActivity {
 
         initData();
 
-        setupToolbar();
-        setupUI();
-        setupData();
+
+
+        initUI();
+
+        bindData();
     }
 
 
@@ -72,6 +83,66 @@ public class PasswordUpdateActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.blank_anim, R.anim.left_to_right);
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    private void initUI() {
+        initToolbar();
+        initProgressDialog();
+
+        etNewPassword = (EditText) findViewById(R.id.input_password);
+        etConfirmNewPassword = (EditText) findViewById(R.id.input_password_confirm);
+    }
+
+    private void initProgressDialog() {
+        try {
+            prgDialog = new ProgressDialog(this);
+            prgDialog.setMessage("Please wait...");
+            prgDialog.setCancelable(false);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initProgressDialog.", e);
+        }
+    }
+
+    private void initToolbar() {
+        try {
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            toolbar.setTitle(passwordChangeString);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initToolbar.", e);
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
     private void initData(){
         try {
             jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
@@ -80,52 +151,33 @@ public class PasswordUpdateActivity extends AppCompatActivity {
             Utils.psErrorLogE("Error in init data.", e);
         }
     }
-    private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setTitle(passwordChangeString);
-    }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
-    private void setupUI() {
-        etNewPassword = (EditText) findViewById(R.id.input_password);
-        etConfirmNewPassword = (EditText) findViewById(R.id.input_password_confirm);
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
-        prgDialog = new ProgressDialog(this);
-        prgDialog.setMessage("Please wait...");
-        prgDialog.setCancelable(false);
-    }
-
-    private void setupData() {
-        pref = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        userId = pref.getInt("_login_user_id", 0);
-
-
-    }
-
-    public void doUpdate(View view) {
-        if (inputValidation()) {
-            // pb = (ProgressBar) findViewById(R.id.loading_spinner);
-            //pb.setVisibility(view.VISIBLE);
-
-            final String URL = Config.APP_API_URL + Config.POST_USER_UPDATE + userId;
-            Utils.psLog(URL);
-
-            HashMap<String, String> params = new HashMap<>();
-            params.put("password", etNewPassword.getText().toString().trim());
-
-            doSubmit(URL, params);
-
+    private void bindData() {
+        try {
+            pref = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
+            userId = pref.getInt("_login_user_id", 0);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in bindData.", e);
         }
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
 
     private void doSubmit(String postURL, HashMap<String, String> params) {
         prgDialog.show();
@@ -192,6 +244,25 @@ public class PasswordUpdateActivity extends AppCompatActivity {
         Toast.makeText(this, success_status, Toast.LENGTH_SHORT).show();
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    public void doUpdate(View view) {
+        if (inputValidation()) {
+            final String URL = Config.APP_API_URL + Config.POST_USER_UPDATE + userId;
+            Utils.psLog(URL);
+
+            HashMap<String, String> params = new HashMap<>();
+            params.put("password", etNewPassword.getText().toString().trim());
+            doSubmit(URL, params);
+        }
+    }
+
     public void showFailPopup() {
         new MaterialDialog.Builder(this)
                 .title(R.string.register)
@@ -199,4 +270,9 @@ public class PasswordUpdateActivity extends AppCompatActivity {
                 .positiveText(R.string.OK)
                 .show();
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
 }

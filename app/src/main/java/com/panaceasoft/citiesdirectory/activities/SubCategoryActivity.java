@@ -107,7 +107,7 @@ public class SubCategoryActivity extends AppCompatActivity {
         final Intent intent;
         intent = new Intent(this, MapActivity.class);
         startActivity(intent);
-
+        overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
     }
 
     private void setupViewPager(ViewPager viewPager, ArrayList<PSubCategoryData> subCategoryArrayList) {

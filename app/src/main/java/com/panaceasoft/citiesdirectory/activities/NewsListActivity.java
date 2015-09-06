@@ -1,7 +1,7 @@
 package com.panaceasoft.citiesdirectory.activities;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -16,7 +18,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -25,18 +26,18 @@ import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.adapters.NewsAdapter;
 import com.panaceasoft.citiesdirectory.models.PNewsData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewsListActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
     private Toolbar toolbar;
     private int selectedCityId;
     private ListView listView;
@@ -49,6 +50,13 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
     private Intent intent;
     private String jsonStatusSuccessString;
     private SpannableString newsListString;
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,56 +65,93 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
 
         initData();
 
-        setupToolbar();
+        initUI();
+
+        bindData();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.blank_anim, R.anim.left_to_right);
+    }
+
+    @Override
+    public void onRefresh() {
+        requestData();
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void initUI() {
+        initToolbar();
         initList();
-        prepareData();
     }
 
-    private void initData(){
-        jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
-        newsListString = Utils.getSpannableString(getString(R.string.news_list));
-    }
-
-    private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        toolbar.setTitle(newsListString);
+    private void initToolbar() {
+        try {
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initToolbar.", e);
+        }
     }
 
     private void initList() {
-        listView = (ListView) findViewById(R.id.news_list);
-        listView.setOnItemClickListener(new ListClickHandler());
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-    }
-
-    public class ListClickHandler implements OnItemClickListener {
-
-        @Override
-        public void onItemClick(AdapterView<?> adapter, View view, int position, long arg3) {
-            // TODO Auto-generated method stub
-            newsData = (PNewsData) adapter.getItemAtPosition(position);
-            Utils.psLog(" Title " + newsData.title);
-            bundle = new Bundle();
-            bundle.putParcelable("news", newsData);
-
-            intent = new Intent(getApplicationContext(), NewsDetailActivity.class);
-            intent.putExtra("news_bundle", bundle);
-            startActivity(intent);
-
+        try {
+            listView = (ListView) findViewById(R.id.news_list);
+            listView.setOnItemClickListener(new ListClickHandler());
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initList.", e);
         }
-
     }
 
-    private void prepareData() {
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void initData(){
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            newsListString = Utils.getSpannableString(getString(R.string.news_list));
+        } catch (Resources.NotFoundException e) {
+            Utils.psErrorLogE("Error in initToolbar.", e);
+        }
+    }
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void bindData() {
+
+        toolbar.setTitle(newsListString);
         selectedCityId = Integer.parseInt(getIntent().getStringExtra("selected_city_id"));
         newsDataSet = new ArrayList<>();
         adapter = new NewsAdapter(this, newsDataSet);
@@ -123,10 +168,14 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         );
     }
 
-    @Override
-    public void onRefresh() {
-        requestData();
-    }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
 
     private void requestData() {
 
@@ -190,6 +239,40 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
         queue.add(request);
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Listener Class
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    public class ListClickHandler implements OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapter, View view, int position, long arg3) {
+            // TODO Auto-generated method stub
+            newsData = (PNewsData) adapter.getItemAtPosition(position);
+            Utils.psLog(" Title " + newsData.title);
+            bundle = new Bundle();
+            bundle.putParcelable("news", newsData);
+
+            intent = new Intent(getApplicationContext(), NewsDetailActivity.class);
+            intent.putExtra("news_bundle", bundle);
+            startActivity(intent);
+            overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
+        }
+
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Listener Class
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 
 
 }

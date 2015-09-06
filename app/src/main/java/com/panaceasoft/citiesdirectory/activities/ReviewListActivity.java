@@ -90,6 +90,8 @@ public class ReviewListActivity extends AppCompatActivity {
                     intent.putExtra("selected_item_id", selectedItemId);
                     intent.putExtra("selected_city_id", selectedCityId);
                     startActivityForResult(intent, 1);
+                    overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
+
                 } else {
                     Intent intent = new Intent(getApplicationContext(), UserLoginActivity.class);
                     startActivity(intent);

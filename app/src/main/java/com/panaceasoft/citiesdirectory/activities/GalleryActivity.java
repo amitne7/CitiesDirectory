@@ -1,20 +1,15 @@
 package com.panaceasoft.citiesdirectory.activities;
 
 import android.content.Context;
-import android.os.Parcelable;
+import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.panaceasoft.citiesdirectory.Config;
-import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.models.PImageData;
 import com.panaceasoft.citiesdirectory.models.PItemData;
@@ -32,41 +27,43 @@ import java.util.ArrayList;
  */
 
 public class GalleryActivity extends AppCompatActivity {
-    static TextView txtImgDesc;
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private TextView txtImgDesc;
     private static PNewsData newsData;
     private static PItemData itemData;
-
     private Bundle bundle;
     private String from;
-
     private static ArrayList<PImageData> imageArray;
+    private TouchImageView imgView;
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        ExtendedViewPager mViewPager = (ExtendedViewPager) findViewById(R.id.view_pager);
-        mViewPager.setAdapter(new TouchImageAdapter());
-        mViewPager.setCurrentItem((Integer.MAX_VALUE / 2) - (Integer.MAX_VALUE / 2) % 12);
-        txtImgDesc = (TextView) findViewById(R.id.img_desc);
+        initUI();
 
-
-        bundle = getIntent().getBundleExtra("images_bundle");
-        from =bundle.getString("from");
-        if(from.toString().equals("item")) {
-            itemData = bundle.getParcelable("images");
-            imageArray = itemData.images;
-        } else {
-            newsData = bundle.getParcelable("images");
-            imageArray = newsData.images;
-        }
-
-
-
+        initData();
     }
 
-    static class TouchImageAdapter extends PagerAdapter {
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.blank_anim, R.anim.left_to_right);
+    }
+
+    class TouchImageAdapter extends PagerAdapter {
 
         Context context;
 
@@ -78,19 +75,12 @@ public class GalleryActivity extends AppCompatActivity {
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
-            Log.d("TEMAPS", position + "");
-            TouchImageView imgView = new TouchImageView(container.getContext());
-            TextView imgDesc = new TextView(container.getContext());
-
-
+            imgView = new TouchImageView(container.getContext());
             if(position >=  imageArray.size()) {
                 position = position %  imageArray.size();
             }
             Picasso.with(context).load(Config.APP_IMAGES_URL + imageArray.get(position).path).into(imgView);
-
             txtImgDesc.setText(imageArray.get(position).description);
-            Utils.psLog("Img Desc " + imageArray.get(position).description);
-
             container.addView(imgView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             return imgView;
         }
@@ -104,6 +94,63 @@ public class GalleryActivity extends AppCompatActivity {
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
         }
+
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void initUI() {
+        try {
+            ExtendedViewPager mViewPager = (ExtendedViewPager) findViewById(R.id.view_pager);
+            mViewPager.setAdapter(new TouchImageAdapter());
+            mViewPager.setCurrentItem((Integer.MAX_VALUE / 2) - (Integer.MAX_VALUE / 2) % 12);
+            txtImgDesc = (TextView) findViewById(R.id.img_desc);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initUI.", e);
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void initData() {
+        try {
+            bundle = getIntent().getBundleExtra("images_bundle");
+            from =bundle.getString("from");
+            if(from.toString().equals("item")) {
+                itemData = bundle.getParcelable("images");
+                imageArray = itemData.images;
+            } else {
+                newsData = bundle.getParcelable("images");
+                imageArray = newsData.images;
+            }
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initData.", e);
+        }
+    }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    private void bindData() {
+        bindGallery();
+    }
+
+    private void bindGallery() {
+
 
     }
 }

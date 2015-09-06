@@ -10,8 +10,21 @@ import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 public class MapActivity extends AppCompatActivity {
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
     private Toolbar toolbar;
     private SpannableString exploreOnMap;
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +39,20 @@ public class MapActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.blank_anim, R.anim.left_to_right);
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
     private void initData() {
         try {
             exploreOnMap = Utils.getSpannableString(getString(R.string.explore_on_map));
@@ -34,26 +61,50 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
     private void initUI() {
         initToolbar();
     }
 
     private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
+        try {
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
 
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initToolbar.", e);
+        }
     }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     private void bindData(){
         toolbar.setTitle(exploreOnMap);
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
 
 }

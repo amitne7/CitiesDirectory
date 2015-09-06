@@ -2,15 +2,15 @@ package com.panaceasoft.citiesdirectory.activities;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -22,75 +22,150 @@ import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
 import android.widget.Button;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.HashMap;
 
 
 public class InquiryActivity extends AppCompatActivity {
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
     private Toolbar toolbar;
     private EditText txtName;
     private EditText txtEmail;
     private EditText txtMessage;
     private SharedPreferences pref;
-   // private ProgressBar pb;
     private Button btnSubmit;
     private ProgressDialog prgDialog;
     private String jsonStatusSuccessString;
+    private SpannableString inquiry;
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         setContentView(R.layout.activity_inquiry);
-        setupToolbar();
+
         initUI();
+
         initData();
+
+        bindData();
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.blank_anim, R.anim.left_to_right);
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
 
     private void initData() {
-        jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+        try {
+            pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            inquiry = Utils.getSpannableString(getString(R.string.inquiry));
+        } catch (Resources.NotFoundException e) {
+            Utils.psErrorLog("Error in initData," ,e );
+        }
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     private void initUI() {
-        txtName = (EditText) findViewById(R.id.input_name);
-        txtName.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
-        txtEmail = (EditText) findViewById(R.id.input_email);
-        txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
-        txtMessage = (EditText) findViewById(R.id.input_message);
-        txtMessage.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
-        btnSubmit = (Button) findViewById(R.id.button_submit);
-        btnSubmit.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
-       // pb = (ProgressBar) findViewById(R.id.loading_spinner);
+
+        try {
+            initToolbar();
+            initProgressDialog();
+            txtName = (EditText) findViewById(R.id.input_name);
+            txtName.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            txtEmail = (EditText) findViewById(R.id.input_email);
+            txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            txtMessage = (EditText) findViewById(R.id.input_message);
+            txtMessage.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            btnSubmit = (Button) findViewById(R.id.button_submit);
+            btnSubmit.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initUI.", e);
+        }
     }
 
-    private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        toolbar.setTitle(Utils.getSpannableString(getString(R.string.inquiry)));
-
-        prgDialog = new ProgressDialog(this);
-        prgDialog.setMessage("Please wait...");
-        prgDialog.setCancelable(false);
+    private void initToolbar() {
+        try {
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initToolbar.", e);
+        }
     }
+
+    private void initProgressDialog() {
+        try {
+            prgDialog = new ProgressDialog(this);
+            prgDialog.setMessage("Please wait...");
+            prgDialog.setCancelable(false);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initProgressDialog.", e);
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void bindData() {
+        toolbar.setTitle(inquiry);
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     public void doInquiry(View view) {
         if (inputValidation()) {
-           // pb = (ProgressBar) findViewById(R.id.loading_spinner);
-           // pb.setVisibility(view.VISIBLE);
 
             final String URL = Config.APP_API_URL + Config.POST_ITEM_INQUIRY + GlobalData.itemData.id;
             Utils.psLog(URL);
@@ -190,5 +265,10 @@ public class InquiryActivity extends AppCompatActivity {
 
         return true;
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion // Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
 
 }

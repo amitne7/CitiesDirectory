@@ -28,14 +28,15 @@ import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.HashMap;
 
 public class ReviewEntry extends AppCompatActivity {
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     private Toolbar toolbar;
     private SharedPreferences pref;
@@ -48,56 +49,116 @@ public class ReviewEntry extends AppCompatActivity {
     private String jsonStatusSuccessString;
     private SpannableString reviewString;
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review_entry);
 
+        initUI();
+
         initData();
 
-        prepareData();
-        setupToolbar();
-        setupUserInfo();
+        bindData();
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(R.anim.blank_anim, R.anim.left_to_right);
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    private void initUI() {
+        initToolbar();
+    }
+
+    private void initToolbar() {
+        try {
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            toolbar.setTitle(reviewString);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initToolbar.", e);
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // init UI Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     private void initData() {
         try {
             jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
             reviewString = Utils.getSpannableString(getString(R.string.review));
+
+            pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
+            selectedCityId = getIntent().getIntExtra("selected_city_id", 0);
         }catch(Exception e){
             Utils.psErrorLogE("Error in init data.", e);
         }
 
     }
-    private void prepareData() {
-        pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        selectedItemId = getIntent().getIntExtra("selected_item_id", 0);
-        selectedCityId = getIntent().getIntExtra("selected_city_id", 0);
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // init Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void bindData() {
+        try {
+            txtUserName = (TextView) findViewById(R.id.login_user_name);
+            txtUserEmail = (TextView) findViewById(R.id.login_user_email);
+
+            txtUserName.setText(pref.getString("_login_user_name", "").toString());
+            txtUserEmail.setText(pref.getString("_login_user_email", "").toString());
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in bindData.", e);
+        }
     }
 
-    private void setupUserInfo() {
-        txtUserName = (TextView) findViewById(R.id.login_user_name);
-        txtUserEmail = (TextView) findViewById(R.id.login_user_email);
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Bind Data Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
-        txtUserName.setText(pref.getString("_login_user_name", "").toString());
-        txtUserEmail.setText(pref.getString("_login_user_email", "").toString());
-    }
 
-    private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        toolbar.setTitle(reviewString);
-    }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     public void doReview(View view) {
         if (inputValidation()) {
@@ -116,6 +177,14 @@ public class ReviewEntry extends AppCompatActivity {
         }
 
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
     private void doSubmit(String postURL, HashMap<String, String> params, final View view) {
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
@@ -150,7 +219,6 @@ public class ReviewEntry extends AppCompatActivity {
                                 Utils.psLog("Error in loading.");
                             }
 
-                            // requestData(Config.APP_API_URL + Config.ITEMS_BY_ID + selectedItemId + "/city_id/" + selectedCityId, success_status);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -165,55 +233,6 @@ public class ReviewEntry extends AppCompatActivity {
 
         // add the request object to the queue to be executed
         mRequestQueue.add(req);
-    }
-
-    private void requestData(String uri, final String success_status) {
-        StringRequest request = new StringRequest(uri,
-
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-
-                            // String success_status = response.getString("success");
-                            //{"error":{"message":"require_city_id"}}
-                            Gson gson = new Gson();
-                            Type listType = new TypeToken<PItemData>() {
-                            }.getType();
-                            GlobalData.itemData = (PItemData) gson.fromJson(response, listType);
-
-                            pb = (ProgressBar) findViewById(R.id.loading_spinner);
-                            pb.setVisibility(View.GONE);
-
-                            Utils.psLog(success_status);
-                            if (success_status != null) {
-                                Utils.psLog(" --- Need to refresh review list and count --- ");
-                                //showSuccessPopup();
-                                Intent in = new Intent();
-                                setResult(RESULT_OK, in);
-                                finish();
-                            } else {
-                                showFailPopup();
-                            }
-
-
-                        } catch (Exception e) {
-                            showFailPopup();
-                        }
-                    }
-                },
-
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError ex) {
-                        //Log.d("Volley Error " , ex.getMessage());
-                    }
-                });
-
-        RequestQueue queue = Volley.newRequestQueue(this.getApplicationContext());
-        queue.add(request);
     }
 
     private void showFailPopup() {
@@ -249,4 +268,9 @@ public class ReviewEntry extends AppCompatActivity {
         return true;
 
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //end region // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
 }
