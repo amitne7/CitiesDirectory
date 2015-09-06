@@ -167,10 +167,10 @@ public class UserLoginFragment extends Fragment {
                                 editor.commit();
 
                                 // Update Menu
-                                Utils.activity.changeMenu();
+                                Utils.activity.bindMenu();
 
                                 if(! user_profile_photo.equals("")){
-                                    Utils.activity.loadProfileImage(user_name, user_profile_photo);
+                                    Utils.activity.loadProfileImage(user_profile_photo);
                                     prgDialog.cancel();
                                 }else {
                                     prgDialog.cancel();

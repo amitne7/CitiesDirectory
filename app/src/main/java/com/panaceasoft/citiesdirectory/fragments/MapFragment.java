@@ -435,7 +435,7 @@ public class MapFragment extends Fragment {
 
                         } else {
                             display_message.setVisibility(View.VISIBLE);
-                            String message = getResources().getString(R.string.wrong_url);
+                            String message = getResources().getString(R.string.connection_error);
                             display_message.setText(message);
 
                         }

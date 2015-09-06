@@ -57,11 +57,13 @@ public class TabFragment extends Fragment {
     private List<PItemData> it;
     private List<PItemData> myDataset;
     private SwipeRefreshLayout swipeRefreshLayout;
-
+    private String jsonStatusSuccess ;
     // TODO: Rename and change types and number of parameters
     public static TabFragment newInstance(PSubCategoryData subCategoryData, int CityID) {
         TabFragment fragment = new TabFragment();
         fragment.setData(subCategoryData, CityID);
+
+
         return fragment;
     }
 
@@ -73,6 +75,7 @@ public class TabFragment extends Fragment {
         this.subCategoryData = subCategoryData;
         this.selectedCityID = selectedCityID;
         this.selectedSubCategoryID = subCategoryData.id;
+
     }
 
     @Override
@@ -108,6 +111,9 @@ public class TabFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing(true);
             }
         });
+
+
+        this.jsonStatusSuccess = getResources().getString(R.string.json_status_success);
 
         return view;
     }
@@ -160,7 +166,7 @@ public class TabFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccess)) {
 
                                 if (myDataset.size() > 0) {
                                     myDataset.remove(myDataset.size() - 1);
@@ -173,7 +179,6 @@ public class TabFragment extends Fragment {
                                 it = (List<PItemData>) gson.fromJson(response.getString("data"), listType);
 
                                 progressWheel.setVisibility(View.GONE);
-
 
                                 for (PItemData pItem : it) {
 

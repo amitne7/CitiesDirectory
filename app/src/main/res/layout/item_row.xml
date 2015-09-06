@@ -16,7 +16,9 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
+            android:layout_height="fill_parent"
+            android:paddingBottom = "@dimen/space_1"
+            >
 
             <ImageView
                 android:id="@+id/item_image"
@@ -35,7 +37,9 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/small_title"
                 android:background="@android:color/white"
-                android:paddingLeft="@dimen/space_mini_2"
+                android:paddingTop = "@dimen/space_1"
+                android:paddingBottom = "@dimen/space_1"
+                android:paddingLeft="@dimen/space_mini_4"
                 android:paddingRight="@dimen/space_mini_2"
                 android:text="@string/city_name"
                 android:textColor="@android:color/black"
@@ -48,6 +52,7 @@
                 android:layout_height="@dimen/line_height"
                 android:background="@color/lineColor"
                 android:layout_below="@+id/item_name"
+                android:layout_marginBottom="@dimen/space_1"
                 />
 
 
@@ -57,7 +62,7 @@
                 android:layout_height="@dimen/icon_size"
                 android:src="@drawable/ic_thumb_up"
                 android:layout_below="@id/line_break"
-                android:paddingLeft="@dimen/space_mini_2"
+                android:paddingLeft="@dimen/space_mini_4"
                 />
 
             <TextView

@@ -13,6 +13,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.MainActivity;
+import com.panaceasoft.citiesdirectory.fragments.NotificationFragment;
 
 /**
  * Created by Panacea-Soft on 6/8/15.
@@ -54,47 +55,60 @@ public class GCMNotificationIntentService extends IntentService {
     }
 
     private void sendNotification(String msg) {
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        Utils.psLog("Push Msg : " + msg);
-        resultIntent.putExtra("msg", msg);
-        String displayMessage = "";
-        Utils.psLog("M >>> " + msg);
-        if(!msg.toString().equals("null")) {
-            resultIntent.putExtra("show_noti", true);
-            displayMessage = "You've received new message.";
-        } else {
-            resultIntent.putExtra("show_noti", false);
-            displayMessage = "Welcome from CitiesDirectory";
+
+        if(Utils.activity != null){
+            if(Utils.activity.fragment != null) {
+                if (Utils.activity.fragment instanceof NotificationFragment) {
+                    Utils.activity.savePushMessage(msg);
+                    Utils.activity.refreshNotification();
+                }
+            }
         }
+            Intent resultIntent = new Intent(this, MainActivity.class);
+            Utils.psLog("Push Msg : " + msg);
+            resultIntent.putExtra("msg", msg);
+            String displayMessage = "";
+            Utils.psLog("M >>> " + msg);
+            if(!msg.toString().equals("null")) {
+                resultIntent.putExtra("show_noti", true);
+                displayMessage = "You've received new message.";
+            } else {
+                resultIntent.putExtra("show_noti", false);
+                displayMessage = "Welcome from CitiesDirectory";
+            }
 
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
-                resultIntent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0,
+                    resultIntent, PendingIntent.FLAG_ONE_SHOT);
 
-        NotificationCompat.Builder mNotifyBuilder;
-        NotificationManager mNotificationManager;
+            NotificationCompat.Builder mNotifyBuilder;
+            NotificationManager mNotificationManager;
 
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        mNotifyBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle("Alert")
-                .setContentText(displayMessage)
-                .setSmallIcon(R.drawable.ic_notifications_white);
-        // Set pending intent
-        mNotifyBuilder.setContentIntent(resultPendingIntent);
+            mNotifyBuilder = new NotificationCompat.Builder(this)
+                    .setContentTitle("Alert")
+                    .setContentText(displayMessage)
+                    .setSmallIcon(R.drawable.ic_notifications_white);
+            // Set pending intent
+            mNotifyBuilder.setContentIntent(resultPendingIntent);
 
-        // Set Vibrate, Sound and Light
-        int defaults = 0;
-        defaults = defaults | Notification.DEFAULT_LIGHTS;
-        defaults = defaults | Notification.DEFAULT_VIBRATE;
-        defaults = defaults | Notification.DEFAULT_SOUND;
+            // Set Vibrate, Sound and Light
+            int defaults = 0;
+            defaults = defaults | Notification.DEFAULT_LIGHTS;
+            defaults = defaults | Notification.DEFAULT_VIBRATE;
+            defaults = defaults | Notification.DEFAULT_SOUND;
 
-        mNotifyBuilder.setDefaults(defaults);
-        // Set the content for Notification
-        mNotifyBuilder.setContentText(displayMessage);
-        // Set autocancel
-        mNotifyBuilder.setAutoCancel(true);
-        // Post a notification
-        mNotificationManager.notify(notifyID, mNotifyBuilder.build());
+            mNotifyBuilder.setDefaults(defaults);
+            // Set the content for Notification
+            mNotifyBuilder.setContentText(displayMessage);
+            // Set autocancel
+            mNotifyBuilder.setAutoCancel(true);
+            // Post a notification
+            mNotificationManager.notify(notifyID, mNotifyBuilder.build());
+
+
+
+
     }
 
 }

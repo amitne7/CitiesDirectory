@@ -1,11 +1,10 @@
 package com.panaceasoft.citiesdirectory.activities;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -18,31 +17,23 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.fragments.CitiesListFragment;
 import com.panaceasoft.citiesdirectory.fragments.FavouritesListFragment;
-
-
 import com.panaceasoft.citiesdirectory.fragments.NotificationFragment;
 import com.panaceasoft.citiesdirectory.fragments.ProfileFragment;
-
 import com.panaceasoft.citiesdirectory.fragments.SearchFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserForgotPasswordFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserLoginFragment;
 import com.panaceasoft.citiesdirectory.fragments.UserRegisterFragment;
-
-import com.panaceasoft.citiesdirectory.models.Users;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -53,87 +44,109 @@ import java.io.FileOutputStream;
  */
 
 public class MainActivity extends AppCompatActivity {
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
     private Toolbar toolbar = null;
     private ActionBarDrawerToggle drawerToggle = null;
     private DrawerLayout drawerLayout = null;
     private NavigationView navigationView = null;
     private int currentMenuId = 0;
-    public Users user;
-    private SearchView searchView;
     private FABActions fabActions;
-    private MenuItem searchItem;
-    private Fragment fragment = null;
     private boolean notiFlag;
     private SharedPreferences pref;
+    private SpannableString toolbarTitle;
+    private FloatingActionButton fab;
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Public Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    public Fragment fragment = null;
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Public Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        notiFlag = getIntent().getBooleanExtra("show_noti", false);
 
-        setUpUtils();
+        initUtils();
 
-        setupToolbar();
-        setUpDrawerLayout();
-        setUpNavigationView();
-        setUpFAB();
+        initUI();
 
-        loadLoginUserInfo();
-        changeMenu();
-        Utils.psLog("Noti Flag : " + notiFlag);
-        if (notiFlag) {
-            savePushMessage(getIntent().getStringExtra("msg"));
-            openFragment(R.id.nav_push_noti);
-        } else {
-            openFragment(R.id.nav_home);
-        }
+        initData();
+
+        bindData();
 
     }
 
-    private void setUpUtils() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        Utils.psLog("OnActivityResult");
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                refreshProfileData();
+            }
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init Utils Class
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void initUtils() {
         new Utils(this);
     }
 
-    public void changeMenu() {
-        if (pref.getInt("_login_user_id", 0) != 0) {
-            navigationView.getMenu().setGroupVisible(R.id.group_after_login, true);
-            navigationView.getMenu().setGroupVisible(R.id.group_before_login, false);
-        } else {
-            navigationView.getMenu().setGroupVisible(R.id.group_before_login, true);
-            navigationView.getMenu().setGroupVisible(R.id.group_after_login, false);
-        }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Init Utils Class
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init UI
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void initUI(){
+        initToolbar();
+        initDrawerLayout();
+        initNavigationView();
+        initFAB();
     }
 
-    private void setupToolbar() {
+    private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-
         }
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         }
-
-        toolbar.setTitle(Utils.getSpannableString(getString(R.string.app_name)));
-
     }
 
-    public void setUpDrawerLayout() {
+    private void initDrawerLayout() {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         if (drawerLayout != null && toolbar != null) {
             drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
                 @Override
                 public void onDrawerOpened(View drawerView) {
                     super.onDrawerOpened(drawerView);
                 }
-
                 @Override
                 public void onDrawerClosed(View drawerView) {
                     super.onDrawerClosed(drawerView);
@@ -141,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
             };
 
             drawerLayout.setDrawerListener(drawerToggle);
-
             drawerLayout.post(new Runnable() {
                 @Override
                 public void run() {
@@ -151,55 +163,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    private void setUpFAB() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.bringToFront();
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fabClicked(view);
-            }
-        });
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void fabClicked(View view) {
-        if (fabActions == FABActions.PROFILE) {
-            final Intent intent;
-            intent = new Intent(this, EditProfileActivity.class);
-            ActivityOptionsCompat options = ActivityOptionsCompat.
-                    makeSceneTransitionAnimation(this, (View)view, "profile");
-            //startActivity(intent, options.toBundle());
-            startActivityForResult(intent, 1, options.toBundle());
-            //overridePendingTransition(R.anim.right_to_left,R.anim.blank_anim);
-            //overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
-        } else {
-            Snackbar.make(view, "Why you click me! " + fabActions, Snackbar.LENGTH_SHORT)
-                    .setAction("Action", null).show();
-        }
-    }
-
-    private void disableFAB() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.GONE);
-    }
-
-    private void enableFAB() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setVisibility(View.VISIBLE);
-    }
-
-    private void updateFABIcon(int icon) {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageResource(icon);
-    }
-
-    private void updateFABAction(FABActions action) {
-        fabActions = action;
-    }
-
-    private void setUpNavigationView() {
+    private void initNavigationView() {
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         if (navigationView != null) {
@@ -210,15 +174,114 @@ public class MainActivity extends AppCompatActivity {
                         public boolean onNavigationItemSelected(MenuItem menuItem) {
 
                             navigationMenuChanged(menuItem);
-
                             return true;
                         }
                     });
         }
+    }
 
+    private void initFAB() {
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.bringToFront();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fabClicked(view);
+            }
+        });
+    }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Init UI
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init Data
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    private void initData(){
+        try {
+            pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            notiFlag = getIntent().getBooleanExtra("show_noti", false);
+            Utils.psLog("Notification Flag : " + notiFlag);
+            if (notiFlag) {
+                savePushMessage(getIntent().getStringExtra("msg"));
+                openFragment(R.id.nav_push_noti);
+            } else {
+                openFragment(R.id.nav_home);
+            }
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in getting notification flag data.", e);
+        }
 
+        try {
+            toolbarTitle = Utils.getSpannableString(getString(R.string.app_name));
+        }catch (Exception e){
+            Utils.psErrorLogE("Error in getting toolbar title.", e);
+        }
+    }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion init Data
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Bind Data
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void bindData() {
+
+        toolbar.setTitle(toolbarTitle);
+
+        bindMenu();
+
+    }
+
+    // This function will change the menu based on the user is logged in or not.
+    public void bindMenu() {
+        if (pref.getInt("_login_user_id", 0) != 0) {
+            navigationView.getMenu().setGroupVisible(R.id.group_after_login, true);
+            navigationView.getMenu().setGroupVisible(R.id.group_before_login, false);
+        } else {
+            navigationView.getMenu().setGroupVisible(R.id.group_before_login, true);
+            navigationView.getMenu().setGroupVisible(R.id.group_after_login, false);
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Bind Data
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void fabClicked(View view) {
+        if (fabActions == FABActions.PROFILE) {
+            final Intent intent;
+            intent = new Intent(this, EditProfileActivity.class);
+            startActivityForResult(intent, 1);
+
+            // Sample Animatin Code
+            //ActivityOptionsCompat options = ActivityOptionsCompat.
+            //        makeSceneTransitionAnimation(this, (View)view, "profile");
+            //startActivity(intent, options.toBundle());
+            //overridePendingTransition(R.anim.right_to_left,R.anim.blank_anim);
+        }
+    }
+
+    private void disableFAB() {
+        fab.setVisibility(View.GONE);
+    }
+
+    private void enableFAB() {
+        fab.setVisibility(View.VISIBLE);
+    }
+
+    private void updateFABIcon(int icon) {
+        fab.setImageResource(icon);
+    }
+
+    private void updateFABAction(FABActions action) {
+        fabActions = action;
     }
 
     private void navigationMenuChanged(MenuItem menuItem) {
@@ -227,8 +290,35 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.closeDrawers();
     }
 
-    public void openFragment(int menuId) {
+    private void updateFragment(Fragment fragment) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.replace(R.id.content_frame, fragment);
+        transaction.commit();
+    }
 
+    private void doLogout() {
+        pref.edit().remove("_login_user_id").commit();
+        pref.edit().remove("_login_user_name").commit();
+        pref.edit().remove("_login_user_email").commit();
+        pref.edit().remove("_login_user_about_me").commit();
+        pref.edit().remove("_login_user_photo").commit();
+
+        bindMenu();
+
+        openFragment(R.id.nav_home);
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    public void openFragment(int menuId) {
 
         switch (menuId) {
             case R.id.nav_home:
@@ -276,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_push_noti_login:
                 disableFAB();
                 fragment = new NotificationFragment();
-                toolbar.setTitle(Utils.getSpannableString(getString(R.string.push_noti_setting)));
+                //toolbar.setTitle(Utils.getSpannableString(getString(R.string.push_noti_setting)));
                 break;
 
             case R.id.nav_favourite_item_login:
@@ -303,68 +393,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void updateFragment(Fragment fragment) {
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.replace(R.id.content_frame, fragment);
-        transaction.commit();
-    }
-
-    private void doLogout() {
-        /*
-        DatabaseHelper db = new DatabaseHelper(getApplication());
-        db.deleteAllUser();
-        changeMenu();
-        openFragment(R.id.nav_home);
-        */
-        pref.edit().remove("_login_user_id").commit();
-        pref.edit().remove("_login_user_name").commit();
-        pref.edit().remove("_login_user_email").commit();
-        pref.edit().remove("_login_user_about_me").commit();
-
-        changeMenu();
-        openFragment(R.id.nav_home);
-    }
-
-
-    private void loadLoginUserInfo() {
-        Utils.psLog("Login User Id " + pref.getInt("_login_user_id", 0));
-        /*
-        DatabaseHelper db = new DatabaseHelper(getApplication());
-        ArrayList<Users> usersArrayList = db.getAllUsers();
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = prefs.edit();
-
-        if (usersArrayList.size() > 0) {
-
-            user = usersArrayList.get(0);
-            editor.putInt("_login_user_id", usersArrayList.get(0).getId());
-            editor.putString("_login_user_name", usersArrayList.get(0).getUser_name());
-            editor.putString("_login_user_email", usersArrayList.get(0).getEmail());
-            editor.putString("_login_user_about_me", usersArrayList.get(0).getAbout_me());
-        } else {
-            editor.putInt("_login_user_id", 0);
-        }
-        editor.commit();
-        */
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        Utils.psLog("OnActivityResult");
-        if (requestCode == 1) {
-
-            if (resultCode == RESULT_OK) {
-                refreshProfileData();
-            }
-
-        }
-
-    }
-
+    // Neet to check
     public void refreshProfileData() {
 
         if (fragment instanceof ProfileFragment) {
@@ -372,59 +401,70 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private enum FABActions {
-        SEARCH,
-        PROFILE
+    public void refreshProfile(){
+        openFragment(R.id.nav_profile_login);
     }
 
-    private void savePushMessage(String msg) {
+    public void refreshNotification(){
+        try {
+            fragment = new NotificationFragment();
+
+            updateFragment(fragment);
+            if (pref.getInt("_login_user_id", 0) != 0) {
+                currentMenuId = R.id.nav_push_noti_login;
+            }else{
+                currentMenuId = R.id.nav_push_noti;
+            }
+
+            navigationView.getMenu().findItem(currentMenuId).setChecked(true);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Refresh Notification View Error. " , e);
+        }
+
+    }
+
+    public void savePushMessage(String msg) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("_push_noti_message", msg);
         editor.commit();
-
     }
 
-    public void refreshProfile(){
-        openFragment(R.id.nav_profile_login);
-    }
-    public void loadProfileImage(String name, String path) {
+    public void loadProfileImage(String path) {
 
         if(!path.toString().equals("")){
 
-            final String fileName = path;//name ;//+ ".jpg";
-            Utils.psLog("file name >> " + fileName);
+            final String fileName = path;
+            Utils.psLog("file name : " + fileName);
 
             Target target = new Target() {
 
                 @Override
                 public void onPrepareLoad(Drawable arg0) {
                     Utils.psLog("Prepare Image to load.");
-                    //return;
+                    return;
                 }
 
                 @Override
                 public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
                     Utils.psLog("inside onBitmapLoaded ");
 
-                            try {
-                                File file = null;
+                    try {
+                        File file;
 
-                                file = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
+                        file = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
 
-                                file.createNewFile();
-                                FileOutputStream ostream = new FileOutputStream(file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
-                                ostream.close();
-                                Utils.psLog("Success Image Loaded.");
+                        file.createNewFile();
+                        FileOutputStream ostream = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+                        ostream.close();
+                        Utils.psLog("Success Image Loaded.");
 
-                                refreshProfile();
+                        refreshProfile();
 
-
-                            } catch (Exception e) {
-                                //e.printStackTrace();
-                                Utils.psLog("Error >> " + e.getMessage());
-                            }
+                    } catch (Exception e) {
+                        Utils.psErrorLogE(e.getMessage(), e);
+                    }
 
                 }
 
@@ -444,4 +484,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Public Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Enum
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private enum FABActions {
+        PROFILE
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Enum
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 }

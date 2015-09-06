@@ -441,8 +441,6 @@ public class DetailActivity extends AppCompatActivity {
 
         GlobalData.itemData = null;
 
-
-
         finish();
         overridePendingTransition(R.anim.blank_anim,R.anim.left_to_right);
         return;

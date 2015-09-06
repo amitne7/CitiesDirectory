@@ -10,22 +10,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
-
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -40,11 +35,8 @@ import com.panaceasoft.citiesdirectory.models.PCityData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +48,9 @@ import java.util.List;
 
 public class CitiesListFragment extends Fragment {
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
     private RecyclerView mRecyclerView;
     private ProgressWheel progressWheel;
     private CityAdapter adapter;
@@ -63,7 +58,6 @@ public class CitiesListFragment extends Fragment {
     private TextView display_message;
     private ArrayList<PCityData> pCityDataList;
     private ArrayList<PCityData> pCityDataSet;
-
     private NestedScrollView singleLayout;
     private TextView scCityName;
     private TextView scCityLocation;
@@ -73,36 +67,61 @@ public class CitiesListFragment extends Fragment {
     private TextView scCityItemCount;
     private ImageView scCityPhoto;
     private Button scCityExplore;
+    private String jsonStatusSuccess;
+    private String connectionError;
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Public Variables
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Constructor
+    //-------------------------------------------------------------------------------------------------------------------------------------
     public CitiesListFragment() {
-        // Required empty public constructor
-    }
 
+    }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Constructor
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cities_list, container, false);
 
-        initSingleUI(view);
+        initUI(view);
 
-        requestData(Config.APP_API_URL + Config.GET_ALL);
-
-        setupSwipeRefreshLayout(view);
-
-        setupProgressWheel(view);
-        setupRecyclerView(view);
-
-        startLoading();
-
-
+        initData();
 
         return view;
     }
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Override Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init UI Function
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void initUI(View view){
+        initSingleUI(view);
+
+        initSwipeRefreshLayout(view);
+
+        initProgressWheel(view);
+
+        initRecyclerView(view);
+
+        startLoading();
+    }
 
     private void initSingleUI(View view) {
-        singleLayout =(NestedScrollView) view.findViewById(R.id.single_city_layout);
 
+        singleLayout =(NestedScrollView) view.findViewById(R.id.single_city_layout);
         scCityName = (TextView) view.findViewById(R.id.sc_city_name);
         scCityLocation = (TextView) view.findViewById(R.id.sc_city_loc);
         scCityAbout = (TextView) view.findViewById(R.id.sc_city_desc);
@@ -158,11 +177,7 @@ public class CitiesListFragment extends Fragment {
 
     }
 
-    private void setupProgressWheel(View view) {
-        progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
-    }
-
-    private void setupSwipeRefreshLayout(View view) {
+    private void initSwipeRefreshLayout(View view) {
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -172,7 +187,12 @@ public class CitiesListFragment extends Fragment {
         });
     }
 
-    private void setupRecyclerView(View view) {
+    private void initProgressWheel(View view) {
+        progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
+    }
+
+    private void initRecyclerView(View view) {
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
@@ -198,6 +218,22 @@ public class CitiesListFragment extends Fragment {
         }));
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Init UI Function
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Init Data Function
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void initData(){
+        requestData(Config.APP_API_URL + Config.GET_ALL);
+
+        jsonStatusSuccess = getResources().getString(R.string.json_status_success);
+        connectionError = getResources().getString(R.string.connection_error);
+
+    }
+
     private void requestData(String uri) {
         JsonObjectRequest request = new JsonObjectRequest(uri,
                 new Response.Listener<JSONObject>() {
@@ -205,13 +241,13 @@ public class CitiesListFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             String status = response.getString("status");
-                            if (status.equals(getString(R.string.json_status_success))) {
+                            if (status.equals(jsonStatusSuccess)) {
                                 progressWheel.setVisibility(View.GONE);
                                 Gson gson = new Gson();
                                 Type listType = new TypeToken<List<PCityData>>() {
                                 }.getType();
 
-                                pCityDataList = gson.fromJson(response.getString("data"), listType); //fromJson(response.getString("data")+"",listType);
+                                pCityDataList = gson.fromJson(response.getString("data"), listType);
 
                                 Utils.psLog("City Count : "  + pCityDataList.size());
                                 if(pCityDataList.size() > 1) {
@@ -226,11 +262,13 @@ public class CitiesListFragment extends Fragment {
                                 }
 
                                 updateGlobalCityList();
+
                             } else {
                                 stopLoading();
                                 Utils.psLog("Error in loading CityList.");
                             }
                         } catch (JSONException e) {
+                            Utils.psErrorLogE("Error in loading CityList.", e);
                             stopLoading();
                             e.printStackTrace();
                         }
@@ -244,18 +282,17 @@ public class CitiesListFragment extends Fragment {
                     public void onErrorResponse(VolleyError ex) {
                         progressWheel.setVisibility(View.GONE);
                         stopLoading();
-                        NetworkResponse response = ex.networkResponse;
+                       /* NetworkResponse response = ex.networkResponse;
                         if (response != null && response.data != null) {
 
-                        } else {
-                            try {
-                                display_message.setVisibility(View.VISIBLE);
-                                String message = getResources().getString(R.string.wrong_url);
-                                display_message.setText(message);
-                            }catch (Exception e){
-                                Utils.psLog("Error in wrongl url.");
-                            }
+                        } else {*/
+                        try {
+                            display_message.setVisibility(View.VISIBLE);
+                            display_message.setText(connectionError);
+                        }catch (Exception e){
+                            Utils.psErrorLogE("Error in Connection Url.", e);
                         }
+                        //}
 
                     }
                 });
@@ -270,21 +307,30 @@ public class CitiesListFragment extends Fragment {
         queue.add(request);
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Init Data Function
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Bind Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
     private void updateSingleDisplay() {
-        if(pCityDataList.size() > 0){
-            display_message.setVisibility(View.GONE);
-            singleLayout.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in));
+        try {
+            if (pCityDataList.size() > 0) {
 
+                display_message.setVisibility(View.GONE);
+                singleLayout.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in));
+                scCityName.setText(pCityDataList.get(0).name);
+                scCityLocation.setText(pCityDataList.get(0).address);
+                scCityAbout.setText(pCityDataList.get(0).description);
+                scCityCatCount.setText(pCityDataList.get(0).category_count + " Categories");
+                scCitySubCatCount.setText(pCityDataList.get(0).sub_category_count + " Sub Categories");
+                scCityItemCount.setText(pCityDataList.get(0).item_count + " Items");
+                Picasso.with(getActivity()).load(Config.APP_IMAGES_URL + pCityDataList.get(0).cover_image_file).into(scCityPhoto);
 
-            scCityName.setText(pCityDataList.get(0).name);
-            scCityLocation.setText(pCityDataList.get(0).address);
-            scCityAbout.setText(pCityDataList.get(0).description);
-
-            scCityCatCount.setText(pCityDataList.get(0).category_count+ " Categories");
-            scCitySubCatCount.setText(pCityDataList.get(0).sub_category_count + " Sub Categories");
-            scCityItemCount.setText(pCityDataList.get(0).item_count+ " Items");
-
-            Picasso.with(getActivity()).load(Config.APP_IMAGES_URL + pCityDataList.get(0).cover_image_file).into(scCityPhoto);
+            }
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in single display data binding.", e);
         }
     }
 
@@ -300,10 +346,9 @@ public class CitiesListFragment extends Fragment {
         if (swipeRefreshLayout.isRefreshing()) {
             pCityDataSet.clear();
             adapter.notifyDataSetChanged();
-            int i = 0;
+
             for (PCityData cd : pCityDataList) {
                 pCityDataSet.add(cd);
-                i++;
             }
         } else {
             for (PCityData cd : pCityDataList) {
@@ -314,8 +359,21 @@ public class CitiesListFragment extends Fragment {
         adapter.notifyItemInserted(pCityDataSet.size());
     }
 
-    public void onItemClicked(int position) {
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Bind Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
 
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //region // Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+    private void onItemClicked(int position) {
+        Utils.psLog("Position : " + position);
+        Intent intent;
+        intent = new Intent(getActivity(),SelectedCityActivity.class);
+        GlobalData.citydata = pCityDataList.get(position);
+        intent.putExtra("selected_city_id", pCityDataList.get(position).id);
+        getActivity().startActivity(intent);
     }
 
     private void startLoading(){
@@ -335,7 +393,19 @@ public class CitiesListFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing(false);
             }
         }catch (Exception e){}
-
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //endregion Private Functions
+    //-------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
 
 }

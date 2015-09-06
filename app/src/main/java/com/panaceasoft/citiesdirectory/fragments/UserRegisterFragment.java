@@ -166,7 +166,7 @@ public class UserRegisterFragment extends Fragment {
                                 editor.commit();
 
                                 // Update Menu
-                                Utils.activity.changeMenu();
+                                Utils.activity.bindMenu();
 
                                 // Show profile Menu
                                 if(getActivity() instanceof MainActivity) {

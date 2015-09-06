@@ -276,4 +276,31 @@ public class Utils {
                 true);
     }
 
+    public static int getLineNumber() {
+        return Thread.currentThread().getStackTrace()[4].getLineNumber();
+    }
+
+    public static String getClassName(Object obj) {
+        return ""+ ((Object) obj).getClass();
+    }
+
+    public static void psErrorLog(String log, Object obj){
+        try {
+            Log.d("TEAMPS", log);
+            Log.d("TEAMPS", "Line : " + getLineNumber());
+            Log.d("TEAMPS", "Class : " + getClassName(obj));
+        }catch (Exception ee){}
+    }
+
+    public static void psErrorLogE(String log, Exception e) {
+        try {
+            StackTraceElement l = e.getStackTrace()[0];
+            Log.d("TEAMPS", log);
+            Log.d("TEAMPS", "Line : " + l.getLineNumber());
+            Log.d("TEAMPS", "Method : " + l.getMethodName());
+            Log.d("TEAMPS", "Class : " + l.getClassName());
+        }catch (Exception ee){}
+
+    }
+
 }

@@ -24,7 +24,7 @@
     <string name="logout">Logout</string>
     <string name="title_activity_selected_city">SelectedCityActivity</string>
     <string name="display_name">Display Message</string>
-    <string name="wrong_url">Oops! App cannot connect to your server</string>
+    <string name="connection_error">Oops! App cannot connect to your server</string>
     <string name="title_activity_inquiry">InquiryActivity</string>
 
     <string name="hello_world">Hello world!</string>

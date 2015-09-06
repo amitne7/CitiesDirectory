@@ -85,11 +85,11 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
 
             @Override
             public void onClick(View view) {
-                final Intent intent;
-                intent = new Intent(holder.itemView.getContext(),SelectedCityActivity.class);
-                GlobalData.citydata = city;
-                intent.putExtra("selected_city_id", city.id);
-                holder.itemView.getContext().startActivity(intent);
+//                final Intent intent;
+//                intent = new Intent(holder.itemView.getContext(),SelectedCityActivity.class);
+//                GlobalData.citydata = city;
+//                intent.putExtra("selected_city_id", city.id);
+//                holder.itemView.getContext().startActivity(intent);
 
             }
         });

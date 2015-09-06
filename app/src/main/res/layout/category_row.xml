@@ -26,7 +26,6 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
                 android:scaleType="fitXY"
-
                 android:adjustViewBounds="true"/>
 
             <TextView
@@ -34,7 +33,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/small_title"
-                android:paddingLeft="@dimen/space_mini_2"
+                android:paddingTop = "@dimen/space_1"
+                android:paddingBottom = "@dimen/space_1"
+                android:paddingLeft="@dimen/space_1"
                 android:paddingRight="@dimen/space_mini_2"
                 android:text="@string/city_name"
                 android:textColor="@android:color/black"
