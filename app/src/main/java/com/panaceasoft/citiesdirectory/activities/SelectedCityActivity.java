@@ -264,7 +264,7 @@ public class SelectedCityActivity extends AppCompatActivity {
             final Field tpf = object.getClass().getDeclaredField("mTextPaint");
             tpf.setAccessible(true);
 
-            ((TextPaint) tpf.get(object)).setTypeface(Utils.getTypeFace(Utils.Fonts.NOTO_SANS));
+            ((TextPaint) tpf.get(object)).setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
             ((TextPaint) tpf.get(object)).setColor(getResources().getColor(R.color.colorAccent));
         } catch (Exception ignored) {
         }

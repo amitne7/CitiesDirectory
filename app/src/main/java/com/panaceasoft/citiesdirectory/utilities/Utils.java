@@ -211,18 +211,18 @@ public class Utils {
         if(currentTypeface == fonts) {
             if (fromAsset == null) {
                 if(fonts == Fonts.NOTO_SANS) {
-                    fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Light.ttf");
+                    fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/NotoSans-Regular.ttf");
                 }else if(fonts == Fonts.ROBOTO){
                     fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Regular.ttf");
                 }
             }
         }else{
             if(fonts == Fonts.NOTO_SANS){
-                fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Light.ttf");
+                fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/NotoSans-Regular.ttf");
             }else if(fonts == Fonts.ROBOTO){
                 fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Regular.ttf");
             }else{
-                fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/NotoSans-Regular.ttf");
+                fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Regular.ttf");
             }
 
             //fromAsset = Typeface.createFromAsset(activity.getAssets(), "fonts/Roboto-Italic.ttf");
@@ -233,7 +233,7 @@ public class Utils {
 
     public static SpannableString getSpannableString(String str) {
         spannableString = new SpannableString(str);
-        spannableString.setSpan(new PSTypefaceSpan("", Utils.getTypeFace(Utils.Fonts.NOTO_SANS)), 0, spannableString.length(),
+        spannableString.setSpan(new PSTypefaceSpan("", Utils.getTypeFace(Fonts.ROBOTO)), 0, spannableString.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableString;
     }

@@ -151,6 +151,8 @@ public class TabFragment extends Fragment {
             }
         });
 
+        startLoading();
+
     }
 
     private void initProgressWheel(View view) {
@@ -201,7 +203,7 @@ public class TabFragment extends Fragment {
      **------------------------------------------------------------------------------------------------*/
 
     private void requestData(String uri) {
-        startLoading();
+
         JsonObjectRequest request = new JsonObjectRequest(uri,
 
                 new Response.Listener<JSONObject>() {

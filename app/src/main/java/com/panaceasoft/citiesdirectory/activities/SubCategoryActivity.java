@@ -194,7 +194,7 @@ public class SubCategoryActivity extends AppCompatActivity {
     private void updateTabFonts(TabLayout tabLayout){
         for(int i =0 ; i< tabLayout.getTabCount(); i++) {
             TextView tt = new TextView(this);
-            tt.setTypeface(Utils.getTypeFace(Utils.Fonts.NOTO_SANS));
+            tt.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
             tt.setTextColor(Color.WHITE);
             tt.setText(tabLayout.getTabAt(i).getText());
             tabLayout.getTabAt(i).setCustomView(tt);
