@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
-
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -30,7 +29,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -52,10 +50,8 @@ import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rey.material.widget.Slider;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,40 +65,42 @@ import java.util.Locale;
 
 public class MapFragment extends Fragment {
 
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
     private GoogleMap googleMap;
     private Marker customMarker;
     private LatLng markerLatLng;
-
     private ProgressWheel progressWheel;
     private ArrayList<PItemData> items;
     private TextView display_message;
     private RequestQueue queue;
-
-    private Bitmap bm;
     private boolean checkingLatLng = false;
     private HashMap<String, Uri> images = new HashMap<String, Uri>();
     private HashMap<String, Uri> markerImages = new HashMap<String, Uri>();
     private HashMap<Marker, PItemData> markerInfo = new HashMap<Marker, PItemData>();
     private HashMap<String, String> markerAddress = new HashMap<String, String>();
     private SharedPreferences pref;
-
     private int selectedCityId;
     private int selectedSubCatId;
-
     private double selectedRegionLat;
     private double selectedRegionLng;
     private double currentLongitude;
     private double currentLatitude;
-
     View marker;
     MaterialDialog dialog;
     MapView mMapView;
     private String jsonStatusSuccessString;
     private SpannableString connectionErrorString;
 
-    public MapFragment() {
-        // Required empty public constructor
-    }
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
+
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,29 +110,9 @@ public class MapFragment extends Fragment {
 
         initData();
 
-        if (Utils.isGooglePlayServicesOK(getActivity())) {
-            Utils.psLog("Google Play Service is ready for Google Map");
-            setUpFAB(v);
-            setUpUI(v);
-            loadPreferenceData();
-            loadMap(v, savedInstanceState, inflater, container);
-            queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        } else {
-            showNoServicePopup();
-        }
+        initUI(v, inflater, container, savedInstanceState);
 
         return v;
-
-    }
-
-    private void initData() {
-
-        try {
-            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
-            connectionErrorString = Utils.getSpannableString(getString(R.string.connection_error));
-        }catch(Exception e){
-            Utils.psErrorLogE("Error in init data.", e);
-        }
 
     }
 
@@ -162,7 +140,46 @@ public class MapFragment extends Fragment {
         mMapView.onLowMemory();
     }
 
-    private void setUpFAB(View v) {
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - INit data Functions
+     **------------------------------------------------------------------------------------------------*/
+    private void initData() {
+
+        try {
+            jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
+            connectionErrorString = Utils.getSpannableString(getString(R.string.connection_error));
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in init data.", e);
+        }
+
+    }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+    private void initUI(View v, LayoutInflater inflater, ViewGroup container,
+                        Bundle savedInstanceState){
+        if (Utils.isGooglePlayServicesOK(getActivity())) {
+            Utils.psLog("Google Play Service is ready for Google Map");
+            initFAB(v);
+            initMessage(v);
+            loadPreferenceData();
+            loadMap(v, savedInstanceState, inflater, container);
+            queue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        } else {
+            showNoServicePopup();
+        }
+    }
+
+    private void initFAB(View v) {
         FloatingActionButton locationSearchFAB = (FloatingActionButton) v.findViewById(R.id.location_search_fab);
 
         locationSearchFAB.setOnClickListener(new View.OnClickListener() {
@@ -185,7 +202,7 @@ public class MapFragment extends Fragment {
 
     }
 
-    private void setUpUI(View v) {
+    private void initMessage(View v) {
         display_message = (TextView) v.findViewById(R.id.display_message);
         display_message.setVisibility(v.GONE);
 
@@ -223,85 +240,13 @@ public class MapFragment extends Fragment {
         selectedRegionLng = Double.parseDouble(pref.getString("_city_region_lng", ""));
     }
 
-    public void showSearchPopup(View view) {
-        checkingLatLng = false;
-        boolean wrapInScrollView = true;
-        dialog = new MaterialDialog.Builder(getActivity())
-                .title(R.string.location_search_title)
-                .customView(R.layout.slider, wrapInScrollView)
-                .show();
+    /**------------------------------------------------------------------------------------------------
+     * End Block - INit UI Functions
+     **------------------------------------------------------------------------------------------------*/
 
-        view = dialog.getCustomView();
-        Button BtnSearch = (Button) view.findViewById(R.id.button_search);
-        final TextView addressTextView = (TextView) view.findViewById(R.id.complete_address);
-        getCurrentLocation(addressTextView);
-        final Slider slider = (Slider) view.findViewById(R.id.location_slider);
-        BtnSearch.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                dialog.hide();
-                Utils.psLog(String.valueOf(slider.getValue()));
-                googleMap.clear();
-                Utils.psLog(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId);
-                requestData(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId, marker);
-
-            }
-        });
-    }
-
-    public void showWaitPopup() {
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.pls_wait)
-                .content(R.string.gps_not_ready)
-                .positiveText(R.string.OK)
-                .show();
-    }
-
-    public void showNoServicePopup() {
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.sorry_title)
-                .content(R.string.no_google_play)
-                .positiveText(R.string.OK)
-                .show();
-    }
-
-    public boolean readyLatLng() {
-        GPSTracker gps = new GPSTracker(getActivity());
-
-        if (gps.canGetLocation()) {
-            currentLatitude = gps.getLatitude();
-            currentLongitude = gps.getLongitude();
-            if (currentLatitude != 0.0 && currentLongitude != 0.0) {
-                return true;
-            } else {
-                return false;
-            }
-
-        } else {
-            return false;
-        }
-
-    }
-
-    public void getCurrentLocation(TextView tv) {
-
-        GPSTracker gps = new GPSTracker(getActivity());
-
-        if (gps.canGetLocation()) {
-            currentLatitude = gps.getLatitude();
-            currentLongitude = gps.getLongitude();
-
-        } else {
-            gps.showSettingsAlert();
-            checkingLatLng = true;
-            dialog.hide();
-        }
-
-        tv.setText(getCompleteAddressString(currentLatitude, currentLongitude));
-
-    }
-
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
     private String getCompleteAddressString(double LATITUDE, double LONGITUDE) {
         String strAdd = "";
 
@@ -331,22 +276,6 @@ public class MapFragment extends Fragment {
         }
         return strAdd;
     }
-
-    public static Bitmap createDrawableFromView(Context context, View view) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
-        view.buildDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-
-        return bitmap;
-    }
-
 
     private void requestData(String uri, final View marker) {
         JsonObjectRequest request = new JsonObjectRequest(uri,
@@ -468,6 +397,111 @@ public class MapFragment extends Fragment {
         RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
         queue.add(request);
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Public Functions
+     **------------------------------------------------------------------------------------------------*/
+    public void showSearchPopup(View view) {
+        checkingLatLng = false;
+        boolean wrapInScrollView = true;
+        dialog = new MaterialDialog.Builder(getActivity())
+                .title(R.string.location_search_title)
+                .customView(R.layout.slider, wrapInScrollView)
+                .show();
+
+        view = dialog.getCustomView();
+        Button BtnSearch = (Button) view.findViewById(R.id.button_search);
+        final TextView addressTextView = (TextView) view.findViewById(R.id.complete_address);
+        getCurrentLocation(addressTextView);
+        final Slider slider = (Slider) view.findViewById(R.id.location_slider);
+        BtnSearch.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                dialog.hide();
+                Utils.psLog(String.valueOf(slider.getValue()));
+                googleMap.clear();
+                Utils.psLog(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId);
+                requestData(Config.APP_API_URL + Config.SEARCH_BY_GEO + slider.getValue() + "/userLat/" + currentLatitude + "/userLong/" + currentLongitude + "/city_id/" + selectedCityId + "/sub_cat_id/" + selectedSubCatId, marker);
+
+            }
+        });
+    }
+
+    public void showWaitPopup() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.pls_wait)
+                .content(R.string.gps_not_ready)
+                .positiveText(R.string.OK)
+                .show();
+    }
+
+    public void showNoServicePopup() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.sorry_title)
+                .content(R.string.no_google_play)
+                .positiveText(R.string.OK)
+                .show();
+    }
+
+    public boolean readyLatLng() {
+        GPSTracker gps = new GPSTracker(getActivity());
+
+        if (gps.canGetLocation()) {
+            currentLatitude = gps.getLatitude();
+            currentLongitude = gps.getLongitude();
+            if (currentLatitude != 0.0 && currentLongitude != 0.0) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
+
+    }
+
+    public void getCurrentLocation(TextView tv) {
+
+        GPSTracker gps = new GPSTracker(getActivity());
+
+        if (gps.canGetLocation()) {
+            currentLatitude = gps.getLatitude();
+            currentLongitude = gps.getLongitude();
+
+        } else {
+            gps.showSettingsAlert();
+            checkingLatLng = true;
+            dialog.hide();
+        }
+
+        tv.setText(getCompleteAddressString(currentLatitude, currentLongitude));
+
+    }
+
+    public Bitmap createDrawableFromView(Context context, View view) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        return bitmap;
+    }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Public Functions
+     **------------------------------------------------------------------------------------------------*/
 
 
 }

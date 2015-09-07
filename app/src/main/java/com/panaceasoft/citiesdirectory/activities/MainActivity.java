@@ -394,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
     public void refreshProfileData() {
 
         if (fragment instanceof ProfileFragment) {
-            ((ProfileFragment) fragment).setupData();
+            ((ProfileFragment) fragment).bindData();
         }
     }
 

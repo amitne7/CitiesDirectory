@@ -8,39 +8,44 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.MainActivity;
 import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.HashMap;
 
-
 public class UserForgotPasswordFragment extends Fragment {
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
+
     private View view;
     private EditText txtEmail;
     private Button btnRequest;
     private Button btnCancel;
-    //private ProgressBar pb;
     private ProgressDialog prgDialog;
     private String jsonStatusSuccessString;
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
+
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,8 +55,17 @@ public class UserForgotPasswordFragment extends Fragment {
         initData();
 
         initUI();
+
         return view;
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
 
     private void initData() {
         try {
@@ -62,31 +76,49 @@ public class UserForgotPasswordFragment extends Fragment {
         }
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
     private void initUI() {
-        txtEmail = (EditText) this.view.findViewById(R.id.input_email);
-        txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
-        btnRequest = (Button) this.view.findViewById(R.id.button_request);
-        btnRequest.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
-        btnRequest.setOnClickListener(new View.OnClickListener() {
+        try {
+            txtEmail = (EditText) this.view.findViewById(R.id.input_email);
+            txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            btnRequest = (Button) this.view.findViewById(R.id.button_request);
+            btnRequest.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            btnRequest.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                doRequest();
-            }
-        });
-       // pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
-        btnCancel = (Button) this.view.findViewById(R.id.button_cancel);
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doCancel();
-            }
-        });
-        prgDialog = new ProgressDialog(getActivity());
-        prgDialog.setMessage("Please wait...");
-        prgDialog.setCancelable(false);
+                @Override
+                public void onClick(View v) {
+                    doRequest();
+                }
+            });
+            btnCancel = (Button) this.view.findViewById(R.id.button_cancel);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    doCancel();
+                }
+            });
+            prgDialog = new ProgressDialog(getActivity());
+            prgDialog.setMessage("Please wait...");
+            prgDialog.setCancelable(false);
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in Init UI.", e);
+        }
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
 
     private void doCancel() {
         if(getActivity() instanceof MainActivity) {
@@ -98,7 +130,6 @@ public class UserForgotPasswordFragment extends Fragment {
 
     private void doRequest() {
         if(inputValidation()) {
-            //pb.setVisibility(view.VISIBLE);
             final String URL = Config.APP_API_URL + Config.GET_FORGOT_PASSWORD;
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("email", txtEmail.getText().toString());
@@ -130,7 +161,6 @@ public class UserForgotPasswordFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                           // pb.setVisibility(view.GONE);
 
                             String success_status = response.getString("status");
                             Utils.psLog(success_status);
@@ -141,8 +171,6 @@ public class UserForgotPasswordFragment extends Fragment {
                             } else {
                                 showFailPopup(response.getString("error"));
                             }
-
-
 
                         } catch (JSONException e) {
                             prgDialog.cancel();
@@ -176,44 +204,7 @@ public class UserForgotPasswordFragment extends Fragment {
                 .show();
     }
 
-    /*
-    private void doSubmit(String uri) {
-        StringRequest request = new StringRequest(uri,
-
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        pb.setVisibility(View.GONE);
-
-                    }
-                },
-
-                new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError ex) {
-                        pb.setVisibility(View.GONE);
-
-                        NetworkResponse response = ex.networkResponse;
-                        if(response != null && response.data != null){
-
-                        } else {
-
-                        }
-
-                    }
-                });
-
-        request.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-
-
-        RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        queue.add(request);
-    }
-    */
-
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
 }

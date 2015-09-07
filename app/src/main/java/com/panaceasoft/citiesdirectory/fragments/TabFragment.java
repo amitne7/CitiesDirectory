@@ -1,7 +1,6 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -10,15 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
@@ -26,15 +22,12 @@ import com.panaceasoft.citiesdirectory.activities.SubCategoryActivity;
 import com.panaceasoft.citiesdirectory.adapters.ItemAdapter;
 import com.panaceasoft.citiesdirectory.listeners.ClickListener;
 import com.panaceasoft.citiesdirectory.listeners.RecyclerTouchListener;
-//import com.panaceasoft.citiesdirectory.models.ImageData;
 import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.models.PSubCategoryData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,25 +39,32 @@ import java.util.List;
 
 public class TabFragment extends Fragment {
 
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
     public int selectedCityID;
     public int selectedSubCategoryID;
     private RecyclerView mRecyclerView;
     private StaggeredGridLayoutManager mLayoutManager;
     private ItemAdapter mAdapter;
     private ProgressWheel progressWheel;
-    private Handler handler;
     private PSubCategoryData subCategoryData;
     private List<PItemData> it;
     private List<PItemData> myDataset;
     private SwipeRefreshLayout swipeRefreshLayout;
     private String jsonStatusSuccess ;
-    // TODO: Rename and change types and number of parameters
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - New Instance Function
+     **------------------------------------------------------------------------------------------------*/
     public static TabFragment newInstance(PSubCategoryData subCategoryData, int CityID) {
         TabFragment fragment = new TabFragment();
         fragment.setData(subCategoryData, CityID);
-
-
-        return fragment;
+    return fragment;
     }
 
     public TabFragment() {
@@ -78,18 +78,57 @@ public class TabFragment extends Fragment {
 
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - New Instance Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_tab, container, false);
 
-        // Inflate the layout for this fragment
-        Utils.psLog(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/form/0");
-        requestData(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/form/0");
-        setupProgressWheel(view);
-        setupRecyclerView(view);
-        setupSwipeRefreshLayout(view);
+        initData();
+
+        initUI(view);
+
+        return view;
+    }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    private void initData() {
+        try {
+            this.jsonStatusSuccess = getResources().getString(R.string.json_status_success);
+            // Inflate the layout for this fragment
+            Utils.psLog(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/form/0");
+            requestData(Config.APP_API_URL + Config.ITEMS_BY_SUB_CATEGORY + selectedCityID + "/sub_cat_id/" + subCategoryData.id + "/item/all/count/" + Config.PAGINATION + "/form/0");
+        }catch(Exception e){
+            Utils.psErrorLogE("Error in initData.", e);
+        }
+    }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    private void initUI(View view) {
+        initProgressWheel(view);
+        initRecyclerView(view);
+        initSwipeRefreshLayout(view);
 
         mAdapter.setOnLoadMoreListener(new ItemAdapter.OnLoadMoreListener() {
 
@@ -112,17 +151,13 @@ public class TabFragment extends Fragment {
             }
         });
 
-
-        this.jsonStatusSuccess = getResources().getString(R.string.json_status_success);
-
-        return view;
     }
 
-    private void setupProgressWheel(View view) {
+    private void initProgressWheel(View view) {
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
     }
 
-    private void setupSwipeRefreshLayout(View view) {
+    private void initSwipeRefreshLayout(View view) {
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -132,7 +167,7 @@ public class TabFragment extends Fragment {
         });
     }
 
-    private void setupRecyclerView(View view) {
+    private void initRecyclerView(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
@@ -157,7 +192,16 @@ public class TabFragment extends Fragment {
         }));
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
+
     private void requestData(String uri) {
+        startLoading();
         JsonObjectRequest request = new JsonObjectRequest(uri,
 
                 new Response.Listener<JSONObject>() {
@@ -213,16 +257,6 @@ public class TabFragment extends Fragment {
         queue.add(request);
     }
 
-    public void onItemClicked(int position) {
-        ((SubCategoryActivity) getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
-    }
-
-    public void refershLikeAndReview(int itemID, String likeCount, String reviewCount) {
-
-        mAdapter.updateItemLikeAndReviewCount(itemID, likeCount, reviewCount);
-        mAdapter.notifyDataSetChanged();
-    }
-
     private void startLoading() {
         try {
             swipeRefreshLayout.post(new Runnable() {
@@ -244,6 +278,29 @@ public class TabFragment extends Fragment {
         }
 
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Public Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    public void onItemClicked(int position) {
+        ((SubCategoryActivity) getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
+    }
+
+    public void refershLikeAndReview(int itemID, String likeCount, String reviewCount) {
+
+        mAdapter.updateItemLikeAndReviewCount(itemID, likeCount, reviewCount);
+        mAdapter.notifyDataSetChanged();
+    }
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Public Functions
+     **------------------------------------------------------------------------------------------------*/
+
+
 
 
 }

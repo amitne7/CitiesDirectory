@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.RequestQueue;
@@ -36,16 +35,28 @@ import java.util.HashMap;
  */
 
 public class UserLoginFragment extends Fragment {
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
+
     private View view;
     private EditText txtEmail;
     private EditText txtPassword;
     private Button btnLogin;
     private Button btnForgot;
     private Button btnRegister;
-    //private ProgressBar pb;
     private MaterialDialog dialog;
     private ProgressDialog prgDialog;
     private String jsonStatusSuccessString;
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,8 +66,17 @@ public class UserLoginFragment extends Fragment {
         initData();
 
         initUI();
+
         return view;
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
 
     private void initData() {
         try {
@@ -67,56 +87,74 @@ public class UserLoginFragment extends Fragment {
         }
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
+
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
     private void initUI() {
-        //pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
+        try {
 
-        txtEmail = (EditText) this.view.findViewById(R.id.input_email);
-        txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            txtEmail = (EditText) this.view.findViewById(R.id.input_email);
+            txtEmail.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
-        txtPassword = (EditText) this.view.findViewById(R.id.input_password);
-        txtPassword.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            txtPassword = (EditText) this.view.findViewById(R.id.input_password);
+            txtPassword.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
-        btnLogin = (Button) this.view.findViewById(R.id.button_login);
-        btnLogin.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            btnLogin = (Button) this.view.findViewById(R.id.button_login);
+            btnLogin.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
-        btnForgot = (Button) this.view.findViewById(R.id.button_forgot);
-        btnForgot.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            btnForgot = (Button) this.view.findViewById(R.id.button_forgot);
+            btnForgot.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
-        btnRegister = (Button) this.view.findViewById(R.id.button_register);
-        btnRegister.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
+            btnRegister = (Button) this.view.findViewById(R.id.button_register);
+            btnRegister.setTypeface(Utils.getTypeFace(Utils.Fonts.ROBOTO));
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doLogin();
-            }
-        });
+            btnLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    doLogin();
+                }
+            });
 
-        btnForgot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utils.psLog("Forgot Click Here");
-                doForgot();
-            }
-        });
+            btnForgot.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Utils.psLog("Forgot Click Here");
+                    doForgot();
+                }
+            });
 
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doRegister();
-            }
-        });
+            btnRegister.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    doRegister();
+                }
+            });
 
-        prgDialog = new ProgressDialog(getActivity());
-        prgDialog.setMessage("Please wait...");
-        prgDialog.setCancelable(false);
+            prgDialog = new ProgressDialog(getActivity());
+            prgDialog.setMessage("Please wait...");
+            prgDialog.setCancelable(false);
+        }catch (Exception e){
+            Utils.psErrorLogE("Error in Init UI." , e);
+        }
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
 
     private void doLogin() {
 
         if(inputValidation()) {
-
-            //pb.setVisibility(view.VISIBLE);
 
             final String URL = Config.APP_API_URL + Config.POST_USER_LOGIN;
             Utils.psLog(URL);
@@ -156,7 +194,6 @@ public class UserLoginFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
 
-                            //pb.setVisibility(view.GONE);
                             Utils.psLog(" .... Starting User Login Callback .... ");
 
                             String status = response.getString("status");
@@ -225,8 +262,6 @@ public class UserLoginFragment extends Fragment {
 
     }
 
-
-
     private boolean inputValidation() {
 
         if(txtEmail.getText().toString().equals("")) {
@@ -256,5 +291,9 @@ public class UserLoginFragment extends Fragment {
             dialog.show();
         }
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
 
 }

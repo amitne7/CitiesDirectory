@@ -11,30 +11,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.DetailActivity;
-import com.panaceasoft.citiesdirectory.activities.SubCategoryActivity;
 import com.panaceasoft.citiesdirectory.adapters.ItemAdapter;
 import com.panaceasoft.citiesdirectory.listeners.ClickListener;
 import com.panaceasoft.citiesdirectory.listeners.RecyclerTouchListener;
-import com.panaceasoft.citiesdirectory.models.PImageData;
 import com.panaceasoft.citiesdirectory.models.PItemData;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import com.pnikosis.materialishprogress.ProgressWheel;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +38,10 @@ import java.util.List;
  * Contact Email : teamps.is.cool@gmail.com
  */
 public class FavouritesListFragment extends Fragment {
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
 
     private List<PItemData> items;
     private List<PItemData> myDataset;
@@ -56,10 +54,13 @@ public class FavouritesListFragment extends Fragment {
     private String noDataAvaiString;
     private String jsonStatusSuccessString;
 
-    public FavouritesListFragment() {
-        // Required empty public constructor
-    }
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
 
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,16 +69,19 @@ public class FavouritesListFragment extends Fragment {
 
         initData();
 
-
-        setupProgressWheel(view);
-        setupRecyclerView(view);
-
-        displayMessage = (TextView) view.findViewById(R.id.display_message);
-        displayMessage.setVisibility(view.GONE);
+        initUI(view);
 
         return view;
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
+
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - init Data Functions
+     **------------------------------------------------------------------------------------------------*/
     private void initData() {
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getBaseContext());
         Utils.psLog(Config.APP_API_URL + Config.GET_FAVOURITE_ITEMS + pref.getInt("_login_user_id", 0) + "/count/" + Config.PAGINATION + "/form/0");
@@ -91,6 +95,59 @@ public class FavouritesListFragment extends Fragment {
             Utils.psErrorLogE("Error in init data.", e);
         }
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    private void initUI(View view){
+        initProgressWheel(view);
+        initRecyclerView(view);
+
+        displayMessage = (TextView) view.findViewById(R.id.display_message);
+        displayMessage.setVisibility(view.GONE);
+    }
+
+    private void initProgressWheel(View view) {
+        progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
+    }
+
+    private void initRecyclerView(View view) {
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        myDataset = new ArrayList<>();
+
+        mAdapter = new ItemAdapter(myDataset, mRecyclerView);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), mRecyclerView, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+
+                onItemClicked(position);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+    }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
 
     private void requestData(String uri) {
         JsonObjectRequest request = new JsonObjectRequest(uri,
@@ -148,36 +205,7 @@ public class FavouritesListFragment extends Fragment {
         queue.add(request);
     }
 
-    private void setupProgressWheel(View view) {
-        progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
-    }
-
-    private void setupRecyclerView(View view) {
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-
-        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        myDataset = new ArrayList<>();
-
-        mAdapter = new ItemAdapter(myDataset, mRecyclerView);
-        mRecyclerView.setAdapter(mAdapter);
-
-        mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), mRecyclerView, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-
-                onItemClicked(position);
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));
-    }
-
-    public void onItemClicked(int position) {
+    private void onItemClicked(int position) {
         //((SubCategoryActivity)getActivity()).openActivity(myDataset.get(position).id, myDataset.get(position).city_id);
         final Intent intent;
         intent = new Intent(getActivity(), DetailActivity.class);
@@ -185,6 +213,10 @@ public class FavouritesListFragment extends Fragment {
         intent.putExtra("selected_city_id", myDataset.get(position).city_id);
         startActivity(intent);
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
 
 
 }

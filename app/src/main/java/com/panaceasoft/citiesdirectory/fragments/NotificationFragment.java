@@ -1,6 +1,5 @@
 package com.panaceasoft.citiesdirectory.fragments;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,14 +14,12 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.panaceasoft.citiesdirectory.Config;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import android.app.ProgressDialog;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
@@ -32,6 +29,10 @@ import java.io.IOException;
  * Contact Email : teamps.is.cool@gmail.com
  */
 public class NotificationFragment extends Fragment {
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
     private View view;
     private ToggleButton tgNoti;
     private Button btnSubmit;
@@ -40,8 +41,6 @@ public class NotificationFragment extends Fragment {
     private SharedPreferences pref;
     private TextView txtMessage;
     RequestParams params = new RequestParams();
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    AsyncTask<Void, Void, String> createRegIdTask;
     private String URL = "";
     ProgressDialog prgDialog;
     private String serviceNotAvaiString;
@@ -53,11 +52,13 @@ public class NotificationFragment extends Fragment {
     private String gcmRegisterNotSuccessString;
     private String gcmRequestNotFoundString;
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
 
-    public NotificationFragment() {
-        // Required empty public constructor
-    }
-
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,9 +69,16 @@ public class NotificationFragment extends Fragment {
         initData();
 
         initUI();
+
         return view;
     }
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
 
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
     private void initData() {
         try {
 
@@ -84,24 +92,30 @@ public class NotificationFragment extends Fragment {
             gcmCannotConnectString = getResources().getString(R.string.cannot_connect);
 
 
-        }catch(Exception e){
+        } catch (Exception e) {
             Utils.psErrorLogE("Error in init data.", e);
         }
     }
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
 
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
     private void initUI() {
         tgNoti = (ToggleButton) view.findViewById(R.id.toggle_noti);
         btnSubmit = (Button) view.findViewById(R.id.button_submit);
         txtMessage = (TextView) view.findViewById(R.id.latest_push_message);
 
-        if(pref.getBoolean("_push_noti_setting",false)) {
+        if (pref.getBoolean("_push_noti_setting", false)) {
             tgNoti.setChecked(true);
         } else {
             tgNoti.setChecked(false);
         }
 
-        if(!pref.getString("_push_noti_message","").toString().equals("")) {
-            txtMessage.setText(pref.getString("_push_noti_message","").toString());
+        if (!pref.getString("_push_noti_message", "").toString().equals("")) {
+            txtMessage.setText(pref.getString("_push_noti_message", "").toString());
         } else {
             txtMessage.setText(" N.A ");
         }
@@ -124,6 +138,13 @@ public class NotificationFragment extends Fragment {
 
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
     private void getTokenInBackground(final String status) {
         prgDialog.show();
         new AsyncTask<Void, Void, String>() {
@@ -148,7 +169,7 @@ public class NotificationFragment extends Fragment {
             @Override
             protected void onPostExecute(String msg) {
                 Utils.psLog(" Msg Val " + msg);
-                if(!regId.equals("")) {
+                if (!regId.equals("")) {
                     submitToServer(status, regId);
                 } else {
                     hideProgress();
@@ -161,11 +182,10 @@ public class NotificationFragment extends Fragment {
         }.execute(null, null, null);
     }
 
-
     private void submitToServer(final String toggleStatus, String token) {
 
 
-        if(toggleStatus.toString().equals("reg")) {
+        if (toggleStatus.toString().equals("reg")) {
             URL = Config.APP_API_URL + Config.POST_GCM_REGISTER;
         } else {
             URL = Config.APP_API_URL + Config.POST_GCM_UNREGISTER;
@@ -219,43 +239,6 @@ public class NotificationFragment extends Fragment {
                             e.printStackTrace();
                         }
 
-
-                        /*
-                        try {
-                            JSONObject obj = new JSONObject(response);
-                            if (obj.getString("status").toString().equals("yes")) {
-                                if (toggleStatus.toString().equals("reg")) {
-                                    Toast.makeText(
-                                            getActivity().getApplicationContext(),
-                                            getString(R.string.gcm_register_success),
-                                            Toast.LENGTH_LONG).show();
-
-                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-                                    SharedPreferences.Editor editor = prefs.edit();
-                                    editor.putBoolean("_push_noti_setting", true);
-                                    editor.commit();
-
-                                } else {
-                                    Toast.makeText(
-                                            getActivity().getApplicationContext(),
-                                            getString(R.string.gcm_unregister_success),
-                                            Toast.LENGTH_LONG).show();
-
-                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-                                    SharedPreferences.Editor editor = prefs.edit();
-                                    editor.putBoolean("_push_noti_setting", true);
-                                    editor.commit();
-                                }
-                            } else {
-                                Toast.makeText(
-                                        getActivity().getApplicationContext(),
-                                        getString(R.string.gcm_register_not_success),
-                                        Toast.LENGTH_LONG).show();
-                            }
-                        } catch (Throwable t) {
-                            Utils.psLog("Catch : " + t.getMessage());
-                        }
-                        */
                     }
 
                     @Override
@@ -289,4 +272,7 @@ public class NotificationFragment extends Fragment {
         }
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
 }

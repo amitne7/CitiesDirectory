@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.RequestQueue;
@@ -23,8 +22,6 @@ import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.MainActivity;
 import com.panaceasoft.citiesdirectory.activities.UserLoginActivity;
 import com.panaceasoft.citiesdirectory.activities.UserRegisterActivity;
-import com.panaceasoft.citiesdirectory.models.Users;
-import com.panaceasoft.citiesdirectory.models.DatabaseHelper;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,18 +34,28 @@ import java.util.HashMap;
 
 public class UserRegisterFragment extends Fragment {
 
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
     private View view;
     private EditText txtName;
     private EditText txtEmail;
     private EditText txtPassword;
     private String userName;
     private String email;
-    //private ProgressBar pb;
     private Button btnRegister;
     private Button btnCancel;
     private ProgressDialog prgDialog;
     private String jsonStatusSuccessString;
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
+
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,26 +64,40 @@ public class UserRegisterFragment extends Fragment {
 
         initData();
 
-        // Init the all UI
         initUI();
 
         return view;
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
+
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init Data Functions
+     **-----------------------------------------------------------------------------------------------*/
+
     private void initData() {
         try {
             jsonStatusSuccessString = getResources().getString(R.string.json_status_success);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             Utils.psErrorLogE("Error in init data.", e);
         }
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
     private void initUI() {
         txtName = (EditText) this.view.findViewById(R.id.input_name);
         txtEmail = (EditText) this.view.findViewById(R.id.input_email);
         txtPassword = (EditText) this.view.findViewById(R.id.input_password);
-        //pb = (ProgressBar) this.view.findViewById(R.id.loading_spinner);
         btnRegister = (Button) this.view.findViewById(R.id.button_register);
         btnCancel = (Button) this.view.findViewById(R.id.button_cancel);
 
@@ -99,29 +120,37 @@ public class UserRegisterFragment extends Fragment {
         prgDialog.setCancelable(false);
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
+
     private void doCancel() {
-        if(getActivity() instanceof MainActivity) {
+        if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).openFragment(R.id.nav_profile);
-        }else if(getActivity() instanceof UserRegisterActivity) {
+        } else if (getActivity() instanceof UserRegisterActivity) {
             getActivity().finish();
         }
     }
 
     private boolean inputValidation() {
 
-        if(txtName.getText().toString().equals("")) {
+        if (txtName.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.name_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(txtEmail.getText().toString().equals("")) {
+        if (txtEmail.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.email_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(txtPassword.getText().toString().equals("")) {
+        if (txtPassword.getText().toString().equals("")) {
             Toast.makeText(getActivity().getApplicationContext(), R.string.password_validation_message,
                     Toast.LENGTH_LONG).show();
             return false;
@@ -131,9 +160,7 @@ public class UserRegisterFragment extends Fragment {
 
     private void doRegister() {
 
-        if(inputValidation()) {
-
-            //pb.setVisibility(view.VISIBLE);
+        if (inputValidation()) {
 
             final String URL = Config.APP_API_URL + Config.POST_USER_REGISTER;
             Utils.psLog(URL);
@@ -161,8 +188,6 @@ public class UserRegisterFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
 
-                            //pb.setVisibility(view.GONE);
-
                             String status = response.getString("status");
                             if (status.equals(jsonStatusSuccessString)) {
 
@@ -181,7 +206,7 @@ public class UserRegisterFragment extends Fragment {
                                 Utils.activity.bindMenu();
 
                                 // Show profile Menu
-                                if(getActivity() instanceof MainActivity) {
+                                if (getActivity() instanceof MainActivity) {
                                     ((MainActivity) getActivity()).openFragment(R.id.nav_profile_login);
                                 }
 
@@ -206,7 +231,7 @@ public class UserRegisterFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 prgDialog.cancel();
-                Utils.psLog("Error: "+ error.getMessage());
+                Utils.psLog("Error: " + error.getMessage());
             }
         });
 
@@ -215,7 +240,7 @@ public class UserRegisterFragment extends Fragment {
 
     }
 
-    public void showFailPopup() {
+    private void showFailPopup() {
         new MaterialDialog.Builder(getActivity())
                 .title(R.string.register)
                 .content(R.string.login_fail)
@@ -230,14 +255,19 @@ public class UserRegisterFragment extends Fragment {
                 .positiveText(R.string.OK)
                 .callback(new MaterialDialog.ButtonCallback() {
                     public void onPositive(MaterialDialog dialog) {
-                        if(getActivity() instanceof MainActivity) {
+                        if (getActivity() instanceof MainActivity) {
                             ((MainActivity) getActivity()).openFragment(R.id.nav_profile);
-                        }else if(getActivity() instanceof UserLoginActivity) {
+                        } else if (getActivity() instanceof UserLoginActivity) {
                             getActivity().finish();
                         }
                     }
                 })
                 .show();
+
     }
 
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Functions
+     **------------------------------------------------------------------------------------------------*/
 }
+
