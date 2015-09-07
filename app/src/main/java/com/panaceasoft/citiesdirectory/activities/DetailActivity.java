@@ -860,15 +860,18 @@ public class DetailActivity extends AppCompatActivity {
             intent.putExtra("selected_item_id", selectedItemId);
             intent.putExtra("selected_city_id", selectedCityId);
             startActivityForResult(intent, 1);
+            overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
         } else {
             if (pref.getInt("_login_user_id", 0) != 0) {
                 Intent intent = new Intent(this, ReviewEntry.class);
                 intent.putExtra("selected_item_id", selectedItemId);
                 intent.putExtra("selected_city_id", selectedCityId);
                 startActivityForResult(intent, 1);
+                overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
             } else {
                 Intent intent = new Intent(this, UserLoginActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
             }
         }
     }

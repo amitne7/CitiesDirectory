@@ -154,6 +154,7 @@ public class CitiesListFragment extends Fragment {
                     GlobalData.citydata = pCityDataList.get(0);
                     intent.putExtra("selected_city_id", pCityDataList.get(0).id);
                     getActivity().startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
                 }
 
             }
@@ -170,6 +171,7 @@ public class CitiesListFragment extends Fragment {
                     GlobalData.citydata = pCityDataList.get(0);
                     intent.putExtra("selected_city_id", pCityDataList.get(0).id);
                     getActivity().startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
                 }
 
             }
@@ -374,6 +376,7 @@ public class CitiesListFragment extends Fragment {
         GlobalData.citydata = pCityDataList.get(position);
         intent.putExtra("selected_city_id", pCityDataList.get(position).id);
         getActivity().startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
     }
 
     private void startLoading(){

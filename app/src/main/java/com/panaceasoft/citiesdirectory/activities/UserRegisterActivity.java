@@ -9,8 +9,21 @@ import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.utilities.Utils;
 
 public class UserRegisterActivity extends AppCompatActivity {
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
+
     private Toolbar toolbar;
     private SpannableString registerString;
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Private Variables
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,33 +32,54 @@ public class UserRegisterActivity extends AppCompatActivity {
 
         initData();
 
-        setupToolbar();
+        initToolbar();
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Override Functions
+     **------------------------------------------------------------------------------------------------*/
+
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
 
     private void initData() {
         try {
-
             registerString = Utils.getSpannableString(getString(R.string.register));
         }catch(Exception e){
             Utils.psErrorLogE("Error in init data.", e);
         }
     }
 
-    private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init Data Functions
+     **------------------------------------------------------------------------------------------------*/
 
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    /**------------------------------------------------------------------------------------------------
+     * Start Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
 
-        toolbar.setTitle(registerString);
-
+    private void initToolbar() {
+        try {
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
+            setSupportActionBar(toolbar);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            toolbar.setTitle(registerString);
+        } catch (Exception e) {
+            Utils.psErrorLogE("Error in initToolbar.", e);
+        }
     }
+
+    /**------------------------------------------------------------------------------------------------
+     * End Block - Init UI Functions
+     **------------------------------------------------------------------------------------------------*/
+
 
 }

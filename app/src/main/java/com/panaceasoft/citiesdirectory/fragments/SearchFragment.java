@@ -139,6 +139,7 @@ public class SearchFragment extends Fragment {
         intent.putExtra("search_keyword", txt_search.getText().toString().trim());
         intent.putExtra("selected_city_name", selectedCityName);
         startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.right_to_left, R.anim.blank_anim);
     }
     //-------------------------------------------------------------------------------------------------------------------------------------
     //endregion Private Functions
