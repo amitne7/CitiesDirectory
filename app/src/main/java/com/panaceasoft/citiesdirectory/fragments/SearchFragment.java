@@ -13,6 +13,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.panaceasoft.citiesdirectory.GlobalData;
 import com.panaceasoft.citiesdirectory.R;
 import com.panaceasoft.citiesdirectory.activities.SearchResultActivity;
@@ -112,6 +115,10 @@ public class SearchFragment extends Fragment {
         });
 
         txt_search = (TextView) view.findViewById(R.id.input_search);
+
+        AdView mAdView = (AdView) view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
     }
 

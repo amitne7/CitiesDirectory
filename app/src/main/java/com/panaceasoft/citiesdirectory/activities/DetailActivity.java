@@ -26,6 +26,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -319,6 +321,14 @@ public class DetailActivity extends AppCompatActivity {
             initCollapsingToolbarLayout();
 
             initilizeMap(savedInstanceState);
+
+            AdView mAdView = (AdView) findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+
+            AdView mAdView2 = (AdView) findViewById(R.id.adView2);
+            AdRequest adRequest2 = new AdRequest.Builder().build();
+            mAdView2.loadAd(adRequest2);
 
         }catch(Exception e){
             Utils.psErrorLogE("Error in Init UI.", e);

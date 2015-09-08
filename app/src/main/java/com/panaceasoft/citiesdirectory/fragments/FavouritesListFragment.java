@@ -16,6 +16,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.panaceasoft.citiesdirectory.Config;
@@ -110,6 +112,10 @@ public class FavouritesListFragment extends Fragment {
 
         displayMessage = (TextView) view.findViewById(R.id.display_message);
         displayMessage.setVisibility(view.GONE);
+
+        AdView mAdView = (AdView) view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     private void initProgressWheel(View view) {

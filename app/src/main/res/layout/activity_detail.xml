@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     android:fitsSystemWindows="true"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     psPopup:app="http://schemas.android.com/apk/res-auto">
+
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -197,6 +199,17 @@
 
             </LinearLayout>
 
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/banner_ad_unit_id">
+            </com.google.android.gms.ads.AdView>
+
 
             <LinearLayout
                 android:layout_marginTop="@dimen/space_2"
@@ -373,6 +386,18 @@
                     android:text="@string/view_more_review"
                     android:onClick="doReview"
                     />
+
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/adView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    ads:adSize="BANNER"
+                    ads:adUnitId="@string/banner_ad_unit_id">
+                </com.google.android.gms.ads.AdView>
+
             </LinearLayout>
 
             <!-- Added some space after all -->
@@ -396,6 +421,8 @@
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|right|end"
         app:layout_behavior="com.panaceasoft.citiesdirectory.utilities.ScrollingFABBehavior" />
+
+
 
 </android.support.design.widget.CoordinatorLayout>
 
