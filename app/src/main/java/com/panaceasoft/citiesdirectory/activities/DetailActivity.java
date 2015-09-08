@@ -330,6 +330,11 @@ public class DetailActivity extends AppCompatActivity {
                 AdView mAdView2 = (AdView) findViewById(R.id.adView2);
                 AdRequest adRequest2 = new AdRequest.Builder().build();
                 mAdView2.loadAd(adRequest2);
+            }else{
+                AdView mAdView = (AdView) findViewById(R.id.adView);
+                mAdView.setVisibility(View.GONE);
+                AdView mAdView2 = (AdView) findViewById(R.id.adView2);
+                mAdView2.setVisibility(View.GONE);
             }
 
         }catch(Exception e){
