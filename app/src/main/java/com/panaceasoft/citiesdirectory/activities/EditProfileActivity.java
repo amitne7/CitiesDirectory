@@ -47,7 +47,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileLockInterruptionException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -476,7 +475,7 @@ public class EditProfileActivity extends AppCompatActivity {
             pb = (ProgressBar) findViewById(R.id.loading_spinner);
             pb.setVisibility(view.VISIBLE);
 
-            final String URL = Config.APP_API_URL + Config.POST_USER_UPDATE + userId;
+            final String URL = Config.APP_API_URL + Config.PUT_USER_UPDATE + userId;
             Utils.psLog(URL);
 
             HashMap<String, String> params = new HashMap<>();

@@ -63,9 +63,9 @@ public class ReviewEntry extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review_entry);
 
-        initUI();
-
         initData();
+
+        initUI();
 
         bindData();
     }

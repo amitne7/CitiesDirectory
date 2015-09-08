@@ -248,7 +248,7 @@ public class PasswordUpdateActivity extends AppCompatActivity {
 
     public void doUpdate(View view) {
         if (inputValidation()) {
-            final String URL = Config.APP_API_URL + Config.POST_USER_UPDATE + userId;
+            final String URL = Config.APP_API_URL + Config.PUT_USER_UPDATE + userId;
             Utils.psLog(URL);
 
             HashMap<String, String> params = new HashMap<>();

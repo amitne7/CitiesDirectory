@@ -677,15 +677,21 @@ public class DetailActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             String success_status = response.getString("status");
+                            String data_status = response.getString("data");
 
                             if (success_status.equals(jsonStatusSuccessString)) {
-                                setRatingBar.setRating(Float.parseFloat(response.getString("total")));
-                                if (Float.parseFloat(response.getString("total")) != 0.0) {
-                                    ratingCount.setText("Total Rating : " + response.getString("total"));
+                                JSONObject jresponse = new JSONObject(data_status);
+                                if(jresponse.getString("isRate").toString().equals("yes")){
+                                    setRatingBar.setRating(Float.parseFloat(jresponse.getString("total")));
+                                    if(Float.parseFloat(jresponse.getString("total")) != 0.0) {
+                                        ratingCount.setText("Total Rating : " + jresponse.getString("total"));
+                                    }
+                                } else {
+                                    ratingCount.setText(getString(R.string.first_rating));
                                 }
-                            } else {
-                                ratingCount.setText(getString(R.string.first_rating));
+
                             }
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -772,8 +778,8 @@ public class DetailActivity extends AppCompatActivity {
                             String success_status = response.getString("status");
 
                             if (success_status.equals(jsonStatusSuccessString)) {
-                                setRatingBar.setRating(Float.parseFloat(response.getString("rating")));
-                                ratingCount.setText("Total Rating : " + response.getString("rating"));
+                                setRatingBar.setRating(Float.parseFloat(response.getString("data")));
+                                ratingCount.setText("Total Rating : " + response.getString("data"));
                             } else {
                                 showRatingFailPopup();
                             }
