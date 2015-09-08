@@ -95,9 +95,11 @@ public class NewsListActivity extends AppCompatActivity implements SwipeRefreshL
         initToolbar();
         initList();
 
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        if(Config.SHOW_APMOB) {
+            AdView mAdView = (AdView) findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }
     }
 
     private void initToolbar() {

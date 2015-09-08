@@ -11,6 +11,8 @@ public class Config extends Application{
 
     public static final String GOOGLE_PROJECT_NO = "312984937906";
 
+    public static final Boolean SHOW_APMOB = false;
+
     public static final String MSG_KEY = "m";
 
     public static final int PAGINATION = 3;

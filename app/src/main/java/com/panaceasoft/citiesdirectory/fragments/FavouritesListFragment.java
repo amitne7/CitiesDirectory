@@ -113,9 +113,11 @@ public class FavouritesListFragment extends Fragment {
         displayMessage = (TextView) view.findViewById(R.id.display_message);
         displayMessage.setVisibility(view.GONE);
 
-        AdView mAdView = (AdView) view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        if(Config.SHOW_APMOB) {
+            AdView mAdView = (AdView) view.findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }
     }
 
     private void initProgressWheel(View view) {

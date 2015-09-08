@@ -322,13 +322,15 @@ public class DetailActivity extends AppCompatActivity {
 
             initilizeMap(savedInstanceState);
 
-            AdView mAdView = (AdView) findViewById(R.id.adView);
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
+            if(Config.SHOW_APMOB) {
+                AdView mAdView = (AdView) findViewById(R.id.adView);
+                AdRequest adRequest = new AdRequest.Builder().build();
+                mAdView.loadAd(adRequest);
 
-            AdView mAdView2 = (AdView) findViewById(R.id.adView2);
-            AdRequest adRequest2 = new AdRequest.Builder().build();
-            mAdView2.loadAd(adRequest2);
+                AdView mAdView2 = (AdView) findViewById(R.id.adView2);
+                AdRequest adRequest2 = new AdRequest.Builder().build();
+                mAdView2.loadAd(adRequest2);
+            }
 
         }catch(Exception e){
             Utils.psErrorLogE("Error in Init UI.", e);
